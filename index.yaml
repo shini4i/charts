@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  app:
+  - apiVersion: v2
+    created: "2022-03-11T22:38:53.312571754Z"
+    description: A Helm chart for a simple app deployment
+    digest: 7f14db56514ee2d7c8e896ff53c07ec546cda860c0545691a6fd3b9fcf69bf33
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.0.1/app-0.0.1.tgz
+    version: 0.0.1
+generated: "2022-03-11T22:38:53.312576754Z"
