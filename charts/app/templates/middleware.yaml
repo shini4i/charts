@@ -1,0 +1,16 @@
+{{- if .Values.middleware.sourceRange -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "app.fullname" . }}-whitelist
+  {{- with .Values.middleware.labels }}
+  labels:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ipWhiteList:
+    {{- with .Values.middleware.sourceRange }}
+    sourceRange:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end }}
