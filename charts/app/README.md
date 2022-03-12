@@ -47,8 +47,9 @@ A Helm chart for a simple app deployment
 | resources | object | `{}` |  |
 | revisionHistoryLimit | int | `1` |  |
 | securityContext | object | `{}` |  |
-| service.containerPort | int | `80` |  |
-| service.port | int | `80` |  |
+| service.ports[0].containerPort | int | `80` |  |
+| service.ports[0].name | string | `"http"` |  |
+| service.ports[0].port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |

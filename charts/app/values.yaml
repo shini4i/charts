@@ -36,8 +36,10 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
-  containerPort: 80
+  ports:
+    - port: 80
+      containerPort: 80
+      name: http
 
 # -- Classical ingress definition
 ingress:
