@@ -20,6 +20,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+# deployments revisionHistoryLimit
+revisionHistoryLimit: 1
+
 podSecurityContext: {}
   # fsGroup: 2000
 
@@ -33,8 +36,10 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
-  containerPort: 80
+  ports:
+    - port: 80
+      containerPort: 80
+      name: http
 
 # -- Classical ingress definition
 ingress:
@@ -70,6 +75,18 @@ middleware:
   existingMiddlewares: {}
 
 app:
+  # -- Deployments livenessProbe configuration
+  livenessProbe: {}
+  #  httpGet:
+  #    path: /
+  #    port: http
+
+  # -- Deployments readinessProbe configuration
+  readinessProbe: {}
+  #  httpGet:
+  #    path: /
+  #    port: http
+
   # -- Environment variables to pass to main app container
   env: []
   # - name: "ENV_NAME"
@@ -100,6 +117,13 @@ job:
   #     name: config-map-name
   # - secretRef:
   #     name: secret-name
+
+podMonitor:
+  enabled: false
+  podMetricsEndpoints: []
+  #  - port: metrics
+  #  - port: web
+  labels: {}
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -1,8 +1,10 @@
 # app
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
+
+**Homepage:** <https://shini4i.github.io/charts/>
 
 ## Values
 
@@ -11,6 +13,8 @@ A Helm chart for a simple app deployment
 | affinity | object | `{}` |  |
 | app.env | list | `[]` | Environment variables to pass to main app container |
 | app.envFrom | list | `[]` | envFrom to pass to main app container |
+| app.livenessProbe | object | `{}` | Deployments livenessProbe configuration |
+| app.readinessProbe | object | `{}` | Deployments readinessProbe configuration |
 | autoscaling.enabled | bool | `false` |  |
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
@@ -35,12 +39,17 @@ A Helm chart for a simple app deployment
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
+| podMonitor.enabled | bool | `false` |  |
+| podMonitor.labels | object | `{}` |  |
+| podMonitor.podMetricsEndpoints | list | `[]` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
+| revisionHistoryLimit | int | `1` |  |
 | securityContext | object | `{}` |  |
-| service.containerPort | int | `80` |  |
-| service.port | int | `80` |  |
+| service.ports[0].containerPort | int | `80` |  |
+| service.ports[0].name | string | `"http"` |  |
+| service.ports[0].port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
