@@ -39,6 +39,9 @@ A Helm chart for a simple app deployment
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
+| podMonitor.enabled | bool | `false` |  |
+| podMonitor.labels | object | `{}` |  |
+| podMonitor.podMetricsEndpoints | list | `[]` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |

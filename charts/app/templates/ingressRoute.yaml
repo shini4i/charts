@@ -33,4 +33,4 @@ spec:
     domains:
       - main: {{ .Values.ingressRoute.host }}
     secretName: {{ .Values.ingressRoute.tlsSecret }}
-  {{- end }}
+{{- end }}
