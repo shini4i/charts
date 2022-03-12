@@ -20,6 +20,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+# deployments revisionHistoryLimit
+revisionHistoryLimit: 1
+
 podSecurityContext: {}
   # fsGroup: 2000
 
@@ -70,6 +73,18 @@ middleware:
   existingMiddlewares: {}
 
 app:
+  # -- Deployments livenessProbe configuration
+  livenessProbe: {}
+  #  httpGet:
+  #    path: /
+  #    port: http
+
+  # -- Deployments readinessProbe configuration
+  readinessProbe: {}
+  #  httpGet:
+  #    path: /
+  #    port: http
+
   # -- Environment variables to pass to main app container
   env: []
   # - name: "ENV_NAME"

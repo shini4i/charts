@@ -3,3 +3,5 @@ name: app
 description: A Helm chart for a simple app deployment
 type: application
 version: 0.0.1
+
+home: https://shini4i.github.io/charts/

@@ -4,6 +4,8 @@
 
 A Helm chart for a simple app deployment
 
+**Homepage:** <https://shini4i.github.io/charts/>
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -11,6 +13,8 @@ A Helm chart for a simple app deployment
 | affinity | object | `{}` |  |
 | app.env | list | `[]` | Environment variables to pass to main app container |
 | app.envFrom | list | `[]` | envFrom to pass to main app container |
+| app.livenessProbe | object | `{}` | Deployments livenessProbe configuration |
+| app.readinessProbe | object | `{}` | Deployments readinessProbe configuration |
 | autoscaling.enabled | bool | `false` |  |
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
@@ -38,6 +42,7 @@ A Helm chart for a simple app deployment
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
+| revisionHistoryLimit | int | `1` |  |
 | securityContext | object | `{}` |  |
 | service.containerPort | int | `80` |  |
 | service.port | int | `80` |  |
