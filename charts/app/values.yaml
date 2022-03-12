@@ -48,6 +48,8 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  # -- Port to use with ingress
+  exposedPort: 80
   hosts:
     - host: chart-example.local
       paths:
@@ -64,6 +66,8 @@ ingressRoute:
   entryPoint: websecure
   host: example.com
   tlsSecret: example-com-tls
+  # -- Port to use with ingressRoute
+  exposedPort: 80
   annotations: {}
   labels: {}
 

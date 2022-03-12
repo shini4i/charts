@@ -19,7 +19,7 @@ spec:
       kind: Rule
       services:
         - name: {{ include "app.fullname" . }}
-          port: {{ .Values.service.port }}
+          port: {{ .Values.ingressRoute.exposedPort }}
       {{ if .Values.middleware.enabled -}}
       middlewares:
         {{ if .Values.middleware.sourceRange -}}
