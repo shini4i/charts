@@ -58,6 +58,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.sideCars }}
+        {{- toYaml .Values.sideCars | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
