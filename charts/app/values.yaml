@@ -103,6 +103,12 @@ app:
   # - secretRef:
   #     name: secret-name
 
+# -- Raw yaml definition of sidecar containers
+sideCars: []
+#  - name: sidecar
+#    image: "image:tag"
+#    imagePullPolicy: IfNotPresent
+
 job:
   enabled: false
   image: curlimages/curl:7.82.0

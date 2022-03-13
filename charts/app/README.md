@@ -56,6 +56,7 @@ A Helm chart for a simple app deployment
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` |  |
+| sideCars | list | `[]` | Raw yaml definition of sidecar containers |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
