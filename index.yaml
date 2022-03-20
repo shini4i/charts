@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   app:
   - apiVersion: v2
+    created: "2022-03-20T19:24:04.358728181Z"
+    description: A Helm chart for a simple app deployment
+    digest: 8bd107e6aa97f1ee046f0c88284616e58d0f6890757f018f6b97117f048dbba0
+    home: https://shini4i.github.io/charts/
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.0.4/app-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
     created: "2022-03-12T18:08:52.212097116Z"
     description: A Helm chart for a simple app deployment
     digest: 7db67e4c50f27d0c838f26005e0672fceaa91034d85bcda14de535f228b6b88c
@@ -30,4 +40,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/app-0.0.1/app-0.0.1.tgz
     version: 0.0.1
-generated: "2022-03-12T18:08:52.212109316Z"
+generated: "2022-03-20T19:24:04.358746982Z"
