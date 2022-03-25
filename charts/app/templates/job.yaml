@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: job
-          image: {{ .Values.job.image }}
+          image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
           command:
             {{- range .Values.job.command }}
             - {{ . | quote }}

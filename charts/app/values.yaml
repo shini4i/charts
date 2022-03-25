@@ -111,7 +111,9 @@ sideCars: []
 
 job:
   enabled: false
-  image: curlimages/curl:7.82.0
+  image:
+    repository: curlimages/curl
+    tag: 7.82.0
   command: ["curl", "https://ifconfig.me"]
   restartPolicy: Never
   backoffLimit: 1

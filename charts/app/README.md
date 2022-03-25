@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -35,7 +35,8 @@ A Helm chart for a simple app deployment
 | job.enabled | bool | `false` |  |
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
-| job.image | string | `"curlimages/curl:7.82.0"` |  |
+| job.image.repository | string | `"curlimages/curl"` |  |
+| job.image.tag | string | `"7.82.0"` |  |
 | job.restartPolicy | string | `"Never"` |  |
 | middleware | object | `{"enabled":false,"existingMiddlewares":{},"labels":{},"sourceRange":{}}` | Whitelist Middleware definition |
 | nameOverride | string | `""` |  |
