@@ -1,0 +1,30 @@
+{{ if .Values.postgres.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "argo-watcher.fullname" . }}-migrations
+  annotations:
+    "helm.sh/hook": pre-upgrade
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrations
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: DB_HOST
+              value: {{ .Values.postgres.host }}
+            - name: DB_NAME
+              value: {{ .Values.postgres.name }}
+            - name: DB_USER
+              value: {{ .Values.postgres.user }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgres.secretName }}
+          command: ["/bin/dbmate"]
+          args:
+            - "up"
+            - "--url postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)?sslmode=disable"
+      restartPolicy: OnFailure
+  backoffLimit: 5
+{{- end }}
