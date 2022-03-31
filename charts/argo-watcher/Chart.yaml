@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argo-watcher
+description: A Helm chart for deploying argo-watcher
+type: application
+version: 0.1.0
+appVersion: "v0.0.1"
