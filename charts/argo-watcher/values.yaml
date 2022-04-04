@@ -11,6 +11,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 healthChecksEnabled: true
+logLevel: info
 
 argo:
   url: https://argocd.example.com
@@ -41,6 +42,10 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
+podMonitor:
+  enabled: false
+  labels: {}
 
 podAnnotations: {}
 

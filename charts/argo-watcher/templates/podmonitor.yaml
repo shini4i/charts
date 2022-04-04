@@ -1,0 +1,17 @@
+{{ if .Values.podMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "argo-watcher.fullname" . }}-metrics
+  {{- with .Values.podMonitor.labels }}
+  labels:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics/
+{{ end }}

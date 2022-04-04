@@ -26,7 +26,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: app
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -42,6 +42,8 @@ spec:
               value: {{ .Values.argo.username }}
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel | upper }}
           {{- if .Values.postgres.enabled }}
             - name: STATE_TYPE
               value: postgres
