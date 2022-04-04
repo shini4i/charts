@@ -9,10 +9,10 @@ A Helm chart for deploying argo-watcher
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| argo.secretName | string | `""` | Pre-created secret with ARGO_PASSWORD variable |
+| argo.secretName | string | `"argo-watcher-secret"` | Pre-created secret with ARGO_PASSWORD variable |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
-| argo.url | string | `"https://argocd.example.com"` |  |
-| argo.username | string | `"user"` |  |
+| argo.url | string | `"https://argocd.linux-tech.io"` |  |
+| argo.username | string | `"watcher"` |  |
 | fullnameOverride | string | `""` |  |
 | healthChecksEnabled | bool | `true` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -29,6 +29,8 @@ A Helm chart for deploying argo-watcher
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
+| podMonitor.enabled | bool | `false` |  |
+| podMonitor.labels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |

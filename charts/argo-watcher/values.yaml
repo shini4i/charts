@@ -13,12 +13,12 @@ fullnameOverride: ""
 healthChecksEnabled: true
 
 argo:
-  url: https://argocd.example.com
-  username: user
+  url: https://argocd.linux-tech.io
+  username: watcher
   # -- How long to wait for deployment to be finished
   timeout: 300
   # -- Pre-created secret with ARGO_PASSWORD variable
-  secretName: ""
+  secretName: "argo-watcher-secret"
 
 watcher:
   # -- The amount of seconds to keep record in in-memory state. Ignored with STATE_TYPE postgres
@@ -41,6 +41,10 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
+podMonitor:
+  enabled: false
+  labels: {}
 
 podAnnotations: {}
 
