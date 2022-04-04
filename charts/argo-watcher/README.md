@@ -9,10 +9,10 @@ A Helm chart for deploying argo-watcher
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| argo.secretName | string | `"argo-watcher-secret"` | Pre-created secret with ARGO_PASSWORD variable |
+| argo.secretName | string | `""` | Pre-created secret with ARGO_PASSWORD variable |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
-| argo.url | string | `"https://argocd.linux-tech.io"` |  |
-| argo.username | string | `"watcher"` |  |
+| argo.url | string | `"https://argocd.example.com"` |  |
+| argo.username | string | `"user"` |  |
 | fullnameOverride | string | `""` |  |
 | healthChecksEnabled | bool | `true` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |

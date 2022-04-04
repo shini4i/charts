@@ -13,12 +13,12 @@ fullnameOverride: ""
 healthChecksEnabled: true
 
 argo:
-  url: https://argocd.linux-tech.io
-  username: watcher
+  url: https://argocd.example.com
+  username: user
   # -- How long to wait for deployment to be finished
   timeout: 300
   # -- Pre-created secret with ARGO_PASSWORD variable
-  secretName: "argo-watcher-secret"
+  secretName: ""
 
 watcher:
   # -- The amount of seconds to keep record in in-memory state. Ignored with STATE_TYPE postgres
