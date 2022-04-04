@@ -42,6 +42,8 @@ spec:
               value: {{ .Values.argo.username }}
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel | upper }}
           {{- if .Values.postgres.enabled }}
             - name: STATE_TYPE
               value: postgres
