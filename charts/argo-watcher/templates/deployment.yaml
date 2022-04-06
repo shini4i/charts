@@ -43,7 +43,7 @@ spec:
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
             - name: SSL_VERIFY
-              value: {{ .Values.argo.sslVerify }}
+              value: {{ .Values.argo.sslVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
           {{- if .Values.postgres.enabled }}
