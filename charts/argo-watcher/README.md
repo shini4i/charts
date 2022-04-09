@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.3](https://img.shields.io/badge/AppVersion-v0.0.3-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.3](https://img.shields.io/badge/AppVersion-v0.0.3-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -16,7 +16,9 @@ A Helm chart for deploying argo-watcher
 | argo.username | string | `"user"` |  |
 | fullnameOverride | string | `""` |  |
 | healthChecks.enabled | bool | `true` |  |
+| healthChecks.initialDelaySeconds | int | `5` |  |
 | healthChecks.periodSeconds | int | `30` |  |
+| healthChecks.timeoutSeconds | int | `5` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/shini4i/argo-watcher"` |  |
 | image.tag | string | `""` |  |

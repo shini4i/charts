@@ -69,11 +69,15 @@ spec:
               path: /healthz
               port: http
             periodSeconds: {{ .Values.healthChecks.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
           readinessProbe:
             httpGet:
               path: /healthz
               port: http
             periodSeconds: {{ .Values.healthChecks.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

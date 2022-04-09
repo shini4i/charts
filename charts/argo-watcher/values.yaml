@@ -13,6 +13,8 @@ fullnameOverride: ""
 healthChecks:
   enabled: true
   periodSeconds: 30
+  timeoutSeconds: 5
+  initialDelaySeconds: 5
 
 logLevel: info
 
