@@ -10,7 +10,10 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-healthChecksEnabled: true
+healthChecks:
+  enabled: true
+  periodSeconds: 30
+
 logLevel: info
 
 argo:

@@ -63,15 +63,17 @@ spec:
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
             {{- end }}
-          {{- if .Values.healthChecksEnabled }}
+          {{- if .Values.healthChecks.enabled }}
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
+            periodSeconds: {{ .Values.healthChecks.periodSeconds }}
           readinessProbe:
             httpGet:
               path: /healthz
               port: http
+            periodSeconds: {{ .Values.healthChecks.periodSeconds }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
