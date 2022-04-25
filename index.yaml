@@ -2,6 +2,19 @@ apiVersion: v1
 entries:
   app:
   - apiVersion: v2
+    created: "2022-04-25T15:42:03.805119229Z"
+    description: A Helm chart for a simple app deployment
+    digest: 736859508554a9b33b90eb50dd54ac3b1770bb155dda35ff28514cab06f63f7e
+    home: https://github.com/shini4i/charts
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.0.6/app-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
     created: "2022-03-25T21:57:18.452839149Z"
     description: A Helm chart for a simple app deployment
     digest: 7031c387f047e852dec38e07cdbd6312294baab5efaa25b27616a15a23446453
@@ -141,4 +154,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/argo-watcher-0.0.1/argo-watcher-0.0.1.tgz
     version: 0.0.1
-generated: "2022-04-09T16:16:45.465466517Z"
+generated: "2022-04-25T15:42:03.805164729Z"
