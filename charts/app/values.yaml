@@ -79,6 +79,12 @@ middleware:
   existingMiddlewares: {}
 
 app:
+  deployment:
+    strategy: RollingUpdate
+    # Used only if strategy is set to RollingUpdate
+    maxUnavailable: 25%
+    maxSurge: 1
+
   # -- Deployments livenessProbe configuration
   livenessProbe: {}
   #  httpGet:
@@ -103,11 +109,28 @@ app:
   # - secretRef:
   #     name: secret-name
 
+  lifecycle: {}
+  #  postStart:
+  #    exec:
+  #      command: ["cp -R /www/default /shared/public"]
+
 # -- Raw yaml definition of sidecar containers
 sideCars: []
 #  - name: sidecar
 #    image: "image:tag"
 #    imagePullPolicy: IfNotPresent
+
+# -- Raw yaml definition of additional volumes
+volumes: []
+  # - name: nginx-config
+  #   configMap:
+  #    name: nginx-config
+
+# -- Raw yaml definition of init containers
+initContainers: []
+  # - name: test
+  #   image: alpine:3.14.2
+  #   command: ["sh", "-c", "echo test"]
 
 job:
   enabled: false
