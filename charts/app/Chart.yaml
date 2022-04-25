@@ -2,6 +2,10 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.0.5
+version: 0.0.6
 
-home: https://shini4i.github.io/charts/
+home: https://github.com/shini4i/charts
+
+maintainers:
+  - name: Vadim Gedz
+    email: vadims@linux-tech.io

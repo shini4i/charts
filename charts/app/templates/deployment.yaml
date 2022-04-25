@@ -11,6 +11,13 @@ spec:
   selector:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.app.deployment.strategy }}
+    {{- if eq .Values.app.deployment.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.app.deployment.maxUnavailable }}
+      maxSurge: {{ .Values.app.deployment.maxSurge }}
+    {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
@@ -28,6 +35,10 @@ spec:
       serviceAccountName: {{ include "app.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{ toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -40,6 +51,13 @@ spec:
               containerPort: {{ .containerPort }}
               protocol: TCP
             {{- end }}
+          volumeMounts:
+            - mountPath: /shared
+              name: shared
+          {{- if .Values.app.lifecycle }}
+          lifecycle:
+            {{- toYaml .Values.app.lifecycle | nindent 12 }}
+          {{- end }}
           {{- if .Values.app.env }}
           env:
           {{- toYaml .Values.app.env | nindent 10 }}
@@ -60,6 +78,12 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
         {{- if .Values.sideCars }}
         {{- toYaml .Values.sideCars | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: shared
+          emptyDir: {}
+        {{- if .Values.volumes }}
+        {{- toYaml .Values.volumes | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
