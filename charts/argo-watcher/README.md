@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.5](https://img.shields.io/badge/AppVersion-v0.0.5-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.5](https://img.shields.io/badge/AppVersion-v0.0.5-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -40,6 +40,7 @@ A Helm chart for deploying argo-watcher
 | postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
 | postgres.name | string | `""` |  |
+| postgres.port | int | `5432` |  |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
 | postgres.user | string | `""` |  |
 | replicaCount | int | `1` |  |

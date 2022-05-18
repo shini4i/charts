@@ -36,6 +36,7 @@ postgres:
   # -- Sets STATE_TYPE to postgres
   enabled: false
   host: ""
+  port: 5432
   name: ""
   user: ""
   # -- Pre-created secret with DB_PASSWORD variable

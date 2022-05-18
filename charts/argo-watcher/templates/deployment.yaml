@@ -55,6 +55,8 @@ spec:
               value: postgres
             - name: DB_HOST
               value: {{ .Values.postgres.host }}
+            - name: DB_PORT
+              value: {{ .Values.postgres.port | quote }}
             - name: DB_NAME
               value: {{ .Values.postgres.name }}
             - name: DB_USER
