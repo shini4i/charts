@@ -46,10 +46,6 @@ spec:
               value: {{ .Values.argo.sslVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
-          {{- if not .Values.postgres.enabled }}
-            - name: HISTORY_TTL
-              value: {{ .Values.watcher.history_ttl | quote }}
-          {{- end }}
           {{- if .Values.postgres.enabled }}
             - name: STATE_TYPE
               value: postgres

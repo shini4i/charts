@@ -28,10 +28,6 @@ argo:
   # -- Pre-created secret with ARGO_PASSWORD variable
   secretName: ""
 
-watcher:
-  # -- The amount of seconds to keep record in in-memory state. Ignored with STATE_TYPE postgres
-  history_ttl: 3600
-
 postgres:
   # -- Sets STATE_TYPE to postgres
   enabled: false
