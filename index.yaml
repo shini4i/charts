@@ -65,6 +65,16 @@ entries:
     version: 0.0.1
   argo-watcher:
   - apiVersion: v2
+    appVersion: v0.0.9-rc1
+    created: "2022-06-08T19:31:29.746934127Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 644e002a15ce64dc263e2d33838bc0b5463a445c888a5571ebdd82d5e71e8e98
+    name: argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.1.13/argo-watcher-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
     appVersion: v0.0.6
     created: "2022-05-25T08:26:45.95943129Z"
     description: A Helm chart for deploying argo-watcher
@@ -204,4 +214,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/argo-watcher-0.0.1/argo-watcher-0.0.1.tgz
     version: 0.0.1
-generated: "2022-05-25T08:26:45.95952279Z"
+generated: "2022-06-08T19:31:29.747114127Z"
