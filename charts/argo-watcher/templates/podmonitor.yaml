@@ -13,5 +13,5 @@ spec:
       {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
   podMetricsEndpoints:
     - port: http
-      path: /metrics/
+      path: /metrics
 {{ end }}

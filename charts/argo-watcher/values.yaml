@@ -1,5 +1,7 @@
 replicaCount: 1
 
+revisionHistory: 1
+
 image:
   repository: ghcr.io/shini4i/argo-watcher
   pullPolicy: IfNotPresent
@@ -21,7 +23,7 @@ logLevel: info
 argo:
   url: https://argocd.example.com
   # -- If ssl certificate should be verified
-  sslVerify: true
+  skiTlsVerify: false
   username: user
   # -- How long to wait for deployment to be finished
   timeout: 300

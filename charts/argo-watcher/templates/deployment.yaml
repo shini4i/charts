@@ -6,6 +6,7 @@ metadata:
     {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistory }}
   selector:
     matchLabels:
       {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
@@ -42,8 +43,8 @@ spec:
               value: {{ .Values.argo.username }}
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
-            - name: SSL_VERIFY
-              value: {{ .Values.argo.sslVerify | quote }}
+            - name: SKIP_TLS_VERIFY
+              value: {{ .Values.argo.skiTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
           {{- if .Values.postgres.enabled }}
