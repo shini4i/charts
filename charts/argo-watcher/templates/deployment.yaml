@@ -44,7 +44,7 @@ spec:
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
             - name: SKIP_TLS_VERIFY
-              value: {{ .Values.argo.skiTlsVerify | quote }}
+              value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
           {{- if .Values.postgres.enabled }}

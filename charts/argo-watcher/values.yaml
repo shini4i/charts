@@ -23,7 +23,7 @@ logLevel: info
 argo:
   url: https://argocd.example.com
   # -- If ssl certificate should be verified
-  skiTlsVerify: false
+  skipTlsVerify: false
   username: user
   # -- How long to wait for deployment to be finished
   timeout: 300
