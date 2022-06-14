@@ -47,9 +47,13 @@ spec:
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
-          {{- if .Values.postgres.enabled }}
             - name: STATE_TYPE
-              value: postgres
+              {{- if .Values.postgres.enabled }}
+              value: "postgres"
+              {{- else }}
+              value: "in-memory"
+              {{- end }}
+            {{- if .Values.postgres.enabled }}
             - name: DB_HOST
               value: {{ .Values.postgres.host }}
             - name: DB_PORT

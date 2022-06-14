@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.10](https://img.shields.io/badge/AppVersion-v0.0.10-informational?style=flat-square)
+![Version: 0.1.17](https://img.shields.io/badge/Version-0.1.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.10](https://img.shields.io/badge/AppVersion-v0.0.10-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -10,7 +10,7 @@ A Helm chart for deploying argo-watcher
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | argo.secretName | string | `""` | Pre-created secret with ARGO_PASSWORD variable |
-| argo.skipTlsVerify | bool | `false` | If ssl certificate should be verified |
+| argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
 | argo.url | string | `"https://argocd.example.com"` |  |
 | argo.username | string | `"user"` |  |
