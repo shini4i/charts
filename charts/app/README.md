@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -49,6 +49,12 @@ A Helm chart for a simple app deployment
 | job.image.repository | string | `"curlimages/curl"` |  |
 | job.image.tag | string | `"7.82.0"` |  |
 | job.restartPolicy | string | `"Never"` |  |
+| keda.advanced | string | `nil` |  |
+| keda.enabled | bool | `false` |  |
+| keda.fallback | object | `{}` |  |
+| keda.maxReplicaCount | int | `5` |  |
+| keda.minReplicaCount | int | `2` |  |
+| keda.triggers | list | `[]` |  |
 | middleware | object | `{"enabled":false,"existingMiddlewares":{},"labels":{},"sourceRange":{}}` | Whitelist Middleware definition |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
