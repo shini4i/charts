@@ -193,7 +193,7 @@ keda:
   fallback: {}
    # failureThreshold: 3
    # replicas: 4
-  advanced:
+  advanced: {}
    # restoreToOriginalReplicaCount: false
    # horizontalPodAutoscalerConfig:
    #   behavior:
