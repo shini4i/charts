@@ -1,0 +1,32 @@
+configMap:
+  # -- resulting ConfigMap name override
+  nameOverride: ""
+  # -- values of the resulting ConfigMap
+  data: {}
+
+podMonitor:
+  podMetricsEndpoints: []
+  #  - port: metrics
+  #  - port: web
+  labels: {}
+
+job:
+  enabled: false
+  image:
+    repository: curlimages/curl
+    tag: 7.85.0
+  command: ["curl", "https://ifconfig.me"]
+  restartPolicy: Never
+  backoffLimit: 1
+  annotations:
+    "helm.sh/hook": pre-upgrade
+  # -- Environment variables to pass to job container
+  env: []
+  # - name: "ENV_NAME"
+  #   value: "test"
+  # -- envFrom to pass to job container
+  envFrom: []
+  # - configMapRef:
+  #     name: config-map-name
+  # - secretRef:
+  #     name: secret-name
