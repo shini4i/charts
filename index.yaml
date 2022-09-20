@@ -330,4 +330,14 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/argo-watcher-0.0.1/argo-watcher-0.0.1.tgz
     version: 0.0.1
-generated: "2022-08-17T15:54:32.669977737Z"
+  common:
+  - apiVersion: v2
+    created: "2022-09-20T21:10:46.500315735Z"
+    description: A Helm chart library with some common templates
+    digest: ef2a0731de3c3bfa9db139583911f84018934d0d3bbe93f8e204735c7502e8c3
+    name: common
+    type: library
+    urls:
+    - https://github.com/shini4i/charts/releases/download/common-0.0.1/common-0.0.1.tgz
+    version: 0.0.1
+generated: "2022-09-20T21:10:46.500441235Z"
