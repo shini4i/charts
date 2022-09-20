@@ -11,7 +11,6 @@ podMonitor:
   labels: {}
 
 job:
-  enabled: false
   image:
     repository: curlimages/curl
     tag: 7.85.0
@@ -30,3 +29,27 @@ job:
   #     name: config-map-name
   # - secretRef:
   #     name: secret-name
+
+keda:
+  minReplicaCount: 2
+  maxReplicaCount: 5
+  triggers: []
+    # - metadata:
+    #     metricName: app_http_request_count
+    #     query: sum(increase(app_http_request_count{path="/important-endpoint"}[2m]))
+    #     serverAddress: http://prometheus.monitoring:9090
+    #     threshold: '80'
+    #     type: prometheus
+  fallback: {}
+    # failureThreshold: 3
+    # replicas: 4
+  advanced: {}
+    # restoreToOriginalReplicaCount: false
+    # horizontalPodAutoscalerConfig:
+    #   behavior:
+    #     scaleDown:
+    #       stabilizationWindowSeconds: 600
+    #       policies:
+    #         - type: Percent
+    #           value: 10
+    #           periodSeconds: 15

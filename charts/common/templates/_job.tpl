@@ -1,4 +1,4 @@
-{{- define "common.job.yaml" -}}
+{{- define "common.job.tpl" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

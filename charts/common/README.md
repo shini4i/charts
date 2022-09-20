@@ -14,12 +14,16 @@ A Helm chart library with some common templates
 | job.backoffLimit | int | `1` |  |
 | job.command[0] | string | `"curl"` |  |
 | job.command[1] | string | `"https://ifconfig.me"` |  |
-| job.enabled | bool | `false` |  |
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
 | job.image.repository | string | `"curlimages/curl"` |  |
 | job.image.tag | string | `"7.85.0"` |  |
 | job.restartPolicy | string | `"Never"` |  |
+| keda.advanced | object | `{}` |  |
+| keda.fallback | object | `{}` |  |
+| keda.maxReplicaCount | int | `5` |  |
+| keda.minReplicaCount | int | `2` |  |
+| keda.triggers | list | `[]` |  |
 | podMonitor.labels | object | `{}` |  |
 | podMonitor.podMetricsEndpoints | list | `[]` |  |
 

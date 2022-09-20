@@ -1,4 +1,4 @@
-{{- define "common.podmonitor.yaml" -}}
+{{- define "common.podmonitor.tpl" -}}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:

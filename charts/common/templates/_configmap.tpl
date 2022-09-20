@@ -1,4 +1,4 @@
-{{- define "common.configmap.yaml" -}}
+{{- define "common.configmap.tpl" -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

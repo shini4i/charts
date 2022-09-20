@@ -3,4 +3,3 @@ name: common
 description: A Helm chart library with some common templates
 type: library
 version: 0.0.1
-
