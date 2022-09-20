@@ -1,4 +1,4 @@
-{{ define "common.keda-scaledobject.tpl" }}
+{{- define "common.keda-scaledobject.tpl" -}}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
