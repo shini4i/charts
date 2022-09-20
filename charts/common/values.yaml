@@ -39,7 +39,7 @@ keda:
     #     query: sum(increase(app_http_request_count{path="/important-endpoint"}[2m]))
     #     serverAddress: http://prometheus.monitoring:9090
     #     threshold: '80'
-    #     type: prometheus
+    #   type: prometheus
   fallback: {}
     # failureThreshold: 3
     # replicas: 4
