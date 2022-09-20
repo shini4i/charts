@@ -16,8 +16,9 @@ helm repo add shini4i https://shini4i.github.io/charts/
 
 ## Table of Contents
 <!-- table_start -->
-|     Name     |               Description                | Version | App Version |
-|:------------:|:----------------------------------------:|:-------:|:-----------:|
-| argo-watcher | A Helm chart for deploying argo-watcher  |  0.2.4  |    v0.1.4   |
-|     app      | A Helm chart for a simple app deployment |  0.0.8  |     None    |
+|     Name     |                    Description                    | Version | App Version |
+|:------------:|:-------------------------------------------------:|:-------:|:-----------:|
+| argo-watcher |      A Helm chart for deploying argo-watcher      |  0.2.4  |    v0.1.4   |
+|     app      |     A Helm chart for a simple app deployment      |  0.0.8  |     None    |
+|   common     | A Helm chart library with some common templates   |  0.0.1  |     None    |
 <!-- table_end -->
