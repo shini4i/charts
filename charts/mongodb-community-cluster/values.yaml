@@ -1,0 +1,82 @@
+nameOverride: ""
+fullnameOverride: ""
+
+# -- MongoDB instances count
+replicaCount: 1
+
+imagePullSecrets: []
+
+# -- MongoDB version
+version: 6.0.2
+
+mongod:
+  # -- MongoDB setup type
+  type: ReplicaSet
+  persistence:
+    data:
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: ""
+    logs:
+      size: 1Gi
+      storageClassName: ""
+      accessModes:
+        - ReadWriteOnce
+  resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
+
+mongodb_agent:
+  resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
+
+#  At the moment due to limitation in MongoDB community operator, pvc ar created for arbiter as well
+arbiter:
+  # -- If arbiter should be enabled
+  enabled: false
+  # -- Should be less than the value of main replicaCount
+  replicaCount: 1
+
+#  credentials part should be omitted as it will be generated automatically
+users:
+  - name: admin
+    db: admin
+    roles:
+      - db: admin
+        name: clusterAdmin
+      - db: admin
+        name: userAdminAnyDatabase
+
+metrics:
+  enabled: true
+  additionalLabels:
+    prometheus: main
+
+serviceAccount:
+  # -- should match database.name from operator chart
+  nameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# pre-install/pre-commit hook configuration
+job:
+  image:
+    repository: bitnami/kubectl
+    tag: 1.25.3
+
+  restartPolicy: "OnFailure"
+  backoffLimit: 5

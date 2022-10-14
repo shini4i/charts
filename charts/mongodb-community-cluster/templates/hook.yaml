@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-job
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+spec:
+  template:
+    spec:
+      containers:
+        - name: job
+          image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              {{ include "hook-script" . | nindent 14 }}
+      serviceAccountName: {{ include "mongodb-community-cluster.serviceAccountName" . }}
+      restartPolicy: {{ .Values.job.restartPolicy }}
+  backoffLimit: {{ .Values.job.backoffLimit }}
