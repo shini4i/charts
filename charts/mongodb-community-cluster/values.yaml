@@ -4,8 +4,6 @@ fullnameOverride: ""
 # -- MongoDB instances count
 replicaCount: 1
 
-imagePullSecrets: []
-
 # -- MongoDB version
 version: 6.0.2
 

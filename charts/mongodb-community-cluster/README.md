@@ -12,7 +12,6 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 | arbiter.enabled | bool | `false` | If arbiter should be enabled |
 | arbiter.replicaCount | int | `1` | Should be less than the value of main replicaCount |
 | fullnameOverride | string | `""` |  |
-| imagePullSecrets | list | `[]` |  |
 | job.backoffLimit | int | `5` |  |
 | job.image.repository | string | `"bitnami/kubectl"` |  |
 | job.image.tag | string | `"1.25.3"` |  |
