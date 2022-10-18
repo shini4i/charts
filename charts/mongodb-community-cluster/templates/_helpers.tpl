@@ -48,26 +48,32 @@ Currently defaults to "mongodb-database" as it is hardcoded in MongoDB operator
 {{- end }}
 
 {{- define "mongodb-users" }}
+{{- if .Values.users }}
 {{- range $key, $value := .Values.users -}}
 - name: {{ $value.name }}
   db: {{ $value.db }}
-  {{- range $k, $v := $value.roles }}
+  {{- if $value.roles }}
   roles:
+  {{- range $k, $v := $value.roles }}
     - db: {{ $v.db }}
       name: {{ $v.name }}
+  {{- end }}
   {{- end }}
   passwordSecretRef:
     name: {{ $value.name }}-user-password
   scramCredentialsSecretName: {{ $value.name }}
   connectionStringSecretName: {{ $value.name }}-connection-string
 {{ end -}}
+{{ else }}
+{{- "[]" }}
+{{ end }}
 {{- end }}
 
 {{- define "hook-script" -}}
 {{- range $key, $value := .Values.users -}}
 kubectl get secret {{ $value.name }}-user-password || kubectl create secret generic {{ $value.name }}-user-password --from-literal=password={{ randAlphaNum 32 }}
 {{ end }}
-{{ if .Values.metrics.enabled }}
+{{- if .Values.metrics.enabled -}}
 kubectl get secret {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials || kubectl create secret generic {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials --from-literal=username=prometheus --from-literal=password={{ randAlphaNum 32 }}
 {{ end }}
 {{- end -}}

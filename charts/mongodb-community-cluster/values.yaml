@@ -68,10 +68,22 @@ serviceAccount:
   nameOverride: ""
 
 nodeSelector: {}
+#  nodegroup: production
 
 tolerations: []
+#  - key: "example-key"
+#    operator: "Exists"
+#    effect: "NoSchedule"
 
 affinity: {}
+#  nodeAffinity:
+#    requiredDuringSchedulingIgnoredDuringExecution:
+#      nodeSelectorTerms:
+#        - matchExpressions:
+#            - key: topology.kubernetes.io/zone
+#              operator: In
+#              values:
+#                - eu-north-1a
 
 # pre-install/pre-commit hook configuration
 job:

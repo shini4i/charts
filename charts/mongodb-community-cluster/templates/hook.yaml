@@ -1,4 +1,4 @@
-{{ if and .Values.users .Values.metrics.enabled }}
+{{ if or .Values.users .Values.metrics.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -17,7 +17,7 @@ spec:
             - /bin/sh
             - -c
             - |
-              {{ include "hook-script" . | nindent 14 }}
+              {{- include "hook-script" . | nindent 14 }}
       serviceAccountName: {{ include "mongodb-community-cluster.serviceAccountName" . }}
       restartPolicy: {{ .Values.job.restartPolicy }}
   backoffLimit: {{ .Values.job.backoffLimit }}
