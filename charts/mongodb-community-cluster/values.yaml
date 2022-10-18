@@ -1,3 +1,5 @@
+# This chart was tested with MongoDB community operator version 0.7.6
+
 nameOverride: ""
 fullnameOverride: ""
 
