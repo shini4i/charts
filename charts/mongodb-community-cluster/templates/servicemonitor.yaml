@@ -1,0 +1,31 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+    {{- if .Values.metrics.additionalLabels }}
+    {{- toYaml .Values.metrics.additionalLabels | nindent 4 }}
+    {{- end }}
+  name: {{ include "mongodb-community-cluster.fullname" . }}-sm
+spec:
+  endpoints:
+    - basicAuth:
+        password:
+          key: password
+          name: {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials
+        username:
+          key: username
+          name: {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials
+
+      port: prometheus
+      scheme: http
+
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+
+  selector:
+    matchLabels:
+      app: {{ include "mongodb-community-cluster.fullname" . }}-svc
+{{- end }}
