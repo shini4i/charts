@@ -17,8 +17,8 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 | job.image.repository | string | `"bitnami/kubectl"` |  |
 | job.image.tag | string | `"1.25.3"` |  |
 | job.restartPolicy | string | `"OnFailure"` |  |
-| metrics.additionalLabels.prometheus | string | `"main"` |  |
-| metrics.enabled | bool | `true` |  |
+| metrics.additionalLabels | object | `{}` | labels to add to ServiceMonitor |
+| metrics.enabled | bool | `false` | if ServiceMonitor should be deployed |
 | mongod.persistence.data.accessModes[0] | string | `"ReadWriteOnce"` |  |
 | mongod.persistence.data.size | string | `"5Gi"` |  |
 | mongod.persistence.data.storageClassName | string | `""` |  |
@@ -39,12 +39,7 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 | replicaCount | int | `1` | MongoDB instances count |
 | serviceAccount.nameOverride | string | `""` | should match database.name from operator chart |
 | tolerations | list | `[]` |  |
-| users[0].db | string | `"admin"` |  |
-| users[0].name | string | `"admin"` |  |
-| users[0].roles[0].db | string | `"admin"` |  |
-| users[0].roles[0].name | string | `"clusterAdmin"` |  |
-| users[0].roles[1].db | string | `"admin"` |  |
-| users[0].roles[1].name | string | `"userAdminAnyDatabase"` |  |
+| users | list | `[]` |  |
 | version | string | `"6.0.2"` | MongoDB version |
 
 ----------------------------------------------

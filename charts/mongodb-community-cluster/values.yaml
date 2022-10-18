@@ -48,19 +48,20 @@ arbiter:
   replicaCount: 1
 
 #  credentials part should be omitted as it will be generated automatically
-users:
-  - name: admin
-    db: admin
-    roles:
-      - db: admin
-        name: clusterAdmin
-      - db: admin
-        name: userAdminAnyDatabase
+users: []
+#  - name: admin
+#    db: admin
+#    roles:
+#      - db: admin
+#        name: clusterAdmin
+#      - db: admin
+#        name: userAdminAnyDatabase
 
 metrics:
-  enabled: true
-  additionalLabels:
-    prometheus: main
+  # -- if ServiceMonitor should be deployed
+  enabled: false
+  # -- labels to add to ServiceMonitor
+  additionalLabels: {}
 
 serviceAccount:
   # -- should match database.name from operator chart

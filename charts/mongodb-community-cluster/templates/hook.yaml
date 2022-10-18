@@ -1,3 +1,4 @@
+{{ if and .Values.users .Values.metrics.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -20,3 +21,4 @@ spec:
       serviceAccountName: {{ include "mongodb-community-cluster.serviceAccountName" . }}
       restartPolicy: {{ .Values.job.restartPolicy }}
   backoffLimit: {{ .Values.job.backoffLimit }}
+{{ end }}
