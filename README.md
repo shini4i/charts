@@ -17,8 +17,8 @@ helm repo add shini4i https://shini4i.github.io/charts/
 <!-- table_start -->
 |            Name           |     Type    |                               Description                                | Version | App Version |
 |:-------------------------:|:-----------:|:------------------------------------------------------------------------:|:-------:|:-----------:|
-|            app            | application |                 A Helm chart for a simple app deployment                 |  0.0.8  |     None    |
-|           common          |   library   |             A Helm chart library with some common templates              |  0.0.1  |     None    |
 | mongodb-community-cluster | application | A Helm chart for deploying MongoDBCommunity cluster (community-operator) |  0.1.1  |     None    |
 |        argo-watcher       | application |                 A Helm chart for deploying argo-watcher                  |  0.2.4  |    v0.1.4   |
+|           common          |   library   |             A Helm chart library with some common templates              |  0.0.1  |     None    |
+|            app            | application |                 A Helm chart for a simple app deployment                 |  0.0.8  |     None    |
 <!-- table_end -->
