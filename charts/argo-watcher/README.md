@@ -4,6 +4,12 @@
 
 A Helm chart for deploying argo-watcher
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Vadim Gedz | <vadims@linux-tech.io> |  |
+
 ## Values
 
 | Key | Type | Default | Description |
