@@ -47,6 +47,10 @@ arbiter:
   # -- Should be less than the value of main replicaCount
   replicaCount: 1
 
+# -- additional MongoDB configuration
+additionalMongodConfig: {}
+#  storage.wiredTiger.engineConfig.journalCompressor: zlib
+
 #  credentials part should be omitted as it will be generated automatically
 users: []
 #  - name: admin

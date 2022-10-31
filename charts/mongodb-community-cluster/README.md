@@ -8,6 +8,7 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| additionalMongodConfig | object | `{}` | additional MongoDB configuration |
 | affinity | object | `{}` |  |
 | arbiter.enabled | bool | `false` | If arbiter should be enabled |
 | arbiter.replicaCount | int | `1` | Should be less than the value of main replicaCount |

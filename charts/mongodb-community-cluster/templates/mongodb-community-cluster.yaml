@@ -9,6 +9,10 @@ spec:
   {{- if .Values.arbiter.enabled }}
   arbiters: {{ .Values.arbiter.replicaCount }}
   {{- end }}
+  {{- if .Values.additionalMongodConfig }}
+  additionalMongodConfig:
+  {{- toYaml .Values.additionalMongodConfig | nindent 4 }}
+  {{- end }}
   {{- if .Values.metrics.enabled }}
   prometheus:
     passwordSecretRef:
