@@ -1,6 +1,6 @@
 # mongodb-community-cluster
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 
@@ -29,6 +29,9 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 | mongod.resources.limits.memory | string | `"128Mi"` |  |
 | mongod.resources.requests.cpu | string | `"100m"` |  |
 | mongod.resources.requests.memory | string | `"128Mi"` |  |
+| mongod.tls.caConfigMapRef.name | string | `"tls-ca-configmap-name"` |  |
+| mongod.tls.certificateKeySecretRef.name | string | `"tls-secret-name"` |  |
+| mongod.tls.enabled | bool | `false` | Enable TLS for MongoDB communication |
 | mongod.type | string | `"ReplicaSet"` | MongoDB setup type |
 | mongodb_agent.resources.limits.cpu | string | `"100m"` |  |
 | mongodb_agent.resources.limits.memory | string | `"128Mi"` |  |

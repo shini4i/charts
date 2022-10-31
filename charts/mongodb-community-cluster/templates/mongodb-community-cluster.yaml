@@ -23,7 +23,13 @@ spec:
   version: {{ .Values.version }}
   security:
     tls:
-      enabled: false
+      enabled: {{ .Values.mongod.tls.enabled }}
+      {{- if .Values.mongod.tls.enabled }}
+      certificateKeySecretRef:
+        name: {{ .Values.mongod.tls.certificateKeySecretRef.name }}
+      caConfigMapRef:
+        name: {{ .Values.mongod.tls.caConfigMapRef.name }}
+      {{- end }}
     authentication:
       modes: ["SCRAM"]
   statefulSet:

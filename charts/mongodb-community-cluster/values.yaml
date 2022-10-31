@@ -12,6 +12,15 @@ version: 6.0.2
 mongod:
   # -- MongoDB setup type
   type: ReplicaSet
+
+  tls:
+    # -- Enable TLS for MongoDB communication
+    enabled: false
+    certificateKeySecretRef:
+      name: tls-secret-name
+    caConfigMapRef:
+      name: tls-ca-configmap-name
+
   persistence:
     data:
       size: 5Gi
