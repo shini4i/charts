@@ -12,6 +12,15 @@ version: 6.0.2
 mongod:
   # -- MongoDB setup type
   type: ReplicaSet
+
+  tls:
+    # -- Enable TLS for MongoDB communication
+    enabled: false
+    certificateKeySecretRef:
+      name: tls-secret-name
+    caConfigMapRef:
+      name: tls-ca-configmap-name
+
   persistence:
     data:
       size: 5Gi
@@ -46,6 +55,10 @@ arbiter:
   enabled: false
   # -- Should be less than the value of main replicaCount
   replicaCount: 1
+
+# -- additional MongoDB configuration
+additionalMongodConfig: {}
+#  storage.wiredTiger.engineConfig.journalCompressor: zlib
 
 #  credentials part should be omitted as it will be generated automatically
 users: []
