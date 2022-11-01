@@ -36,7 +36,7 @@ Common labels
 {{- define "mongodb-community-cluster.labels" -}}
 helm.sh/chart: {{ include "mongodb-community-cluster.chart" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-mongodb/version: {{ .Values.version }}
+mongodb/version: {{ .Values.version | default .Chart.AppVersion }}
 {{- end }}
 
 {{/*

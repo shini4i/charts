@@ -20,7 +20,7 @@ spec:
     username: prometheus
   {{- end }}
   type: {{ .Values.mongod.type }}
-  version: {{ .Values.version }}
+  version: {{ .Values.version | default .Chart.AppVersion }}
   security:
     tls:
       enabled: {{ .Values.mongod.tls.enabled }}

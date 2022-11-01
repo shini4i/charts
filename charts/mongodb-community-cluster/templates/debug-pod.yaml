@@ -1,0 +1,18 @@
+{{- if .Values.debugPod.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+  name: {{ include "mongodb-community-cluster.fullname" . }}-debug-pod
+spec:
+  containers:
+    - image: "mongo:{{ .Values.version | default .Chart.AppVersion }}"
+      name: client
+      command: ["sleep"]
+      args: ["infinity"]
+      resources: {}
+  serviceAccountName: mongodb-database
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+{{ end }}

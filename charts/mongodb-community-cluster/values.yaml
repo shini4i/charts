@@ -6,8 +6,12 @@ fullnameOverride: ""
 # -- MongoDB instances count
 replicaCount: 1
 
-# -- MongoDB version
-version: 6.0.2
+# -- MongoDB version (defaults to appVersion)
+version: ""
+
+# -- If debug pod with mongosh should be deployed
+debugPod:
+  enabled: false
 
 mongod:
   # -- MongoDB setup type
