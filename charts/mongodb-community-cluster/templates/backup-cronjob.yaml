@@ -33,6 +33,18 @@ spec:
                 - mountPath: /usr/local/bin/backup.sh
                   name: backup
                   subPath: backup.sh
+          {{- if .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml .Values.nodeSelector | nindent 12 }}
+          {{ end }}
+          {{- if .Values.affinity }}
+          affinity:
+            {{- toYaml .Values.affinity | nindent 12 }}
+          {{ end }}
+          {{- if .Values.tolerations }}
+          tolerations:
+            {{- toYaml .Values.tolerations | nindent 12 }}
+          {{- end }}
           volumes:
             - name: backup
               configMap:
