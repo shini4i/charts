@@ -355,6 +355,20 @@ entries:
     version: 0.0.1
   mongodb-community-cluster:
   - apiVersion: v2
+    appVersion: 6.0.2
+    created: "2022-11-02T19:11:29.568663838Z"
+    description: A Helm chart for deploying MongoDBCommunity cluster (community-operator)
+    digest: 007bd28418326262086c5b143c8f5441e90237d972bbe7f65d0a6bd5bacb0e8d
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: mongodb-community-cluster
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.2.0/mongodb-community-cluster-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2022-10-31T14:37:27.842349654Z"
     description: A Helm chart for deploying MongoDBCommunity cluster (community-operator)
     digest: 32ddd526b61f9c66da90fc311091c55e5f187faa79f12188058910e61c725613
@@ -381,4 +395,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-31T14:37:27.842488457Z"
+generated: "2022-11-02T19:11:29.568807842Z"
