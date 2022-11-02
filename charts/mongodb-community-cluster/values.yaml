@@ -77,6 +77,11 @@ users: []
 backups:
   enabled: false
   schedule: "30 0 * * *"
+  image:
+    repository: ghcr.io/shini4i/mongodb-tools-awscli
+    tag: 6.0.2
+  # -- a user to use for backups (from users block)
+  user: ""
   aws:
     bucketName: ""
     bucketPrefix: ""

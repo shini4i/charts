@@ -83,6 +83,6 @@ kubectl get secret {{ include "mongodb-community-cluster.fullname" . }}-promethe
 {{- $namespace := .Release.Namespace }}
 {{- $count := sub .Values.replicaCount 1 }}
 {{- range $i := until (.Values.replicaCount | int) -}}
-{{ $name }}-mongodb-{{ . }}.{{ $name }}-mongodb-svc.{{ $namespace }}.svc.cluster.local{{ if ne $i $count }},{{ end }}
+{{ $name }}-{{ . }}.{{ $name }}-svc.{{ $namespace }}.svc.cluster.local{{ if ne $i $count }},{{ end }}
 {{- end }}
 {{- end }}

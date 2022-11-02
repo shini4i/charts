@@ -13,10 +13,19 @@ spec:
         spec:
           containers:
             - name: backup
-              image: ghcr.io/shini4i/mongodb-tools-awscli:6.0.2
+              image: {{ .Values.backups.image.repository }}:{{ .Values.backups.image.tag }}
               imagePullPolicy: IfNotPresent
               command:
+                - /usr/bin/bash
                 - /usr/local/bin/backup.sh
+              env:
+                - name: MONGODB_USERNAME
+                  value: {{ .Values.backups.user }}
+                - name: MONGODB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sandbox-connection-string
+                      key: password
               envFrom:
                 - secretRef:
                     name: {{ .Values.backups.aws.existingSecret }}
