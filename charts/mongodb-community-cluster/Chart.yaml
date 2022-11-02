@@ -2,4 +2,10 @@ apiVersion: v2
 name: mongodb-community-cluster
 description: A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 type: application
-version: 0.1.2
+version: 0.2.0
+appVersion: 6.0.2
+
+maintainers:
+  - name: Vadim Gedz
+    email: vadims@linux-tech.io
+    url: https://github.com/shini4i

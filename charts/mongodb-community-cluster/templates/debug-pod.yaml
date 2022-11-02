@@ -1,0 +1,30 @@
+{{- if .Values.debugPod.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-debug-pod
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+spec:
+  containers:
+    - image: "mongo:{{ .Values.version | default .Chart.AppVersion }}"
+      name: client
+      command: ["sleep"]
+      args: ["infinity"]
+      resources: {}
+  {{- if .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 12 }}
+  {{ end }}
+  {{- if .Values.affinity }}
+  affinity:
+    {{- toYaml .Values.affinity | nindent 12 }}
+  {{ end }}
+  {{- if .Values.tolerations }}
+  tolerations:
+    {{- toYaml .Values.tolerations | nindent 12 }}
+  {{- end }}
+  serviceAccountName: {{ include "mongodb-community-cluster.serviceAccountName" . }}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+{{ end }}

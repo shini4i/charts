@@ -6,8 +6,12 @@ fullnameOverride: ""
 # -- MongoDB instances count
 replicaCount: 1
 
-# -- MongoDB version
-version: 6.0.2
+# -- MongoDB version (defaults to appVersion)
+version: ""
+
+# -- If debug pod with mongosh should be deployed
+debugPod:
+  enabled: false
 
 mongod:
   # -- MongoDB setup type
@@ -69,6 +73,22 @@ users: []
 #        name: clusterAdmin
 #      - db: admin
 #        name: userAdminAnyDatabase
+
+backups:
+  enabled: false
+  schedule: "30 0 * * *"
+  image:
+    repository: ghcr.io/shini4i/mongodb-tools-awscli
+    tag: 6.0.2
+  # -- a user to use for backups (from users block)
+  user: ""
+  aws:
+    bucketName: ""
+    bucketPrefix: ""
+    # -- pre-created secret with AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and optional AWS_DEFAULT_REGION
+    existingSecret: ""
+    # -- endpoint override, will be passed to --endpoint-url
+    endpointOverride: ""
 
 metrics:
   # -- if ServiceMonitor should be deployed

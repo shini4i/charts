@@ -1,0 +1,53 @@
+{{- if .Values.backups.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-backup
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.backups.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: {{ .Values.backups.image.repository }}:{{ .Values.backups.image.tag }}
+              imagePullPolicy: IfNotPresent
+              command:
+                - /usr/bin/bash
+                - /usr/local/bin/backup.sh
+              env:
+                - name: MONGODB_USERNAME
+                  value: {{ .Values.backups.user }}
+                - name: MONGODB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backups.user }}-connection-string
+                      key: password
+              envFrom:
+                - secretRef:
+                    name: {{ .Values.backups.aws.existingSecret }}
+              volumeMounts:
+                - mountPath: /usr/local/bin/backup.sh
+                  name: backup
+                  subPath: backup.sh
+          {{- if .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml .Values.nodeSelector | nindent 12 }}
+          {{ end }}
+          {{- if .Values.affinity }}
+          affinity:
+            {{- toYaml .Values.affinity | nindent 12 }}
+          {{ end }}
+          {{- if .Values.tolerations }}
+          tolerations:
+            {{- toYaml .Values.tolerations | nindent 12 }}
+          {{- end }}
+          volumes:
+            - name: backup
+              configMap:
+                name: {{ include "mongodb-community-cluster.fullname" . }}-backup-script
+          restartPolicy: OnFailure
+{{ end }}
