@@ -24,7 +24,7 @@ spec:
                 - name: MONGODB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: sandbox-connection-string
+                      name: {{ .Values.backups.user }}-connection-string
                       key: password
               envFrom:
                 - secretRef:
