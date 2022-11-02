@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-debug-pod
   labels:
     {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
-  name: {{ include "mongodb-community-cluster.fullname" . }}-debug-pod
 spec:
   containers:
     - image: "mongo:{{ .Values.version | default .Chart.AppVersion }}"
@@ -12,7 +12,7 @@ spec:
       command: ["sleep"]
       args: ["infinity"]
       resources: {}
-  serviceAccountName: mongodb-database
+  serviceAccountName: {{ include "mongodb-community-cluster.serviceAccountName" . }}
   dnsPolicy: ClusterFirst
   restartPolicy: Always
 {{ end }}

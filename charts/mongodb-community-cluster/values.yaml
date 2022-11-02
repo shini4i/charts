@@ -74,6 +74,17 @@ users: []
 #      - db: admin
 #        name: userAdminAnyDatabase
 
+backups:
+  enabled: false
+  schedule: "30 0 * * *"
+  aws:
+    bucketName: ""
+    bucketPrefix: ""
+    # -- pre-created secret with AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and optional AWS_DEFAULT_REGION
+    existingSecret: ""
+    # -- endpoint override, will be passed to --endpoint-url
+    endpointOverride: ""
+
 metrics:
   # -- if ServiceMonitor should be deployed
   enabled: false

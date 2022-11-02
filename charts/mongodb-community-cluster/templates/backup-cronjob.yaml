@@ -1,0 +1,32 @@
+{{- if .Values.backups.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-backup
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.backups.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: ghcr.io/shini4i/mongodb-tools-awscli:6.0.2
+              imagePullPolicy: IfNotPresent
+              command:
+                - /usr/local/bin/backup.sh
+              envFrom:
+                - secretRef:
+                    name: {{ .Values.backups.aws.existingSecret }}
+              volumeMounts:
+                - mountPath: /usr/local/bin/backup.sh
+                  name: backup
+                  subPath: backup.sh
+          volumes:
+            - name: backup
+              configMap:
+                name: {{ include "mongodb-community-cluster.fullname" . }}-backup-script
+          restartPolicy: OnFailure
+{{ end }}

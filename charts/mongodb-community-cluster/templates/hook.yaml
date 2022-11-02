@@ -5,6 +5,7 @@ metadata:
   name: {{ include "mongodb-community-cluster.fullname" . }}-job
   labels:
     {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+    {{- include "mongodb-hosts" }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
 spec:

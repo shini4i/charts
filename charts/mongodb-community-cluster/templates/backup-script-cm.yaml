@@ -1,0 +1,26 @@
+{{- if .Values.backups.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mongodb-community-cluster.fullname" . }}-backup-script
+  labels:
+    {{- include "mongodb-community-cluster.labels" . | nindent 4 }}
+data:
+  backup.sh: |
+    #!/usr/bin/env bash
+    set -e
+    set -o pipefail
+
+    echo "Starting backup"
+    mongodump --host={{ include "mongodb-hosts" . }} \
+    --port="${MONGODB_PORT:-27017}" \
+    --username="$MONGODB_USERNAME" \
+    --password="$MONGODB_PASSWORD" \
+    --archive --gzip --readPreference 'secondary' | \
+    {{- if .Values.backups.aws.endpointOverride }}
+    aws --endpoint-url {{ .Values.backups.aws.endpointOverride }} s3 cp - s3://{{ .Values.backups.aws.bucketName }}/{{ .Values.backups.aws.bucketPrefix }}/"$(date +%Y-%m-%d_%H-%M-%S)".gz
+    {{- else }}
+    aws s3 cp - s3://{{ .Values.backups.aws.bucketName }}/{{ .Values.backups.aws.bucketPrefix }}/"$(date +%Y-%m-%d_%H-%M-%S)".gz
+    {{- end }}
+    echo "Backup completed"
+{{ end }}

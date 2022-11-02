@@ -1,6 +1,6 @@
 # mongodb-community-cluster
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.0.2](https://img.shields.io/badge/AppVersion-6.0.2-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.0.2](https://img.shields.io/badge/AppVersion-6.0.2-informational?style=flat-square)
 
 A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 
@@ -8,7 +8,7 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Vadim Gedz | <vadims@linux-tech.io> |  |
+| Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
 ## Values
 
@@ -18,6 +18,12 @@ A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 | affinity | object | `{}` |  |
 | arbiter.enabled | bool | `false` | If arbiter should be enabled |
 | arbiter.replicaCount | int | `1` | Should be less than the value of main replicaCount |
+| backups.aws.bucketName | string | `""` |  |
+| backups.aws.bucketPrefix | string | `""` |  |
+| backups.aws.endpointOverride | string | `""` |  |
+| backups.aws.existingSecret | string | `""` | pre-created secret with AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and optional AWS_DEFAULT_REGION |
+| backups.enabled | bool | `false` |  |
+| backups.schedule | string | `"30 0 * * *"` |  |
 | debugPod | object | `{"enabled":false}` | If debug pod with mongosh should be deployed |
 | fullnameOverride | string | `""` |  |
 | job.backoffLimit | int | `5` |  |

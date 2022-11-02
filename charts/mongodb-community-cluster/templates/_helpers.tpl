@@ -77,3 +77,12 @@ kubectl get secret {{ $value.name }}-user-password || kubectl create secret gene
 kubectl get secret {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials || kubectl create secret generic {{ include "mongodb-community-cluster.fullname" . }}-prometheus-credentials --from-literal=username=prometheus --from-literal=password={{ randAlphaNum 32 }}
 {{ end }}
 {{- end -}}
+
+{{- define "mongodb-hosts" }}
+{{- $name := .Release.Name }}
+{{- $namespace := .Release.Namespace }}
+{{- $count := sub .Values.replicaCount 1 }}
+{{- range $i := until (.Values.replicaCount | int) -}}
+{{ $name }}-mongodb-{{ . }}.{{ $name }}-mongodb-svc.{{ $namespace }}.svc.cluster.local{{ if ne $i $count }},{{ end }}
+{{- end }}
+{{- end }}
