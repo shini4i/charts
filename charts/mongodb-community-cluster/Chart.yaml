@@ -4,6 +4,7 @@ description: A Helm chart for deploying MongoDBCommunity cluster (community-oper
 type: application
 version: 0.2.0
 appVersion: 6.0.2
+icon: https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg
 
 maintainers:
   - name: Vadim Gedz

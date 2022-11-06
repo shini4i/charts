@@ -1,0 +1,33 @@
+templates:
+  - mongodb-community-cluster.yaml
+tests:
+  - it: should generate a valid user
+    set:
+      users[0]:
+        name: admin
+        db: admin
+        roles:
+          - db: admin
+            name: clusterAdmin
+    asserts:
+      - equal:
+          path: spec.users[0].name
+          value: admin
+      - equal:
+          path: spec.users[0].db
+          value: admin
+      - equal:
+          path: spec.users[0].roles[0].db
+          value: admin
+      - equal:
+          path: spec.users[0].roles[0].name
+          value: clusterAdmin
+      - equal:
+          path: spec.users[0].passwordSecretRef.name
+          value: admin-user-password
+      - equal:
+          path: spec.users[0].scramCredentialsSecretName
+          value: admin
+      - equal:
+          path: spec.users[0].connectionStringSecretName
+          value: admin-connection-string

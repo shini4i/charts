@@ -1,0 +1,15 @@
+templates:
+  - serviceaccount.yaml
+  - role.yaml
+  - role-binding.yaml
+tests:
+  - it: pre-install hook should be set
+    asserts:
+      - equal:
+          path: metadata.annotations.helm\.sh\/hook
+          value: pre-install
+  - it: pre-install hooks should contain "hook-failed" set in helm.sh/hook-delete-policy
+    asserts:
+      - equal:
+          path: metadata.annotations.helm\.sh\/hook\-delete\-policy
+          value: hook-failed
