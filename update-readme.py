@@ -28,7 +28,7 @@ class Readme:
         for chart in charts:
             rows.append(
                 [
-                    chart["name"],
+                    f"[{chart['name']}](https://artifacthub.io/packages/helm/shini4i/{chart['name']})",
                     chart["type"],
                     chart["description"],
                     chart["version"],
