@@ -91,6 +91,19 @@ entries:
     version: 0.0.1
   argo-watcher:
   - apiVersion: v2
+    appVersion: v0.3.1
+    created: "2022-11-24T14:28:06.34409856Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 6f0e74913c4cd10ff0c81f956b2b957aebb11e00c5803d31a9e4f72268333e74
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+    name: argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.2.7/argo-watcher-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
     appVersion: v0.3.0
     created: "2022-11-14T19:23:05.893658552Z"
     description: A Helm chart for deploying argo-watcher
@@ -408,4 +421,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-14T19:23:06.503925714Z"
+generated: "2022-11-24T14:28:06.344862164Z"
