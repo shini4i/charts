@@ -43,6 +43,8 @@ spec:
               value: {{ .Values.argo.username }}
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
+            - name: ARGO_API_TIMEOUT
+              value: {{ .Values.argo.apiTimeout | quote }}
             - name: SKIP_TLS_VERIFY
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: RLOG_LOG_LEVEL

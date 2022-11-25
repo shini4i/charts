@@ -27,6 +27,8 @@ argo:
   username: user
   # -- How long to wait for deployment to be finished
   timeout: 300
+  # -- How long to wait for argocd api to respond
+  apiTimeout: 60
   # -- Pre-created secret with ARGO_PASSWORD variable
   secretName: ""
 
