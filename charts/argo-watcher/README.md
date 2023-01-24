@@ -16,11 +16,10 @@ A Helm chart for deploying argo-watcher
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | argo.apiTimeout | int | `60` | How long to wait for argocd api to respond |
-| argo.secretName | string | `""` | Pre-created secret with ARGO_PASSWORD variable |
+| argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
 | argo.url | string | `"https://argocd.example.com"` |  |
-| argo.username | string | `"user"` |  |
 | fullnameOverride | string | `""` |  |
 | healthChecks.enabled | bool | `true` |  |
 | healthChecks.initialDelaySeconds | int | `5` |  |

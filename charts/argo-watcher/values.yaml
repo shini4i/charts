@@ -24,12 +24,11 @@ argo:
   url: https://argocd.example.com
   # -- If ssl verification should be skipped
   skipTlsVerify: false
-  username: user
   # -- How long to wait for deployment to be finished
   timeout: 300
   # -- How long to wait for argocd api to respond
   apiTimeout: 60
-  # -- Pre-created secret with ARGO_PASSWORD variable
+  # -- Pre-created secret with ARGO_TOKEN variable
   secretName: ""
 
 postgres:
