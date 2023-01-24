@@ -39,8 +39,6 @@ spec:
           env:
             - name: ARGO_URL
               value: {{ .Values.argo.url }}
-            - name: ARGO_USER
-              value: {{ .Values.argo.username }}
             - name: ARGO_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
             - name: ARGO_API_TIMEOUT
