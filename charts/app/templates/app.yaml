@@ -111,7 +111,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if and .Values.app.kind "StatefulSet" .Values.app.statefulSet.persistence.enabled }}
+  {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled }}
   volumeClaimTemplates:
     {{- range .Values.app.statefulSet.persistence.volumes }}
     - metadata:
