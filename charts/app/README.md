@@ -1,30 +1,29 @@
 # app
 
-![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
-
-**Homepage:** <https://github.com/shini4i/charts>
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Vadim Gedz | <vadims@linux-tech.io> |  |
+| Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| app.deployment.maxSurge | int | `1` |  |
-| app.deployment.maxUnavailable | string | `"25%"` |  |
-| app.deployment.strategy | string | `"RollingUpdate"` |  |
+| app.deployment | object | `{"maxSurge":1,"maxUnavailable":"25%","strategy":"RollingUpdate"}` | Deployment configuration (only used if kind is set to Deployment) |
 | app.env | list | `[]` | Environment variables to pass to main app container |
 | app.envFrom | list | `[]` | envFrom to pass to main app container |
+| app.kind | string | `"Deployment"` | Allowed values: Deployment or StatefulSet |
 | app.lifecycle | object | `{}` |  |
 | app.livenessProbe | object | `{}` | Deployments livenessProbe configuration |
 | app.readinessProbe | object | `{}` | Deployments readinessProbe configuration |
+| app.statefulSet | object | `{"persistence":{"enabled":false,"volumes":[{"accessModes":["ReadWriteOnce"],"mountPath":"/data","name":"data","size":"1Gi","storageClassName":""}]},"strategy":"RollingUpdate"}` | StatefulSet configuration (only used if kind is set to StatefulSet) |
+| app.statefulSet.persistence.volumes | list | `[{"accessModes":["ReadWriteOnce"],"mountPath":"/data","name":"data","size":"1Gi","storageClassName":""}]` | Persistent volumes configuration |
 | autoscaling.enabled | bool | `false` |  |
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |

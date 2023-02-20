@@ -79,6 +79,24 @@ middleware:
   existingMiddlewares: {}
 
 app:
+  # -- Allowed values: Deployment or StatefulSet
+  kind: Deployment
+
+  # -- StatefulSet configuration (only used if kind is set to StatefulSet)
+  statefulSet:
+    strategy: RollingUpdate
+    persistence:
+      enabled: false
+      # -- Persistent volumes configuration
+      volumes:
+        - name: data
+          mountPath: /data
+          size: 1Gi
+          storageClassName: ""
+          accessModes:
+           - ReadWriteOnce
+
+  # -- Deployment configuration (only used if kind is set to Deployment)
   deployment:
     strategy: RollingUpdate
     # Used only if strategy is set to RollingUpdate
