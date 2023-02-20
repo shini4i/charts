@@ -60,7 +60,7 @@ spec:
           volumeMounts:
             - mountPath: /shared
               name: shared
-          {{- if and .Values.app.kind "StatefulSet" .Values.app.statefulSet.persistence.enabled }}
+          {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled }}
           {{- range .Values.app.statefulSet.persistence.volumes }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}

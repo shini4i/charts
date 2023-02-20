@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: https://shini4i.github.io/charts
+  version: 0.0.1
+digest: sha256:c363c4ea271f7cc9b07f4894d63ab599c624ff61f538c15290d34279175cb8eb
+generated: "2023-02-21T00:05:20.845396+02:00"
