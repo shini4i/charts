@@ -10,6 +10,12 @@ A Helm chart for a simple app deployment
 | ---- | ------ | --- |
 | Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://shini4i.github.io/charts | common | v0.0.1 |
+
 ## Values
 
 | Key | Type | Default | Description |

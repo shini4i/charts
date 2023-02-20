@@ -8,3 +8,8 @@ maintainers:
   - name: Vadim Gedz
     email: vadims@linux-tech.io
     url: https://github.com/shini4i
+
+dependencies:
+  - name: common
+    version: v0.0.1
+    repository: https://shini4i.github.io/charts
