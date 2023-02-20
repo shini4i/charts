@@ -8,9 +8,6 @@ spec:
   {{- if and (not .Values.autoscaling.enabled) (not .Values.keda.enabled) }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-  {{- if eq .Values.app.kind "StatefulSet" }}
-  serviceName: {{ include "app.fullname" . }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
@@ -23,6 +20,7 @@ spec:
       maxSurge: {{ .Values.app.deployment.maxSurge }}
     {{- end }}
   {{- else if eq .Values.app.kind "StatefulSet" }}
+  serviceName: {{ include "app.fullname" . }}
   updateStrategy:
     type: {{ .Values.app.statefulSet.strategy }}
   {{- end }}
