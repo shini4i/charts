@@ -2,6 +2,19 @@ apiVersion: v1
 entries:
   app:
   - apiVersion: v2
+    created: "2023-02-20T20:33:57.829450332Z"
+    description: A Helm chart for a simple app deployment
+    digest: 579fada351002755c290365391ec67b7894d4d2a3d975c9eeedf13040a08ee3a
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.0.9/app-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
     created: "2022-08-16T18:28:10.509094328Z"
     description: A Helm chart for a simple app deployment
     digest: 9d1289c610d838edd07ff399626159da1b0732a776895cfa1c5f19f42617c186
@@ -447,4 +460,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-24T17:43:10.293288067Z"
+generated: "2023-02-20T20:33:57.829677338Z"
