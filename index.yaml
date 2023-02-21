@@ -1,6 +1,31 @@
 apiVersion: v1
 entries:
   app:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Moved reusable part to `common` chart
+        - kind: changed
+          description: default image set to `traefik/whoami:v1.8.7`
+        - kind: fixed
+          description: Condition in `volumeMounts`
+    apiVersion: v2
+    created: "2023-02-21T16:04:27.666204205Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    description: A Helm chart for a simple app deployment
+    digest: d9c4e195b6f53adc5e6e18c3e9ac9504d054434de16be5baf2bc24699c23fc87
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.0/app-0.1.0.tgz
+    version: 0.1.0
   - apiVersion: v2
     created: "2023-02-20T20:33:57.829450332Z"
     description: A Helm chart for a simple app deployment
@@ -460,4 +485,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-20T20:33:57.829677338Z"
+generated: "2023-02-21T16:04:27.666295207Z"
