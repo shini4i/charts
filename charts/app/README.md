@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -28,16 +28,16 @@ A Helm chart for a simple app deployment
 | app.lifecycle | object | `{}` |  |
 | app.livenessProbe | object | `{}` | Deployments livenessProbe configuration |
 | app.readinessProbe | object | `{}` | Deployments readinessProbe configuration |
-| app.statefulSet | object | `{"persistence":{"enabled":false,"volumes":[{"accessModes":["ReadWriteOnce"],"mountPath":"/data","name":"data","size":"1Gi","storageClassName":""}]},"strategy":"RollingUpdate"}` | StatefulSet configuration (only used if kind is set to StatefulSet) |
-| app.statefulSet.persistence.volumes | list | `[{"accessModes":["ReadWriteOnce"],"mountPath":"/data","name":"data","size":"1Gi","storageClassName":""}]` | Persistent volumes configuration |
+| app.statefulSet | object | `{"persistence":{"enabled":false,"volumes":[]},"strategy":"RollingUpdate"}` | StatefulSet configuration (only used if kind is set to StatefulSet) |
+| app.statefulSet.persistence.volumes | list | `[]` | Persistent volumes configuration |
 | autoscaling.enabled | bool | `false` |  |
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"nginx"` |  |
-| image.tag | string | `"latest"` |  |
+| image.repository | string | `"traefik/whoami"` |  |
+| image.tag | string | `"v1.8.7"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress | object | `{"annotations":{},"className":"","enabled":false,"exposedPort":80,"hosts":[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Classical ingress definition |
 | ingress.exposedPort | int | `80` | Port to use with ingress |

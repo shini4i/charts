@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: traefik/whoami
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "v1.8.7"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -88,13 +88,13 @@ app:
     persistence:
       enabled: false
       # -- Persistent volumes configuration
-      volumes:
-        - name: data
-          mountPath: /data
-          size: 1Gi
-          storageClassName: ""
-          accessModes:
-           - ReadWriteOnce
+      volumes: []
+      #  - name: data
+      #    mountPath: /data
+      #    size: 1Gi
+      #    storageClassName: ""
+      #    accessModes:
+      #     - ReadWriteOnce
 
   # -- Deployment configuration (only used if kind is set to Deployment)
   deployment:
