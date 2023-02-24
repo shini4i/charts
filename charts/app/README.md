@@ -21,6 +21,7 @@ A Helm chart for a simple app deployment
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
+| app.additionalVolumeMounts | list | `[]` | raw yaml definition of additional volume mounts (requires matching volume definition) |
 | app.deployment | object | `{"maxSurge":1,"maxUnavailable":"25%","strategy":"RollingUpdate"}` | Deployment configuration (only used if kind is set to Deployment) |
 | app.env | list | `[]` | Environment variables to pass to main app container |
 | app.envFrom | list | `[]` | envFrom to pass to main app container |

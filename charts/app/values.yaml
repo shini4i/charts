@@ -127,6 +127,12 @@ app:
   # - secretRef:
   #     name: secret-name
 
+  # -- raw yaml definition of additional volume mounts (requires matching volume definition)
+  additionalVolumeMounts: []
+  #  - name: nginx-config
+  #    mountPath: /etc/nginx
+  #    subPath: nginx.conf
+
   lifecycle: {}
   #  postStart:
   #    exec:

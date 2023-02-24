@@ -60,6 +60,9 @@ spec:
           volumeMounts:
             - mountPath: /shared
               name: shared
+          {{- if .Values.app.additionalVolumeMounts }}
+          {{- toYaml .Values.app.additionalVolumeMounts | nindent 12 }}
+          {{- end }}
           {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled }}
           {{- range .Values.app.statefulSet.persistence.volumes }}
             - name: {{ .name }}
