@@ -3,6 +3,27 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: Additional volumeMounts support
+    apiVersion: v2
+    created: "2023-02-25T09:59:50.882321526Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    description: A Helm chart for a simple app deployment
+    digest: 9d1f66e8bd851705df6cceb407d0340ad1eff3d86ff0205782db035fbea4d18e
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.1/app-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Moved reusable part to `common` chart
         - kind: changed
@@ -485,4 +506,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-21T16:04:27.666295207Z"
+generated: "2023-02-25T09:59:50.882430027Z"
