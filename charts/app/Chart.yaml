@@ -2,7 +2,7 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.0
+version: 0.1.1
 
 annotations:
   artifacthub.io/changes: |
