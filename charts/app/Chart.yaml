@@ -2,16 +2,12 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.0
+version: 0.1.1
 
 annotations:
   artifacthub.io/changes: |
-    - kind: changed
-      description: Moved reusable part to `common` chart
-    - kind: changed
-      description: default image set to `traefik/whoami:v1.8.7`
-    - kind: fixed
-      description: Condition in `volumeMounts`
+    - kind: added
+      description: Additional volumeMounts support
 
 maintainers:
   - name: Vadim Gedz
