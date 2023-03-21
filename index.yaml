@@ -4,6 +4,27 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: support for startupProbe
+    apiVersion: v2
+    created: "2023-03-21T16:07:29.897629996Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    description: A Helm chart for a simple app deployment
+    digest: a6b925877679912d8cde9d0221f3a0aa5db33fcfb86a4d8d09b8015f4f90f823
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.2/app-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: Additional volumeMounts support
     apiVersion: v2
     created: "2023-02-25T09:59:50.882321526Z"
@@ -506,4 +527,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-25T09:59:50.882430027Z"
+generated: "2023-03-21T16:07:29.897761499Z"
