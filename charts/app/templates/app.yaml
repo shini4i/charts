@@ -81,6 +81,10 @@ spec:
           envFrom:
           {{- toYaml .Values.app.envFrom | nindent 10 }}
           {{- end }}
+          {{- if .Values.app.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.app.startupProbe | nindent 12 }}
+          {{- end }}
           {{- if .Values.app.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.app.livenessProbe | nindent 12 }}

@@ -103,6 +103,12 @@ app:
     maxUnavailable: 25%
     maxSurge: 1
 
+  # -- Deployments startupProbe configuration
+  startupProbe: {}
+  #  httpGet:
+  #    path: /
+  #    port: http
+
   # -- Deployments livenessProbe configuration
   livenessProbe: {}
   #  httpGet:

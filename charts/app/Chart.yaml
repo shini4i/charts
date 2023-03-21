@@ -2,12 +2,12 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.1
+version: 0.1.2
 
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: Additional volumeMounts support
+      description: support for startupProbe
 
 maintainers:
   - name: Vadim Gedz

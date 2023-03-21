@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -29,6 +29,7 @@ A Helm chart for a simple app deployment
 | app.lifecycle | object | `{}` |  |
 | app.livenessProbe | object | `{}` | Deployments livenessProbe configuration |
 | app.readinessProbe | object | `{}` | Deployments readinessProbe configuration |
+| app.startupProbe | object | `{}` | Deployments startupProbe configuration |
 | app.statefulSet | object | `{"persistence":{"enabled":false,"volumes":[]},"strategy":"RollingUpdate"}` | StatefulSet configuration (only used if kind is set to StatefulSet) |
 | app.statefulSet.persistence.volumes | list | `[]` | Persistent volumes configuration |
 | autoscaling.enabled | bool | `false` |  |
