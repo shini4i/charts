@@ -18,7 +18,7 @@ helm repo add shini4i https://shini4i.github.io/charts/
 |                                                 Name                                                |     Type    |                               Description                                | Version | App Version |
 |:---------------------------------------------------------------------------------------------------:|:-----------:|:------------------------------------------------------------------------:|:-------:|:-----------:|
 |                       [app](https://artifacthub.io/packages/helm/shini4i/app)                       | application |                 A Helm chart for a simple app deployment                 |  0.1.2  |     None    |
-|              [argo-watcher](https://artifacthub.io/packages/helm/shini4i/argo-watcher)              | application |                 A Helm chart for deploying argo-watcher                  |  0.2.10 |    v0.4.0   |
+|              [argo-watcher](https://artifacthub.io/packages/helm/shini4i/argo-watcher)              | application |                 A Helm chart for deploying argo-watcher                  |  0.2.11 |    v0.4.1   |
 |                    [common](https://artifacthub.io/packages/helm/shini4i/common)                    |   library   |             A Helm chart library with some common templates              |  0.0.1  |     None    |
 | [mongodb-community-cluster](https://artifacthub.io/packages/helm/shini4i/mongodb-community-cluster) | application | A Helm chart for deploying MongoDBCommunity cluster (community-operator) |  0.2.0  |    6.0.2    |
 <!-- table_end -->
