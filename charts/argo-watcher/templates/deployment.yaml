@@ -45,7 +45,7 @@ spec:
               value: {{ .Values.argo.apiTimeout | quote }}
             - name: SKIP_TLS_VERIFY
               value: {{ .Values.argo.skipTlsVerify | quote }}
-            - name: RLOG_LOG_LEVEL
+            - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}
