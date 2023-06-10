@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -21,10 +21,15 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --dearmor --output keyring.gpg
+          echo "${{ secrets.PASSPHRASE }}" > passphrase-file.txt
+
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
         with:
-          version: v3.11.1
+          version: v3.12.0
 
       - name: Add repositories
         run: |
@@ -35,5 +40,9 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
+          CR_KEY: Vadim Gedz <vadims@linux-tech.io>
+          CR_KEYRING: keyring.gpg
+          CR_PASSPHRASE_FILE: passphrase-file.txt
+          CR_SIGN: true
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_SKIP_EXISTING: true
