@@ -170,6 +170,25 @@ entries:
     - https://github.com/shini4i/charts/releases/download/app-0.0.1/app-0.0.1.tgz
     version: 0.0.1
   argo-watcher:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Set default securityContext
+        - kind: fixed
+          description: Set correct variable for configuring log level
+    apiVersion: v2
+    appVersion: v0.4.2
+    created: "2023-06-10T20:50:29.746886459Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: b727d6d6cdba369352de496898afe193a64a71d14f32d8a15aeb04f934b52bd7
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+    name: argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.3.0/argo-watcher-0.3.0.tgz
+    version: 0.3.0
   - apiVersion: v2
     appVersion: v0.4.2
     created: "2023-06-06T12:01:25.461079855Z"
@@ -566,4 +585,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-06T12:01:25.461365667Z"
+generated: "2023-06-10T20:50:29.747202364Z"
