@@ -22,3 +22,24 @@ helm repo add shini4i https://shini4i.github.io/charts/
 |                    [common](https://artifacthub.io/packages/helm/shini4i/common)                    |   library   |             A Helm chart library with some common templates              |  0.0.1  |     None    |
 | [mongodb-community-cluster](https://artifacthub.io/packages/helm/shini4i/mongodb-community-cluster) | application | A Helm chart for deploying MongoDBCommunity cluster (community-operator) |  0.2.0  |    6.0.2    |
 <!-- table_end -->
+
+## Signing
+Starting from `2023-06-11` all charts in this repository are signed with a GPG key. It is done to ensure the integrity of the charts.
+
+To verify the signature, first import the key:
+```
+gpg --recv-keys F509F29B63C1DC2B
+```
+
+Then verify the signature:
+```
+helm pull shini4i/argo-watcher --version 0.3.1 --prov
+helm verify ./argo-watcher-0.3.1.tgz
+```
+
+Given that everything is correct, you should see the following output:
+```
+Signed by: Vadim Gedz <vadims@linux-tech.io>
+Using Key With Fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+Chart Hash Verified: sha256:66555b4f6ac47a4ff67beb20963e6bd3ffcb0a8a1c33bfd8bba1d89011b0355a
+```
