@@ -7,6 +7,3 @@ appVersion: v0.5.0
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
-annotations:
-  artifacthub.io/changes: "- kind: changed\n  description: Set default securityContext\n\
-    - kind: fixed\n  description: Set correct variable for configuring log level\n"
