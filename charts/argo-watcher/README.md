@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -38,6 +38,8 @@ A Helm chart for deploying argo-watcher
 | ingress.tls | list | `[]` |  |
 | logLevel | string | `"info"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicies.additionalRules | list | `[]` | additional ingress rules to add to the network policy (access will be granted to .Values.service.containerPort) |
+| networkPolicies.enabled | bool | `false` | If network policies should be created |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podMonitor.enabled | bool | `false` |  |
