@@ -35,7 +35,7 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    {{- range .Values.networkPolicies.additionalRules }}
+    {{- with .Values.networkPolicies.additionalRules }}
     - from:
         {{- toYaml . | nindent 8 }}
       ports:
