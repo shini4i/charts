@@ -2,8 +2,12 @@ apiVersion: v2
 name: argo-watcher
 description: A Helm chart for deploying argo-watcher
 type: application
-version: 0.3.1
+version: 0.3.2
 appVersion: v0.5.0
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: Basic network policy support
