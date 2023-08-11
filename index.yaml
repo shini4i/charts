@@ -173,6 +173,23 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: changed
+          description: revert to version 0.5.0
+    apiVersion: v2
+    appVersion: v0.5.0
+    created: "2023-08-11T13:49:06.786845915Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 38f11d6be4106e65ce4473b4cc0b3288dbdadac2e9c6353d619cf60e76871084
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+    name: argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.3.4/argo-watcher-0.3.4.tgz
+    version: 0.3.4
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
           description: Update argo-watcher app version from v0.5.0 to v0.6.0-pre.1
     apiVersion: v2
     appVersion: v0.6.0-pre.1
@@ -638,4 +655,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-11T13:43:40.938512777Z"
+generated: "2023-08-11T13:49:06.787385426Z"
