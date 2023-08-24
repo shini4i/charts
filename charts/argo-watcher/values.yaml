@@ -30,6 +30,12 @@ argo:
   apiTimeout: 60
   # -- Pre-created secret with ARGO_TOKEN variable
   secretName: ""
+  # -- Configuration for argo image updater logic replacement
+  updater:
+    # -- Pre-created secret with ssh key (optional)
+    sshSecretName: ""
+    # -- Key to mount from sshSecretName
+    sshKey: "sshPrivateKey"
 
 postgres:
   # -- Sets STATE_TYPE to postgres

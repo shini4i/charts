@@ -2,10 +2,15 @@ apiVersion: v2
 name: argo-watcher
 description: A Helm chart for deploying argo-watcher
 type: application
-version: 0.3.4
+version: 0.3.5
 appVersion: v0.5.0
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
 annotations:
-  artifacthub.io/changes: "- kind: changed\n  description: revert to version 0.5.0\n"
+  artifacthub.io/signKey: |
+    fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+    url: https://shini4i.github.io/charts/pgp_keys.asc
+  artifacthub.io/changes: |
+    - kind: added
+      description: Support for ssh key configuration
