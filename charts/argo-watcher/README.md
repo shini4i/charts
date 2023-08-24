@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.6.0-pre.1](https://img.shields.io/badge/AppVersion-v0.6.0--pre.1-informational?style=flat-square)
+![Version: 0.3.6](https://img.shields.io/badge/Version-0.3.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -8,7 +8,7 @@ A Helm chart for deploying argo-watcher
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Vadim Gedz | <vadims@linux-tech.io> |  |
+| Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
 ## Values
 
@@ -19,6 +19,9 @@ A Helm chart for deploying argo-watcher
 | argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
+| argo.updater | object | `{"sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
+| argo.updater.sshKey | string | `"sshPrivateKey"` | Key to mount from sshSecretName |
+| argo.updater.sshSecretName | string | `""` | Pre-created secret with ssh key (optional) |
 | argo.url | string | `"https://argocd.example.com"` |  |
 | fullnameOverride | string | `""` |  |
 | healthChecks.enabled | bool | `true` |  |
