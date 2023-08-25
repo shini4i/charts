@@ -49,6 +49,8 @@ spec:
               value: {{ .Values.logLevel | upper }}
             - name: SSH_KEY_PATH
               value: "/tmp/id_rsa"
+            - name: SSH_KNOWN_HOSTS
+              value: "/tmp/ssh_known_hosts"
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}
               value: "postgres"
@@ -94,6 +96,10 @@ spec:
               mountPath: /tmp/id_rsa
               subPath: {{ .Values.argo.updater.sshKey }}
               readOnly: true
+            - name: known-hosts
+              mountPath: /tmp/ssh_known_hosts
+              subPath: {{ .Values.argo.updater.knownHostsKey }}
+              readOnly: true
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -105,6 +111,12 @@ spec:
             items:
               - key: {{ .Values.argo.updater.sshKey }}
                 path: {{ .Values.argo.updater.sshKey }}
+        - name: known-hosts
+          configMap:
+            name: {{ .Values.argo.updater.knownHostsConfigMap | default "argo-watcher-ssh-known-hosts" }}
+            items:
+              - key: {{ .Values.argo.updater.knownHostsKey }}
+                path: {{ .Values.argo.updater.knownHostsKey }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

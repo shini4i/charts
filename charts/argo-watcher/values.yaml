@@ -36,6 +36,10 @@ argo:
     sshSecretName: ""
     # -- Key to mount from sshSecretName
     sshKey: "sshPrivateKey"
+    # -- Known hosts configmap override (optional)
+    knownHostsConfigMap: ""
+    # -- Known hosts configmap key (optional)
+    knownHostsKey: "ssh_known_hosts"
 
 postgres:
   # -- Sets STATE_TYPE to postgres
