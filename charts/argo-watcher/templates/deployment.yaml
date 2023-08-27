@@ -51,6 +51,10 @@ spec:
               value: "/tmp/id_rsa"
             - name: SSH_KNOWN_HOSTS
               value: "/tmp/ssh_known_hosts"
+            - name: SSH_COMMIT_USER
+              value: {{ .Values.argo.updater.commitAuthor }}
+            - name: SSH_COMMIT_MAIL
+              value: {{ .Values.argo.updater.commitEmail }}
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}
               value: "postgres"

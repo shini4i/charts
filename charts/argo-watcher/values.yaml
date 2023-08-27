@@ -40,6 +40,10 @@ argo:
     knownHostsConfigMap: ""
     # -- Known hosts configmap key (optional)
     knownHostsKey: "ssh_known_hosts"
+    # -- User to use for git operations
+    commitAuthor: "argo-watcher"
+    # -- Email to use for git operations
+    commitEmail: "argo-watcher@example.com"
 
 postgres:
   # -- Sets STATE_TYPE to postgres

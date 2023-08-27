@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.3.8](https://img.shields.io/badge/Version-0.3.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
+![Version: 0.3.9](https://img.shields.io/badge/Version-0.3.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -19,7 +19,9 @@ A Helm chart for deploying argo-watcher
 | argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
-| argo.updater | object | `{"knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
+| argo.updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
+| argo.updater.commitAuthor | string | `"argo-watcher"` | User to use for git operations |
+| argo.updater.commitEmail | string | `"argo-watcher@example.com"` | Email to use for git operations |
 | argo.updater.knownHostsConfigMap | string | `""` | Known hosts configmap override (optional) |
 | argo.updater.knownHostsKey | string | `"ssh_known_hosts"` | Known hosts configmap key (optional) |
 | argo.updater.sshKey | string | `"sshPrivateKey"` | Key to mount from sshSecretName |
