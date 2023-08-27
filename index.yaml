@@ -173,6 +173,27 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: support for configuring both commit author and email
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.5.0
+    created: "2023-08-27T17:27:18.44958857Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: c37af5277653790c2b59a0a10be342d790f80428bdc224f347b9023ebd1253ca
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.3.9/argo-watcher-0.3.9.tgz
+    version: 0.3.9
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: support for ssh known hosts configuration
       artifacthub.io/signKey: |
         fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
@@ -738,4 +759,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-25T12:55:28.493750544Z"
+generated: "2023-08-27T17:27:18.450146874Z"
