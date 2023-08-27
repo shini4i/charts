@@ -3,6 +3,30 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: added chart signing
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2023-08-27T17:51:06.065857333Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    description: A Helm chart for a simple app deployment
+    digest: afcf8e7c4ea9c845d5120119355c130e145062d8391144cc932f6654a38b6488
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.3/app-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: support for startupProbe
     apiVersion: v2
@@ -708,6 +732,22 @@ entries:
     - https://github.com/shini4i/charts/releases/download/argo-watcher-0.0.1/argo-watcher-0.0.1.tgz
     version: 0.0.1
   common:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: added chart signing
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2023-08-27T17:51:06.278498659Z"
+    description: A Helm chart library with some common templates
+    digest: 064350214e089337392ff08a4e514f39a7e8d92568f50ac5493a2e70806eb49f
+    name: common
+    type: library
+    urls:
+    - https://github.com/shini4i/charts/releases/download/common-0.0.2/common-0.0.2.tgz
+    version: 0.0.2
   - apiVersion: v2
     created: "2022-09-20T21:10:46.500315735Z"
     description: A Helm chart library with some common templates
@@ -718,6 +758,28 @@ entries:
     - https://github.com/shini4i/charts/releases/download/common-0.0.1/common-0.0.1.tgz
     version: 0.0.1
   mongodb-community-cluster:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: added chart signing
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: 6.0.2
+    created: "2023-08-27T17:51:06.440201472Z"
+    description: A Helm chart for deploying MongoDBCommunity cluster (community-operator)
+    digest: e0054048d6e8b7b0a55e248cbbebaa58cc873e1b98b6b01f4ca875317bb764da
+    icon: https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: mongodb-community-cluster
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.2.1/mongodb-community-cluster-0.2.1.tgz
+    version: 0.2.1
   - apiVersion: v2
     appVersion: 6.0.2
     created: "2022-11-02T19:11:29.568663838Z"
@@ -759,4 +821,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-27T17:27:18.450146874Z"
+generated: "2023-08-27T17:51:06.440424977Z"
