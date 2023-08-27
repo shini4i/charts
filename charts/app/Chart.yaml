@@ -2,12 +2,15 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.2
+version: 0.1.3
 
 annotations:
+  artifacthub.io/signKey: |
+    fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+    url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: support for startupProbe
+    - kind: changed
+      description: added chart signing
 
 maintainers:
   - name: Vadim Gedz
