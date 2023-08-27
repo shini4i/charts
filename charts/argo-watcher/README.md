@@ -10,6 +10,15 @@ A Helm chart for deploying argo-watcher
 | ---- | ------ | --- |
 | Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
+## Source Code
+
+* <https://github.com/shini4i/argo-watcher>
+* <https://github.com/shini4i/charts/tree/main/charts/argo-watcher>
+
+## Requirements
+
+Kubernetes: `>=1.21.0-0`
+
 ## Values
 
 | Key | Type | Default | Description |

@@ -4,6 +4,15 @@ description: A Helm chart for deploying argo-watcher
 type: application
 version: 0.3.9
 appVersion: v0.5.0
+icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+kubeVersion: ">=1.21.0-0"
+keywords:
+  - argocd
+  - gitops
+  - automation
+sources:
+  - https://github.com/shini4i/argo-watcher
+  - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
