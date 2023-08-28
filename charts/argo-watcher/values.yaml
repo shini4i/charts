@@ -28,7 +28,7 @@ argo:
   timeout: 300
   # -- How long to wait for argocd api to respond
   apiTimeout: 60
-  # -- Pre-created secret with ARGO_TOKEN variable
+  # -- Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN
   secretName: ""
   # -- Configuration for argo image updater logic replacement
   updater:
