@@ -2,7 +2,7 @@ apiVersion: v2
 name: argo-watcher
 description: A Helm chart for deploying argo-watcher
 type: application
-version: 0.3.9
+version: 0.4.0
 appVersion: v0.5.0
 icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 kubeVersion: ">=1.21.0-0"
