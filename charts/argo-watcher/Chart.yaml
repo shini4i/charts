@@ -23,4 +23,4 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: added
-      description: support for configuring both commit author and email
+      description: support for missed refreshApp option

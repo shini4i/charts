@@ -28,6 +28,8 @@ argo:
   timeout: 300
   # -- How long to wait for argocd api to respond
   apiTimeout: 60
+  # -- If argo-watcher should refresh app during check to make ArgoCD detect changes faster
+  refreshApp: true
   # -- Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN
   secretName: ""
   # -- Configuration for argo image updater logic replacement

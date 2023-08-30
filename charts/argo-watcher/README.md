@@ -25,6 +25,7 @@ Kubernetes: `>=1.21.0-0`
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | argo.apiTimeout | int | `60` | How long to wait for argocd api to respond |
+| argo.refreshApp | bool | `true` | If argo-watcher should refresh app during check to make ArgoCD detect changes faster |
 | argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
