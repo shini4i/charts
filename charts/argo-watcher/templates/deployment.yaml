@@ -43,6 +43,8 @@ spec:
               value: {{ .Values.argo.timeout | quote }}
             - name: ARGO_API_TIMEOUT
               value: {{ .Values.argo.apiTimeout | quote }}
+            - name: ARGO_REFRESH_APP
+              value: {{ .Values.argo.refreshApp | quote }}
             - name: SKIP_TLS_VERIFY
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL

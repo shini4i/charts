@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.3.9](https://img.shields.io/badge/Version-0.3.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -10,13 +10,23 @@ A Helm chart for deploying argo-watcher
 | ---- | ------ | --- |
 | Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
+## Source Code
+
+* <https://github.com/shini4i/argo-watcher>
+* <https://github.com/shini4i/charts/tree/main/charts/argo-watcher>
+
+## Requirements
+
+Kubernetes: `>=1.21.0-0`
+
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | argo.apiTimeout | int | `60` | How long to wait for argocd api to respond |
-| argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable |
+| argo.refreshApp | bool | `true` | If argo-watcher should refresh app during check to make ArgoCD detect changes faster |
+| argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
 | argo.updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
