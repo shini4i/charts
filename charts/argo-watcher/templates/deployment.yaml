@@ -49,6 +49,7 @@ spec:
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
+            {{- if .Values.argo.updater.sshSecretName }}
             - name: SSH_KEY_PATH
               value: "/tmp/id_rsa"
             - name: SSH_KNOWN_HOSTS
@@ -57,6 +58,11 @@ spec:
               value: {{ .Values.argo.updater.commitAuthor }}
             - name: SSH_COMMIT_MAIL
               value: {{ .Values.argo.updater.commitEmail }}
+            {{- end }}
+            {{- if .Values.argo.registryProxyUrl }}
+            - name: DOCKER_IMAGES_PROXY
+              value: {{ .Values.argo.registryProxyUrl }}
+            {{- end }}
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}
               value: "postgres"

@@ -28,6 +28,8 @@ argo:
   timeout: 300
   # -- How long to wait for argocd api to respond
   apiTimeout: 60
+  # -- argo-watcher will assume that image can be mutated and will use this value while checking app status
+  registryProxyUrl: ""
   # -- If argo-watcher should refresh app during check to make ArgoCD detect changes faster
   refreshApp: true
   # -- Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN
