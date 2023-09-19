@@ -2,25 +2,26 @@ apiVersion: v2
 name: argo-watcher
 description: A Helm chart for deploying argo-watcher
 type: application
-version: 0.4.2
-appVersion: v0.5.0
-icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-kubeVersion: ">=1.21.0-0"
-keywords:
-  - argocd
-  - gitops
-  - automation
 sources:
-  - https://github.com/shini4i/argo-watcher
-  - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+- https://github.com/shini4i/argo-watcher
+- https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+version: 0.4.3
+keywords:
+- argocd
+- gitops
+- automation
+kubeVersion: '>=1.21.0-0'
+appVersion: v0.6.0
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
   url: https://github.com/shini4i
+icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 annotations:
-  artifacthub.io/signKey: |
-    fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+  artifacthub.io/signKey: 'fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+
     url: https://shini4i.github.io/charts/pgp_keys.asc
-  artifacthub.io/changes: |
-    - kind: changed
-      description: the default known hosts configmap is no longer created if knownHostsConfigMap override is provided
+
+    '
+  artifacthub.io/changes: "- kind: changed\n  description: Update argo-watcher app\
+    \ version from v0.5.0 to v0.6.0\n"
