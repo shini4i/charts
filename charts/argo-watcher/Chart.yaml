@@ -5,13 +5,13 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.4.3
+version: 0.4.4
 keywords:
 - argocd
 - gitops
 - automation
 kubeVersion: '>=1.21.0-0'
-appVersion: v0.6.0
+appVersion: v0.6.1
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
@@ -24,4 +24,4 @@ annotations:
 
     '
   artifacthub.io/changes: "- kind: changed\n  description: Update argo-watcher app\
-    \ version from v0.5.0 to v0.6.0\n"
+    \ version from v0.6.0 to v0.6.1\n"
