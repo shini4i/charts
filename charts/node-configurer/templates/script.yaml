@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "node-configurer.fullname" . }}-script-routes
+  labels:
+    {{- include "node-configurer.labels" . | nindent 4 }}
+data:
+  configurer-routes.sh: |
+    #!/bin/sh
+
+    while true; do
+      all_routes_correct=true
+
+      {{- range .Values.routes }}
+      if ! ip route show | grep -q "{{ .cidr }} via {{ .gateway }} "; then
+        all_routes_correct=false
+        echo "Adding route for {{ .name }}: {{ .cidr }} via {{ .gateway }}"
+        ip route add "{{ .cidr }}" via "{{ .gateway }}"
+      fi
+      {{- end }}
+
+      if $all_routes_correct; then
+        echo "All routes are correct. Sleeping..."
+      fi
+
+      sleep 30
+    done
