@@ -1,0 +1,6 @@
+apiVersion: v2
+name: node-configurer
+description: A Helm chart for making node level configuration durin startup
+type: application
+version: 0.1.0
+appVersion: "3.18"
