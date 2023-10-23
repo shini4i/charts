@@ -2,7 +2,13 @@
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.18](https://img.shields.io/badge/AppVersion-3.18-informational?style=flat-square)
 
-A Helm chart for making node level configuration durin startup
+A Helm chart for making node level configuration during startup
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
 
 ## Values
 
@@ -20,12 +26,7 @@ A Helm chart for making node level configuration durin startup
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | resources | object | `{}` |  |
-| routes[0].cidr | string | `"8.8.8.8"` |  |
-| routes[0].gateway | string | `"167.99.128.1"` |  |
-| routes[0].name | string | `"example"` |  |
-| routes[1].cidr | string | `"1.1.1.1"` |  |
-| routes[1].gateway | string | `"167.99.128.1"` |  |
-| routes[1].name | string | `"example2"` |  |
+| routes | list | `[]` |  |
 | securityContext.capabilities.add[0] | string | `"NET_ADMIN"` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | serviceAccount.annotations | object | `{}` |  |

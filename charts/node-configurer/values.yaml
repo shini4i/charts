@@ -10,13 +10,13 @@ fullnameOverride: ""
 
 hostNetwork: true
 
-routes:
-  - name: "example"
-    cidr: "8.8.8.8"
-    gateway: "167.99.128.1"
-  - name: "example2"
-    cidr: "1.1.1.1"
-    gateway: "167.99.128.1"
+routes: []
+  # - name: "database"
+  #   cidr: "192.168.0.2/32"
+  #   gateway: "192.168.10.1"
+  # - name: "ldap"
+  #   cidr: "192.168.1.6"
+  #   gateway: "192.168.16.1"
 
 serviceAccount:
   # Specifies whether a service account should be created
