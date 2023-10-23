@@ -1061,4 +1061,29 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-13T07:46:51.856024877Z"
+  node-configurer:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: initial version with routes support
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: "3.18"
+    created: "2023-10-23T18:26:47.435192192Z"
+    description: A Helm chart for making node level configuration during startup
+    digest: 45fbdc59bd7c44c6a0bca39e612960cfb5a831b4bb351a405b533a413491c00a
+    keywords:
+    - bootstrap
+    - automation
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: node-configurer
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-10-23T18:26:47.436381292Z"
