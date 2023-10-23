@@ -13,10 +13,10 @@ hostNetwork: true
 routes:
   - name: "example"
     cidr: "8.8.8.8"
-    gateway: "192.168.1.1"
+    gateway: "167.99.128.1"
   - name: "example2"
     cidr: "1.1.1.1"
-    gateway: "192.168.0.1"
+    gateway: "167.99.128.1"
 
 serviceAccount:
   # Specifies whether a service account should be created

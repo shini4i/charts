@@ -12,7 +12,7 @@ data:
       all_routes_correct=true
 
       {{- range .Values.routes }}
-      if ! ip route show | grep -q "{{ .cidr }}" | grep -q "{{ .gateway }}"; then
+      if ! ip route show | grep -q "{{ .cidr }} via {{ .gateway }} "; then
         all_routes_correct=false
         echo "Adding route for {{ .name }}: {{ .cidr }} via {{ .gateway }}"
         ip route add "{{ .cidr }}" via "{{ .gateway }}"
