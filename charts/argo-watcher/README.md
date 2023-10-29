@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.4.7](https://img.shields.io/badge/Version-0.4.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.6.4](https://img.shields.io/badge/AppVersion-v0.6.4-informational?style=flat-square)
+![Version: 0.4.8](https://img.shields.io/badge/Version-0.4.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.6.4](https://img.shields.io/badge/AppVersion-v0.6.4-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -30,9 +30,10 @@ Kubernetes: `>=1.21.0-0`
 | argo.secretName | string | `""` | Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN |
 | argo.skipTlsVerify | bool | `false` | If ssl verification should be skipped |
 | argo.timeout | int | `300` | How long to wait for deployment to be finished |
-| argo.updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
+| argo.updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","extraKnownHosts":[],"knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement |
 | argo.updater.commitAuthor | string | `"argo-watcher"` | User to use for git operations |
 | argo.updater.commitEmail | string | `"argo-watcher@example.com"` | Email to use for git operations |
+| argo.updater.extraKnownHosts | list | `[]` | Extra known hosts to add to ssh config, will be skipped if knownHostsConfigMap is set (optional) |
 | argo.updater.knownHostsConfigMap | string | `""` | Known hosts configmap override (optional) |
 | argo.updater.knownHostsKey | string | `"ssh_known_hosts"` | Known hosts configmap key (optional) |
 | argo.updater.sshKey | string | `"sshPrivateKey"` | Key to mount from sshSecretName |
