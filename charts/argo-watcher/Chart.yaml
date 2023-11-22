@@ -5,7 +5,7 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.4.8
+version: 0.5.0
 keywords:
 - argocd
 - gitops
@@ -24,5 +24,5 @@ annotations:
 
     '
   artifacthub.io/changes: |
-    - kind: changed
-      description: Add support for providing extra known hosts from values.yaml
+    - kind: added
+      description: support for argocd url alias

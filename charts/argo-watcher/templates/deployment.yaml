@@ -59,6 +59,10 @@ spec:
             - name: SSH_COMMIT_MAIL
               value: {{ .Values.argo.updater.commitEmail }}
             {{- end }}
+            {{- if .Values.argo.urlAlias }}
+            - name: ARGO_URL_ALIAS
+              value: {{ .Values.argo.urlAlias }}
+            {{- end }}
             {{- if .Values.argo.registryProxyUrl }}
             - name: DOCKER_IMAGES_PROXY
               value: {{ .Values.argo.registryProxyUrl }}

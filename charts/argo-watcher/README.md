@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.4.8](https://img.shields.io/badge/Version-0.4.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.6.4](https://img.shields.io/badge/AppVersion-v0.6.4-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.6.4](https://img.shields.io/badge/AppVersion-v0.6.4-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -39,6 +39,7 @@ Kubernetes: `>=1.21.0-0`
 | argo.updater.sshKey | string | `"sshPrivateKey"` | Key to mount from sshSecretName |
 | argo.updater.sshSecretName | string | `""` | Pre-created secret with ssh key (optional) |
 | argo.url | string | `"https://argocd.example.com"` |  |
+| argo.urlAlias | string | `""` | An alias that will be used to generate url for ArgoCD app |
 | fullnameOverride | string | `""` |  |
 | healthChecks.enabled | bool | `true` |  |
 | healthChecks.initialDelaySeconds | int | `5` |  |

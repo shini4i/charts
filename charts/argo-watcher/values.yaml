@@ -22,6 +22,8 @@ logLevel: info
 
 argo:
   url: https://argocd.example.com
+  # -- An alias that will be used to generate url for ArgoCD app
+  urlAlias: ""
   # -- If ssl verification should be skipped
   skipTlsVerify: false
   # -- How long to wait for deployment to be finished
