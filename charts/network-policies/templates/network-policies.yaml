@@ -1,0 +1,72 @@
+{{- $root := . -}}
+{{- range .Values.policies }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $root.Release.Name }}-{{ .name }}
+  labels:
+    {{- include "network-policies.labels" $root | nindent 4 }}
+spec:
+  podSelector:
+    {{- if .podSelector.matchLabels }}
+    matchLabels:
+      {{- range $key, $value := .podSelector.matchLabels }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    {{- end }}
+  policyTypes:
+    {{- range .policyTypes }}
+    - {{ . }}
+    {{- end }}
+  {{- if .ingress }}
+  ingress:
+    {{- range .ingress }}
+    - from:
+      {{- range .from }}
+        - namespaceSelector:
+            matchLabels:
+            {{- range $key, $value := .namespaceSelector.matchLabels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+        {{- if .podSelector }}
+          podSelector:
+            matchLabels:
+            {{- range $key, $value := .podSelector.matchLabels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+        {{- end }}
+      {{- end }}
+      ports:
+        {{- range .ports }}
+        - protocol: {{ .protocol }}
+          port: {{ .port }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .egress }}
+  egress:
+    {{- range .egress }}
+    - to:
+      {{- range .to }}
+        - namespaceSelector:
+            matchLabels:
+            {{- range $key, $value := .namespaceSelector.matchLabels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+        {{- if .podSelector }}
+          podSelector:
+            matchLabels:
+            {{- range $key, $value := .podSelector.matchLabels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+        {{- end }}
+      {{- end }}
+      ports:
+        {{- range .ports }}
+        - protocol: {{ .protocol }}
+          port: {{ .port }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+---
+{{- end }}
