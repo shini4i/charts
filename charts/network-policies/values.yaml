@@ -1,0 +1,27 @@
+nameOverride: ""
+fullnameOverride: ""
+
+policies: {}
+#  - name: default-deny-all
+#    policyTypes:
+#      - Ingress
+#    podSelector: {}
+#  - name: allow-ingress-nginx
+#    policyTypes:
+#      - Ingress
+#    podSelector:
+#      matchLabels:
+#        app: atlantis
+#        release: atlantis
+#    ingress:
+#      - from:
+#          - namespaceSelector:
+#              matchLabels:
+#                kubernetes.io/metadata.name: web
+#            podSelector:
+#              matchLabels:
+#                app.kubernetes.io/instance: ingress-nginx
+#                app.kubernetes.io/name: ingress-nginx
+#        ports:
+#          - protocol: TCP
+#            port: atlantis
