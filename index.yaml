@@ -1151,6 +1151,30 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/mongodb-community-cluster-0.1.0/mongodb-community-cluster-0.1.0.tgz
     version: 0.1.0
+  network-policies:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: initial version
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2023-12-02T15:01:24.983467625Z"
+    description: A generic helm chart for simple network policies
+    digest: cb2b2110941c3b007a446149721bc779eb05546ecbe48730ba994ce437289401
+    keywords:
+    - network-policies
+    - kubernetes
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: network-policies
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/network-policies-0.0.1/network-policies-0.0.1.tgz
+    version: 0.0.1
   node-configurer:
   - annotations:
       artifacthub.io/changes: |
@@ -1176,4 +1200,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-22T09:24:16.895808065Z"
+generated: "2023-12-02T15:01:24.983625611Z"
