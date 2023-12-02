@@ -2,7 +2,7 @@ apiVersion: v2
 name: network-policies
 description: A generic helm chart for simple network policies
 type: application
-version: 0.0.1
+version: 0.0.2
 
 maintainers:
   - name: Vadim Gedz
@@ -18,5 +18,5 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: initial version
+    - kind: fixed
+      description: correct indent in matchLabels

@@ -26,13 +26,13 @@ spec:
         - namespaceSelector:
             matchLabels:
             {{- range $key, $value := .namespaceSelector.matchLabels }}
-            {{ $key }}: {{ $value }}
+              {{ $key }}: {{ $value }}
             {{- end }}
         {{- if .podSelector }}
           podSelector:
             matchLabels:
             {{- range $key, $value := .podSelector.matchLabels }}
-            {{ $key }}: {{ $value }}
+              {{ $key }}: {{ $value }}
             {{- end }}
         {{- end }}
       {{- end }}
