@@ -4,6 +4,12 @@
 
 A generic helm chart for simple network policies
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Vadim Gedz | <vadims@linux-tech.io> | <https://github.com/shini4i> |
+
 ## Values
 
 | Key | Type | Default | Description |
