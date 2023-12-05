@@ -23,5 +23,6 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
 
     '
-  artifacthub.io/changes: "- kind: changed\n  description: Update argo-watcher app\
-    \ version from v0.6.4 to v0.6.5\n"
+  artifacthub.io/changes: |
+    - kind: changed
+      description: rename ARGO_TIMEOUT with DEPLOYMENT_TIMEOUT

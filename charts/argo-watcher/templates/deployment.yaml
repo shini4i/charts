@@ -39,7 +39,7 @@ spec:
           env:
             - name: ARGO_URL
               value: {{ .Values.argo.url }}
-            - name: ARGO_TIMEOUT
+            - name: DEPLOYMENT_TIMEOUT
               value: {{ .Values.argo.timeout | quote }}
             - name: ARGO_API_TIMEOUT
               value: {{ .Values.argo.apiTimeout | quote }}
