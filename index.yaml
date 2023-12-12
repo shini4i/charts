@@ -196,6 +196,36 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: quote extra envs values
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.6.6
+    created: "2023-12-12T16:12:19.714456369Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 29f035e1c0eb91343bc5cc7aa114ba6428cbb92a9aba2ce143afc1ab0c8acc3a
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.5.5/argo-watcher-0.5.5.tgz
+    version: 0.5.5
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: support for providing extra environment variables
       artifacthub.io/signKey: |
@@ -1313,4 +1343,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-12T16:00:54.666955659Z"
+generated: "2023-12-12T16:12:19.714672112Z"
