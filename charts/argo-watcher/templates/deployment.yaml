@@ -83,6 +83,10 @@ spec:
             - name: DB_USER
               value: {{ .Values.postgres.user }}
           {{- end }}
+          {{- range .Values.extraEnvs }}
+            - name: {{ .name }}
+              value: {{ .value }}
+          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ .Values.argo.secretName }}
