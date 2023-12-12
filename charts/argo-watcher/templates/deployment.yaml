@@ -85,7 +85,7 @@ spec:
           {{- end }}
           {{- range .Values.extraEnvs }}
             - name: {{ .name }}
-              value: {{ .value }}
+              value: {{ .value | quote }}
           {{- end }}
           envFrom:
             - secretRef:

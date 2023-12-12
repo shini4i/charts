@@ -56,8 +56,8 @@ argo:
 
 # -- Additional environment variables to add to the container
 extraEnvs: []
-#   - name: EXTRA_ENV
-#     value: "extra-value"
+#  - name: EXTRA_ENV
+#    value: "extra-value"
 
 postgres:
   # -- Sets STATE_TYPE to postgres
