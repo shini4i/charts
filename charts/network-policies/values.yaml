@@ -6,6 +6,13 @@ policies: {}
 #    policyTypes:
 #      - Ingress
 #    podSelector: {}
+#  - name: allow-ingress-self-namespace
+#    policyTypes:
+#      - Ingress
+#    podSelector: {}
+#    ingress:
+#      - from:
+#          - podSelector: {}
 #  - name: allow-ingress-nginx
 #    policyTypes:
 #      - Ingress

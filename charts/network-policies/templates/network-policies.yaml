@@ -23,11 +23,13 @@ spec:
     {{- range .ingress }}
     - from:
       {{- range .from }}
+        {{- if .namespaceSelector }}
         - namespaceSelector:
             matchLabels:
             {{- range $key, $value := .namespaceSelector.matchLabels }}
               {{ $key }}: {{ $value }}
             {{- end }}
+        {{- end }}
         {{- if .podSelector }}
           podSelector:
             matchLabels:
@@ -35,12 +37,17 @@ spec:
               {{ $key }}: {{ $value }}
             {{- end }}
         {{- end }}
+      {{- if not .namespaceSelector }}
+        - podSelector: {}
       {{- end }}
+      {{- end }}
+      {{- if .ports }}
       ports:
         {{- range .ports }}
         - protocol: {{ .protocol }}
           port: {{ .port }}
         {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
   {{- if .egress }}
