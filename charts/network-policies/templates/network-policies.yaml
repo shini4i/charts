@@ -7,13 +7,15 @@ metadata:
   labels:
     {{- include "network-policies.labels" $root | nindent 4 }}
 spec:
+  {{- if .podSelector.matchLabels }}
   podSelector:
-    {{- if .podSelector.matchLabels }}
     matchLabels:
       {{- range $key, $value := .podSelector.matchLabels }}
       {{ $key }}: {{ $value | quote }}
       {{- end }}
-    {{- end }}
+  {{- else }}
+  podSelector: {}
+  {{- end }}
   policyTypes:
     {{- range .policyTypes }}
     - {{ . }}
