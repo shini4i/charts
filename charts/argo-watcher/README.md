@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -68,6 +68,11 @@ Kubernetes: `>=1.21.0-0`
 | podSecurityContext | object | `{}` |  |
 | postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
+| postgres.migration.backoffLimit | int | `5` |  |
+| postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
+| postgres.migration.image.repository | string | `"migrate/migrate"` |  |
+| postgres.migration.image.tag | string | `"v4.17.0"` |  |
+| postgres.migration.restartPolicy | string | `"OnFailure"` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |

@@ -1,0 +1,53 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "argo-watcher.fullname" . }}-migration
+  labels:
+    {{- include "argo-watcher.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: copy-migration-files
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - cp /db/migrations/* /migrations
+          volumeMounts:
+            - mountPath: /migrations
+              name: migrations
+      containers:
+        - name: migration
+          image: {{ .Values.postgres.migration.image.repository }}:{{ .Values.postgres.migration.image.tag }}
+          imagePullPolicy: {{ .Values.postgres.migration.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+          env:
+            - name: DB_HOST
+              value: {{ .Values.postgres.host }}
+            - name: DB_PORT
+              value: {{ .Values.postgres.port | quote }}
+            - name: DB_NAME
+              value: {{ .Values.postgres.name }}
+            - name: DB_USER
+              value: {{ .Values.postgres.user }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgres.secretName }}
+          volumeMounts:
+            - mountPath: /migrations
+              name: migrations
+      restartPolicy: {{ .Values.postgres.migration.restartPolicy }}
+      volumes:
+        - name: migrations
+          emptyDir: {}
+  backoffLimit: {{ .Values.postgres.migration.backoffLimit }}
+{{- end }}

@@ -5,7 +5,7 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.5.6
+version: 0.6.0
 keywords:
 - argocd
 - gitops
@@ -23,5 +23,6 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
 
     '
-  artifacthub.io/changes: "- kind: changed\n  description: Update argo-watcher app\
-    \ version from v0.6.6 to v0.7.0\n"
+  artifacthub.io/changes: |
+    - kind: changed
+      description: database migration is now done by pre-install/pre-upgrade hook
