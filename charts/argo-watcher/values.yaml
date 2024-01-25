@@ -68,6 +68,13 @@ postgres:
   user: ""
   # -- Pre-created secret with DB_PASSWORD variable
   secretName: ""
+  migration:
+    image:
+      repository: migrate/migrate
+      tag: "v4.17.0"
+      pullPolicy: IfNotPresent
+    restartPolicy: OnFailure
+    backoffLimit: 5
 
 serviceAccount:
   # Specifies whether a service account should be created
