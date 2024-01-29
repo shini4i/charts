@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -14,6 +14,7 @@ A Helm chart for a simple app deployment
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://shini4i.github.io/charts/ | network-policies | 0.0.4 |
 | https://shini4i.github.io/charts | common | v0.0.1 |
 
 ## Values
@@ -64,6 +65,7 @@ A Helm chart for a simple app deployment
 | keda.triggers | list | `[]` |  |
 | middleware | object | `{"enabled":false,"existingMiddlewares":{},"labels":{},"sourceRange":{}}` | Whitelist Middleware definition |
 | nameOverride | string | `""` |  |
+| network-policies | object | `{}` | Network policies configuration |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podMonitor.enabled | bool | `false` |  |

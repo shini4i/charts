@@ -2,7 +2,7 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.4
+version: 0.1.5
 
 annotations:
   artifacthub.io/signKey: |
@@ -10,7 +10,7 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: added
-      description: support for specifying raw yaml objects
+      description: network-policies chart dependency
 
 maintainers:
   - name: Vadim Gedz
@@ -21,3 +21,6 @@ dependencies:
   - name: common
     version: v0.0.1
     repository: https://shini4i.github.io/charts
+  - name: network-policies
+    version: 0.0.4
+    repository: https://shini4i.github.io/charts/

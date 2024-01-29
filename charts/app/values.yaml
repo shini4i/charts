@@ -254,3 +254,18 @@ rawObject: []
 #          recordType: CNAME
 #          targets:
 #            - 10.10.10.10
+
+# -- Network policies configuration
+network-policies: {}
+#  policies:
+#    - name: default-deny-all
+#      policyTypes:
+#        - Ingress
+#      podSelector: {}
+#    - name: allow-ingress-self-namespace
+#      policyTypes:
+#        - Ingress
+#      podSelector: {}
+#      ingress:
+#        - from:
+#            - podSelector: {}
