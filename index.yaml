@@ -3,6 +3,30 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: support for specifying raw yaml objects
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2024-01-29T17:50:51.92275884Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    description: A Helm chart for a simple app deployment
+    digest: ac819dd97c58c7dacc843dc37efe4c3db4e17ea2ba2958be1772497867974e77
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.4/app-0.1.4.tgz
+    version: 0.1.4
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: added chart signing
       artifacthub.io/signKey: |
@@ -1449,4 +1473,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-01-25T17:11:37.994137094Z"
+generated: "2024-01-29T17:50:51.923069542Z"
