@@ -240,3 +240,17 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# -- Raw yaml definition used to deploy something that is not supported by this chart
+rawObject: []
+#  - apiVersion: externaldns.k8s.io/v1alpha1
+#    kind: DNSEndpoint
+#    metadata:
+#      name: example
+#    spec:
+#      endpoints:
+#        - dnsName: example.com
+#          recordTTL: 300
+#          recordType: CNAME
+#          targets:
+#            - 10.10.10.10
