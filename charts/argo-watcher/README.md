@@ -66,7 +66,7 @@ Kubernetes: `>=1.21.0-0`
 | podMonitor.enabled | bool | `false` |  |
 | podMonitor.labels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| postgres.enabled | bool | `true` | Sets STATE_TYPE to postgres |
+| postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
 | postgres.migration.backoffLimit | int | `5` |  |
 | postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
