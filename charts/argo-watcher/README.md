@@ -89,6 +89,7 @@ Kubernetes: `>=1.21.0-0`
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | revisionHistory | int | `1` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
