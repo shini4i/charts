@@ -76,6 +76,35 @@ postgres:
     restartPolicy: OnFailure
     backoffLimit: 5
 
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      runAsNonRoot: true
+      securityContext:
+        fsGroup: 1000
+
+    resources: {}
+
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+
+    initContainer:
+      resources: {}
+      securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -103,6 +132,7 @@ securityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
+  allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP

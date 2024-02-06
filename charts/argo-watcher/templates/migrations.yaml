@@ -11,6 +11,8 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        {{- toYaml .Values.postgres.migration.podSecurityContext | nindent 8 }}
       initContainers:
         - name: copy-migration-files
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -22,6 +24,10 @@ spec:
           volumeMounts:
             - mountPath: /migrations
               name: migrations
+          securityContext:
+            {{- toYaml .Values.postgres.migration.initContainer.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.postgres.migration.initContainer.resources | nindent 12 }}
       containers:
         - name: migration
           image: {{ .Values.postgres.migration.image.repository }}:{{ .Values.postgres.migration.image.tag }}
@@ -45,6 +51,10 @@ spec:
           volumeMounts:
             - mountPath: /migrations
               name: migrations
+          securityContext:
+            {{- toYaml .Values.postgres.migration.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.postgres.migration.resources | nindent 12 }}
       restartPolicy: {{ .Values.postgres.migration.restartPolicy }}
       volumes:
         - name: migrations

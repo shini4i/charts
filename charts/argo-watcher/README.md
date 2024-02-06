@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
+![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -72,7 +72,22 @@ Kubernetes: `>=1.21.0-0`
 | postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgres.migration.image.repository | string | `"migrate/migrate"` |  |
 | postgres.migration.image.tag | string | `"v4.17.0"` |  |
+| postgres.migration.initContainer.resources | object | `{}` |  |
+| postgres.migration.initContainer.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| postgres.migration.initContainer.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.initContainer.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| postgres.migration.initContainer.securityContext.runAsNonRoot | bool | `true` |  |
+| postgres.migration.initContainer.securityContext.runAsUser | int | `1000` |  |
+| postgres.migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| postgres.migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| postgres.migration.podSecurityContext.securityContext.fsGroup | int | `1000` |  |
+| postgres.migration.resources | object | `{}` |  |
 | postgres.migration.restartPolicy | string | `"OnFailure"` |  |
+| postgres.migration.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| postgres.migration.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| postgres.migration.securityContext.runAsNonRoot | bool | `true` |  |
+| postgres.migration.securityContext.runAsUser | int | `1000` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
@@ -80,6 +95,7 @@ Kubernetes: `>=1.21.0-0`
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | revisionHistory | int | `1` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
