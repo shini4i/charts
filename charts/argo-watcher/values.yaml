@@ -61,7 +61,7 @@ extraEnvs: []
 
 postgres:
   # -- Sets STATE_TYPE to postgres
-  enabled: false
+  enabled: true
   host: ""
   port: 5432
   name: ""
@@ -86,7 +86,10 @@ postgres:
     resources: {}
 
     securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
       runAsUser: 1000
+      allowPrivilegeEscalation: false
       capabilities:
         drop:
           - ALL
@@ -94,7 +97,10 @@ postgres:
     initContainer:
       resources: {}
       securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         runAsUser: 1000
+        allowPrivilegeEscalation: false
         capabilities:
           drop:
             - ALL

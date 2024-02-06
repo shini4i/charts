@@ -66,21 +66,27 @@ Kubernetes: `>=1.21.0-0`
 | podMonitor.enabled | bool | `false` |  |
 | podMonitor.labels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
+| postgres.enabled | bool | `true` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
 | postgres.migration.backoffLimit | int | `5` |  |
 | postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgres.migration.image.repository | string | `"migrate/migrate"` |  |
 | postgres.migration.image.tag | string | `"v4.17.0"` |  |
 | postgres.migration.initContainer.resources | object | `{}` |  |
+| postgres.migration.initContainer.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | postgres.migration.initContainer.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.initContainer.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| postgres.migration.initContainer.securityContext.runAsNonRoot | bool | `true` |  |
 | postgres.migration.initContainer.securityContext.runAsUser | int | `1000` |  |
 | postgres.migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | postgres.migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgres.migration.podSecurityContext.securityContext.fsGroup | int | `1000` |  |
 | postgres.migration.resources | object | `{}` |  |
 | postgres.migration.restartPolicy | string | `"OnFailure"` |  |
+| postgres.migration.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | postgres.migration.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| postgres.migration.securityContext.runAsNonRoot | bool | `true` |  |
 | postgres.migration.securityContext.runAsUser | int | `1000` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
