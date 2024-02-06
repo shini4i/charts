@@ -75,7 +75,6 @@ Kubernetes: `>=1.21.0-0`
 | postgres.migration.initContainer.resources | object | `{}` |  |
 | postgres.migration.initContainer.securityContext.fsGroup | int | `1000` |  |
 | postgres.migration.podSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| postgres.migration.podSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
 | postgres.migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | postgres.migration.podSecurityContext.runAsUser | int | `1000` |  |
 | postgres.migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
