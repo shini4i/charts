@@ -66,21 +66,21 @@ Kubernetes: `>=1.21.0-0`
 | podMonitor.enabled | bool | `false` |  |
 | podMonitor.labels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
+| postgres.enabled | bool | `true` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
 | postgres.migration.backoffLimit | int | `5` |  |
 | postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgres.migration.image.repository | string | `"migrate/migrate"` |  |
 | postgres.migration.image.tag | string | `"v4.17.0"` |  |
 | postgres.migration.initContainer.resources | object | `{}` |  |
-| postgres.migration.initContainer.securityContext.fsGroup | int | `1000` |  |
-| postgres.migration.podSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.initContainer.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | postgres.migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | postgres.migration.podSecurityContext.runAsUser | int | `1000` |  |
 | postgres.migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| postgres.migration.podSecurityContext.securityContext.fsGroup | int | `1000` |  |
 | postgres.migration.resources | object | `{}` |  |
 | postgres.migration.restartPolicy | string | `"OnFailure"` |  |
-| postgres.migration.securityContext.fsGroup | int | `1000` |  |
+| postgres.migration.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |

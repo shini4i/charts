@@ -61,7 +61,7 @@ extraEnvs: []
 
 postgres:
   # -- Sets STATE_TYPE to postgres
-  enabled: false
+  enabled: true
   host: ""
   port: 5432
   name: ""
@@ -79,21 +79,24 @@ postgres:
     podSecurityContext:
       seccompProfile:
         type: RuntimeDefault
-      capabilities:
-        drop:
-          - ALL
       runAsNonRoot: true
       runAsUser: 1000
+      securityContext:
+        fsGroup: 1000
 
     resources: {}
 
     securityContext:
-      fsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
 
     initContainer:
       resources: {}
       securityContext:
-        fsGroup: 1000
+        capabilities:
+          drop:
+            - ALL
 
 serviceAccount:
   # Specifies whether a service account should be created
