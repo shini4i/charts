@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
+![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -66,13 +66,22 @@ Kubernetes: `>=1.21.0-0`
 | podMonitor.enabled | bool | `false` |  |
 | podMonitor.labels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| postgres.enabled | bool | `false` | Sets STATE_TYPE to postgres |
+| postgres.enabled | bool | `true` | Sets STATE_TYPE to postgres |
 | postgres.host | string | `""` |  |
 | postgres.migration.backoffLimit | int | `5` |  |
 | postgres.migration.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgres.migration.image.repository | string | `"migrate/migrate"` |  |
 | postgres.migration.image.tag | string | `"v4.17.0"` |  |
+| postgres.migration.initContainer.resources | object | `{}` |  |
+| postgres.migration.initContainer.securityContext.fsGroup | int | `1000` |  |
+| postgres.migration.podSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgres.migration.podSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| postgres.migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| postgres.migration.podSecurityContext.runAsUser | int | `1000` |  |
+| postgres.migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| postgres.migration.resources | object | `{}` |  |
 | postgres.migration.restartPolicy | string | `"OnFailure"` |  |
+| postgres.migration.securityContext.fsGroup | int | `1000` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
