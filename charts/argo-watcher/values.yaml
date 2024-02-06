@@ -61,7 +61,7 @@ extraEnvs: []
 
 postgres:
   # -- Sets STATE_TYPE to postgres
-  enabled: true
+  enabled: false
   host: ""
   port: 5432
   name: ""
