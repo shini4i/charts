@@ -80,13 +80,13 @@ postgres:
       seccompProfile:
         type: RuntimeDefault
       runAsNonRoot: true
-      runAsUser: 1000
       securityContext:
         fsGroup: 1000
 
     resources: {}
 
     securityContext:
+      runAsUser: 1000
       capabilities:
         drop:
           - ALL
@@ -94,6 +94,7 @@ postgres:
     initContainer:
       resources: {}
       securityContext:
+        runAsUser: 1000
         capabilities:
           drop:
             - ALL
