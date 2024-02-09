@@ -2,7 +2,7 @@ apiVersion: v2
 name: network-policies
 description: A generic helm chart for simple network policies
 type: application
-version: 0.0.4
+version: 0.0.5
 
 maintainers:
   - name: Vadim Gedz
