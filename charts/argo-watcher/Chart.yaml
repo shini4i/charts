@@ -5,24 +5,21 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.6.2
+version: 0.6.3
 keywords:
 - argocd
 - gitops
 - automation
 kubeVersion: '>=1.21.0-0'
-appVersion: v0.7.0
+appVersion: v0.8.0
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
   url: https://github.com/shini4i
 icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 annotations:
-  artifacthub.io/signKey: 'fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
-
-    url: https://shini4i.github.io/charts/pgp_keys.asc
-
-    '
+  artifacthub.io/signKey: "fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B\n
+    url: https://shini4i.github.io/charts/pgp_keys.asc\n"
   artifacthub.io/changes: |
-    - kind: added
-      description: support for setting resources and securityContext in migration job
+    - kind: changed
+      description: Update argo-watcher app version from v0.7.0 to v0.8.0
