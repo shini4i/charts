@@ -54,6 +54,13 @@ argo:
     # -- Email to use for git operations
     commitEmail: "argo-watcher@example.com"
 
+# -- Schedule lockdown configuration
+scheduledLockdown:
+  enabled: false
+  schedule: []
+#    - cron: "0 2 * * *"
+#      duration: 8h
+
 # -- Additional environment variables to add to the container
 extraEnvs: []
 #  - name: EXTRA_ENV

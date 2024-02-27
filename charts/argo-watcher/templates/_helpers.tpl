@@ -60,3 +60,13 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Transform scheduledLockdown to a specific JSON format.
+*/}}
+{{- define "argo-watcher.scheduledLockdownJson" -}}
+{{- $lockdown := .Values.scheduledLockdown -}}
+{{- if and $lockdown.enabled (gt (len $lockdown.schedule) 0) -}}
+[{{- range $i, $item := $lockdown.schedule -}}{{- if $i }},{{ end }}{"cron": {{ $item.cron | quote }}, "duration": {{ $item.duration | quote }}}{{- end -}}]
+{{- end -}}
+{{- end }}
