@@ -59,6 +59,12 @@ spec:
             - name: SSH_COMMIT_MAIL
               value: {{ .Values.argo.updater.commitEmail }}
             {{- end }}
+            {{- if .Values.scheduledLockdown.enabled }}
+            - name: SCHEDULED_LOCKDOWN_ENABLED
+              value: {{ .Values.scheduledLockdown.enabled | quote }}
+            - name: LOCKDOWN_SCHEDULE
+              value: {{ include "argo-watcher.scheduledLockdownJson" . | printf "'%s'" }}
+            {{- end }}
             {{- if .Values.argo.urlAlias }}
             - name: ARGO_URL_ALIAS
               value: {{ .Values.argo.urlAlias }}
