@@ -5,13 +5,13 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.6.5
+version: 0.6.6
 keywords:
 - argocd
 - gitops
 - automation
 kubeVersion: '>=1.21.0-0'
-appVersion: v0.8.0
+appVersion: v0.8.1
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
@@ -22,5 +22,5 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: support for configuring scheduled lockdown
+    - kind: changed
+      description: Update argo-watcher app version from v0.8.0 to v0.8.1
