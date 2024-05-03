@@ -87,8 +87,6 @@ postgres:
       seccompProfile:
         type: RuntimeDefault
       runAsNonRoot: true
-      securityContext:
-        fsGroup: 1000
 
     resources: {}
 
