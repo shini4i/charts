@@ -3,6 +3,33 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: network-policies chart version
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2024-05-11T21:12:56.80678206Z"
+    dependencies:
+    - name: common
+      repository: https://shini4i.github.io/charts
+      version: v0.0.1
+    - name: network-policies
+      repository: https://shini4i.github.io/charts/
+      version: 0.0.6
+    description: A Helm chart for a simple app deployment
+    digest: 78cef54d494f849bc738ee01c0c957a245794e5444153731eb5dea70be5f521e
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.1.6/app-0.1.6.tgz
+    version: 0.1.6
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: network-policies chart dependency
       artifacthub.io/signKey: |
@@ -1880,4 +1907,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-11T20:57:36.189148324Z"
+generated: "2024-05-11T21:12:56.806970783Z"
