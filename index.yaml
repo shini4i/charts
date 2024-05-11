@@ -247,6 +247,38 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: support for additional PodMonitor configuration
+        - kind: changed
+          description: remove support for pre 1.20 kubernetes version in ingress
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.8.4
+    created: "2024-05-11T20:57:36.188928724Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: b329b8a3bee091557b357ee03d8ad45c0548a1de41ddc75ab7472355822390e6
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.7.0/argo-watcher-0.7.0.tgz
+    version: 0.7.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Update argo-watcher app version from v0.8.3 to v0.8.4
       artifacthub.io/signKey: |
@@ -1848,4 +1880,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-03T12:16:53.633954795Z"
+generated: "2024-05-11T20:57:36.189148324Z"
