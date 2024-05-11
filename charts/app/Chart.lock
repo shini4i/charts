@@ -4,6 +4,6 @@ dependencies:
   version: 0.0.1
 - name: network-policies
   repository: https://shini4i.github.io/charts/
-  version: 0.0.4
-digest: sha256:d7a519733123506d4815f701e8c350343520fa493bd510f92de84e7d6926cc4a
-generated: "2024-01-29T22:31:18.244533+02:00"
+  version: 0.0.6
+digest: sha256:0723a3aa308309d37d7b24b01246cb064f28a73858da0201a89e2599404f2ea3
+generated: "2024-05-12T00:04:26.459441+03:00"

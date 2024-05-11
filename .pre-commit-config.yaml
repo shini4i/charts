@@ -6,10 +6,8 @@ repos:
       - id: trailing-whitespace
       - id: check-added-large-files
   - repo: https://github.com/norwoodj/helm-docs
-    rev: v1.13.0
+    rev: v1.13.1
     hooks:
       - id: helm-docs
         args:
           - --chart-search-root=charts
-          - --template-files=./_templates.gotmpl
-          - --template-files=README.md.gotmpl

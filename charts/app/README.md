@@ -14,7 +14,7 @@ A Helm chart for a simple app deployment
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://shini4i.github.io/charts/ | network-policies | 0.0.4 |
+| https://shini4i.github.io/charts/ | network-policies | 0.0.6 |
 | https://shini4i.github.io/charts | common | v0.0.1 |
 
 ## Values
@@ -40,7 +40,7 @@ A Helm chart for a simple app deployment
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"traefik/whoami"` |  |
-| image.tag | string | `"v1.8.7"` |  |
+| image.tag | string | `"v1.10.2"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress | object | `{"annotations":{},"className":"","enabled":false,"exposedPort":80,"hosts":[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Classical ingress definition |
 | ingress.exposedPort | int | `80` | Port to use with ingress |
@@ -55,7 +55,7 @@ A Helm chart for a simple app deployment
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
 | job.image.repository | string | `"curlimages/curl"` |  |
-| job.image.tag | string | `"7.82.0"` |  |
+| job.image.tag | string | `"8.7.1"` |  |
 | job.restartPolicy | string | `"Never"` |  |
 | keda.advanced | object | `{}` |  |
 | keda.enabled | bool | `false` |  |
