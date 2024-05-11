@@ -121,6 +121,8 @@ serviceAccount:
 
 podMonitor:
   enabled: false
+  # interval: 30s
+  # scrapeTimeout: 5s
   labels: {}
 
 podAnnotations: {}

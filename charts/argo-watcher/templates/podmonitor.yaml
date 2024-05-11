@@ -14,4 +14,10 @@ spec:
   podMetricsEndpoints:
     - port: http
       path: /metrics
+      {{- with .Values.podMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.podMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
 {{ end }}
