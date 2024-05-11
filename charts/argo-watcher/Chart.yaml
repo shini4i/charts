@@ -5,7 +5,7 @@ type: application
 sources:
   - https://github.com/shini4i/argo-watcher
   - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.6.10
+version: 0.7.0
 keywords:
   - argocd
   - gitops
@@ -24,3 +24,5 @@ annotations:
   artifacthub.io/changes: |
     - kind: added
       description: support for additional PodMonitor configuration
+    - kind: changed
+      description: remove support for pre 1.20 kubernetes version in ingress
