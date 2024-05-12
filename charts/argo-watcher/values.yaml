@@ -55,11 +55,9 @@ argo:
     commitEmail: "argo-watcher@example.com"
 
 # -- Schedule lockdown configuration
-scheduledLockdown:
-  enabled: false
-  schedule: []
-#    - cron: "0 2 * * *"
-#      duration: 8h
+scheduledLockdown: []
+#  - "Fri 20:00 - Mon 08:00"
+#  - "Tue 22:00 - Tue 23:15"
 
 # -- Additional environment variables to add to the container
 extraEnvs: []
