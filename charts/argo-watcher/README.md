@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.4](https://img.shields.io/badge/AppVersion-v0.8.4-informational?style=flat-square)
+![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.4](https://img.shields.io/badge/AppVersion-v0.8.4-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -94,7 +94,7 @@ Kubernetes: `>=1.21.0-0`
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | revisionHistory | int | `1` |  |
-| scheduledLockdown | object | `{"enabled":false,"schedule":[]}` | Schedule lockdown configuration |
+| scheduledLockdown | list | `[]` | Schedule lockdown configuration |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
