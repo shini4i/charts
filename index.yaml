@@ -274,6 +274,36 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Update argo-watcher app version from v0.8.4 to v0.9.0
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.9.0
+    created: "2024-06-10T19:19:21.699292259Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 9435fe149cef434c03e6ee303e19444dc3e536f87e34d7ca45bd352fcc4d1f07
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.7.2/argo-watcher-0.7.2.tgz
+    version: 0.7.2
+  - annotations:
+      artifacthub.io/changes: |
         - kind: fixed
           description: scheduled lockdown configuration
       artifacthub.io/signKey: |
@@ -1937,4 +1967,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-12T11:14:11.855960107Z"
+generated: "2024-06-10T19:19:21.699827433Z"
