@@ -1,0 +1,74 @@
+suite: test service
+templates:
+  - templates/service.yaml
+tests:
+  - it: should be enabled by default
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should pass default values
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: v1
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].protocol
+          value: TCP
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 80
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: app
+
+  - it: should pass custom port values
+    set:
+      service:
+        type: ClusterIP
+        ports:
+          - port: 8080
+            containerPort: 8081
+            name: example
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: example
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.ports[0].protocol
+          value: TCP
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8081
+
+  - it: should pass custom release name
+    release:
+      name: example
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: example
+            app.kubernetes.io/name: app

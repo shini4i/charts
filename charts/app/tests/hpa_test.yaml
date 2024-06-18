@@ -1,0 +1,139 @@
+suite: test hpa
+templates:
+  - templates/hpa.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      autoscaling:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass default values when enabled
+    set:
+      autoscaling:
+        enabled: true
+    capabilities:
+      majorVersion: "1"
+      minorVersion: "23"
+      apiVersions:
+        - autoscaling/v2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.minReplicas
+          value: 1
+      - equal:
+          path: spec.maxReplicas
+          value: 100
+      - equal:
+          path: spec.metrics[0].resource.name
+          value: cpu
+      - equal:
+          path: spec.metrics[0].resource.target.averageUtilization
+          value: 80
+      - equal:
+          path: spec.metrics[0].resource.target.type
+          value: Utilization
+
+  - it: should use autoscaling/v2beta apiVersion on kubernetes < 1.23
+    set:
+      autoscaling:
+        enabled: true
+    capabilities:
+      majorVersion: "1"
+      minorVersion: "22"
+      apiVersions:
+        - autoscaling/v2beta2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - isAPIVersion:
+          of: autoscaling/v2beta2
+
+  - it: should use autoscaling/v2 apiVersion on kubernetes => 1.23
+    set:
+      autoscaling:
+        enabled: true
+    capabilities:
+      majorVersion: "1"
+      minorVersion: "23"
+      apiVersions:
+        - autoscaling/v2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - isAPIVersion:
+          of: autoscaling/v2
+
+  - it: should pass custom replica size
+    set:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 10
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.minReplicas
+          value: 2
+      - equal:
+          path: spec.maxReplicas
+          value: 10
+
+  - it: should pass custom cpu target utilization
+    set:
+      autoscaling:
+        enabled: true
+        targetCPUUtilizationPercentage: 65
+    capabilities:
+      majorVersion: "1"
+      minorVersion: "23"
+      apiVersions:
+        - autoscaling/v2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.metrics[0].resource.target.averageUtilization
+          value: 65
+
+  - it: should pass custom memory target and default cpu target utilization
+    set:
+      autoscaling:
+        enabled: true
+        targetMemoryUtilizationPercentage: 50
+    capabilities:
+      majorVersion: "1"
+      minorVersion: "23"
+      apiVersions:
+        - autoscaling/v2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.metrics[0].resource.target.averageUtilization
+          value: 80
+      - equal:
+          path: spec.metrics[1].resource.target.averageUtilization
+          value: 50

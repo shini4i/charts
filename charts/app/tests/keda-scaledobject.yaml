@@ -1,0 +1,69 @@
+suite: test keda scaled object
+templates:
+  - templates/keda-scaledobject.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      keda:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass default values
+    set:
+      keda:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: keda.sh/v1alpha1
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: spec.minReplicaCount
+          value: 2
+      - equal:
+          path: spec.maxReplicaCount
+          value: 5
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            name: RELEASE-NAME-app
+
+  - it: should pass full name override
+    set:
+      fullnameOverride: example
+      keda:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            name: example
+
+  - it: should pass custom replica size
+    set:
+      keda:
+        enabled: true
+        minReplicaCount: 10
+        maxReplicaCount: 100
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: keda.sh/v1alpha1
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: spec.minReplicaCount
+          value: 10
+      - equal:
+          path: spec.maxReplicaCount
+          value: 100

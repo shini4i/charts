@@ -1,0 +1,28 @@
+suite: test middleware
+templates:
+  - templates/middleware.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass various assertions
+    set:
+      middleware:
+        sourceRange:
+          - 0.0.0.0/0
+          - 10.10.10.1/24
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: traefik.containo.us/v1alpha1
+      - isKind:
+          of: Middleware
+      - equal:
+          path: spec.ipWhiteList.sourceRange[0]
+          value: 0.0.0.0/0
+      - equal:
+          path: spec.ipWhiteList.sourceRange[1]
+          value: 10.10.10.1/24

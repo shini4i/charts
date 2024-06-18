@@ -1,0 +1,81 @@
+suite: test job
+templates:
+  - templates/job.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      job:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass environment variable assertions
+    set:
+      job:
+        enabled: true
+        env:
+          - name: example
+            value: example1
+        envFrom:
+          - configMapRef:
+              name: example-configmap
+          - secretRef:
+              name: example-secret
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0].name
+          value: example
+      - equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: example1
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0]
+          value:
+            configMapRef:
+              name: example-configmap
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[1]
+          value:
+            secretRef:
+              name: example-secret
+
+  - it: should pass various assertions
+    set:
+      job:
+        enabled: true
+        annotations:
+          example: example1
+        image:
+          repository: alpine
+          tag: 3.19
+        command: ["sh", "-c", "echo test"]
+        restartPolicy: Always
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: batch/v1
+      - isKind:
+          of: Job
+      - equal:
+          path: metadata.annotations
+          value:
+            example: example1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: alpine:3.19
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - sh
+            - -c
+            - echo test
+      - equal:
+          path: spec.template.spec.restartPolicy
+          value: Always

@@ -1,0 +1,55 @@
+suite: test ingress-route
+templates:
+  - templates/ingressRoute.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      ingressRoute:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass various assertions
+    set:
+      ingressRoute:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        labels:
+          traffic-type: private
+        entryPoint: example
+        host: demo.example.io
+        tlsSecret: demo-example-io
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: traefik.containo.us/v1alpha1
+      - isKind:
+          of: IngressRoute
+      - equal:
+          path: metadata.annotations
+          value:
+            cert-manager.io/cluster-issuer: letsencrypt
+      - equal:
+          path: metadata.labels
+          value:
+            traffic-type: private
+      - equal:
+          path: spec.entryPoints[0]
+          value: example
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`demo.example.io`)
+      - equal:
+          path: spec.tls.domains[0].main
+          value: demo.example.io
+      - equal:
+          path: spec.tls.secretName
+          value: demo-example-io

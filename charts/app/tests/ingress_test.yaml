@@ -1,0 +1,69 @@
+suite: test ingress
+templates:
+  - templates/ingress.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      ingress:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass various assertions
+    set:
+      ingress:
+        enabled: true
+        className: example
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        exposedPort: 1234
+        hosts:
+          - host: demo.example.io
+            paths:
+              - path: /
+                pathType: Prefix
+          - host: demo2.example.io
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - demo.example.io
+              - demo2.example.io
+            secretName: demo-example-io
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.ingressClassName
+          value: example
+      - equal:
+          path: metadata.annotations
+          value:
+            cert-manager.io/cluster-issuer: letsencrypt
+      - equal:
+          path: spec.rules[0].host
+          value: demo.example.io
+      - equal:
+          path: spec.rules[1].host
+          value: demo2.example.io
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: demo.example.io
+      - equal:
+          path: spec.tls[0].hosts[1]
+          value: demo2.example.io
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 1234
+      - equal:
+          path: spec.rules[1].http.paths[0].backend.service.port.number
+          value: 1234
