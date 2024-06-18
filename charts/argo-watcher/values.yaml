@@ -36,9 +36,9 @@ argo:
   refreshApp: true
   # -- Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN
   secretName: ""
-  # -- Configuration for argo image updater logic replacement
+  # -- Configuration for argo image updater logic replacement (optional)
   updater:
-    # -- Pre-created secret with ssh key (optional)
+    # -- Pre-created secret with ssh key
     sshSecretName: ""
     # -- Key to mount from sshSecretName
     sshKey: "sshPrivateKey"

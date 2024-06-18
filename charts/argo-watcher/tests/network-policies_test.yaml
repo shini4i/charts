@@ -1,0 +1,8 @@
+suite: test network policies
+templates:
+  - templates/network-policies.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
