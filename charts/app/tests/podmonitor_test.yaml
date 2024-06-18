@@ -1,0 +1,47 @@
+suite: test podmonitor
+templates:
+  - templates/podmonitor.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      podMonitor:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass various assertions
+    set:
+      podMonitor:
+        enabled: true
+        labels:
+          prometheus: main
+        podMetricsEndpoints:
+          - port: metrics
+            interval: 15m
+          - port: web
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: monitoring.coreos.com/v1
+      - isKind:
+          of: PodMonitor
+      - equal:
+          path: metadata.labels
+          value:
+            prometheus: main
+      - equal:
+          path: spec.podMetricsEndpoints[0].port
+          value: metrics
+      - equal:
+          path: spec.podMetricsEndpoints[0].interval
+          value: 15m
+      - equal:
+          path: spec.podMetricsEndpoints[1].port
+          value: web

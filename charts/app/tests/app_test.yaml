@@ -1,0 +1,432 @@
+suite: test app
+templates:
+  - templates/app.yaml
+tests:
+  - it: should pass custom image assertion
+    set:
+      image:
+        repository: alpine
+        tag: 3.19
+        pullPolicy: Always
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: alpine:3.19
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+      - exists:
+          path: spec.template
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotNullOrEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - hasDocuments:
+          count: 1
+
+  - it: should set replica size when autoscaling disabled
+    set:
+      autoscaling:
+        enabled: false
+      keda:
+        enabled: false
+      replicaCount: 2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isNotNullOrEmpty:
+          path: spec.replicas
+      - equal:
+          path: spec.replicas
+          value: 2
+
+  - it: should not have replicas set when hpa enabled
+    set:
+      autoscaling:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: spec.replicas
+
+  - it: should not have replicas set when keda enabled
+    set:
+      keda:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: spec.replicas
+
+  - it: should pass image pull secrets assertion
+    set:
+      imagePullSecrets:
+        - name: regcred
+        - name: regcred2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - exists:
+          path: spec.template.spec.imagePullSecrets
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
+      - equal:
+          path: spec.template.spec.imagePullSecrets[1].name
+          value: regcred2
+
+  - it: should pass container port assertion
+    set:
+      service:
+        type: ClusterIP
+        ports:
+          - port: 8081
+            containerPort: 8080
+            name: http
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+
+  - it: should pass environment variable assertions
+    set:
+      app:
+        env:
+          - name: example
+            value: example1
+        envFrom:
+          - configMapRef:
+              name: example-configmap
+          - secretRef:
+              name: example-secret
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0].name
+          value: example
+      - equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: example1
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0]
+          value:
+            configMapRef:
+              name: example-configmap
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[1]
+          value:
+            secretRef:
+              name: example-secret
+
+  - it: should pass pod annotations assertion
+    set:
+      podAnnotations:
+        example: example1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            example: example1
+
+  - it: should pass security context assertions
+    set:
+      podSecurityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        allowPrivilegeEscalation: false
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            seccompProfile:
+              type: RuntimeDefault
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            capabilities:
+              drop:
+                - ALL
+            allowPrivilegeEscalation: false
+
+  - it: should pass healthcheck probes assertions
+    set:
+      app:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /healthz
+              port: http
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            httpGet:
+              path: /readyz
+              port: http
+
+  - it: should pass lifecycle assertions
+    set:
+      app:
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "sleep 10" ]
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].lifecycle
+          value:
+            preStop:
+              exec:
+                command: [ "sleep 10" ]
+
+  - it: should pass sidecar container assertions
+    set:
+      sideCars:
+        - name: sidecar
+          image: alpine:3.19
+        - name: sidecar2
+          image: alpine:3.20
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 3
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: sidecar
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: alpine:3.19
+      - equal:
+          path: spec.template.spec.containers[2].name
+          value: sidecar2
+      - equal:
+          path: spec.template.spec.containers[2].image
+          value: alpine:3.20
+
+  - it: should pass volumes assertions
+    set:
+      volumes:
+        - name: example-config
+          configMap:
+            name: example-config
+        - name: example-secret
+          secret:
+            secretName: example-secret
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - emptyDir: {}
+              name: shared
+            - configMap:
+                name: example-config
+              name: example-config
+            - name: example-secret
+              secret:
+                secretName: example-secret
+
+  - it: should pass init containers assertions
+    set:
+      initContainers:
+        - name: example
+          image: alpine:3.19
+          command: [ "sh", "-c", "echo test" ]
+        - name: example2
+          image: alpine:3.20
+          command: [ "sh", "-c", "echo test2" ]
+    asserts:
+      - isNotNullOrEmpty:
+          path: spec.template.spec.initContainers
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 2
+      - equal:
+          path: spec.template.spec.initContainers
+          value:
+            - command:
+                - sh
+                - -c
+                - echo test
+              image: alpine:3.19
+              name: example
+            - command:
+                - sh
+                - -c
+                - echo test2
+              image: alpine:3.20
+              name: example2
+
+  - it: should pass node selector assertion
+    set:
+      nodeSelector:
+        nodegroup: default
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            nodegroup: default
+
+  - it: should pass tolerations assertion
+    set:
+      tolerations:
+        - key: "default"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+        - key: "stage"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - effect: NoSchedule
+              key: default
+              operator: Equal
+              value: "true"
+            - effect: NoSchedule
+              key: stage
+              operator: Equal
+              value: "true"
+
+  - it: should pass affinity assertion
+    set:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: app
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: kubernetes.io/hostname
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: app
+
+  - it: should not create persistent volumes and mounts if persistence disabled
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: false
+    asserts:
+      - notExists:
+          path: spec.volumeClaimTemplates
+      - lengthEqual:
+          path: spec.template.spec.containers[0].volumeMounts
+          count: 1
+
+  - it: should pass persistence assertions
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+                size: 8Gi
+                storageClassName: gp3
+                accessModes:
+                  - ReadWriteOnce
+              - name: data2
+                mountPath: /data2
+                size: 10Gi
+                storageClassName: gp3
+                accessModes:
+                  - ReadWriteOnce
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers[0].volumeMounts
+          count: 3
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1]
+          value:
+            mountPath: /data
+            name: data
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[2]
+          value:
+            mountPath: /data2
+            name: data2
+      - equal:
+          path: spec.volumeClaimTemplates[0]
+          value:
+            metadata:
+              name: data
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 8Gi
+              storageClassName: gp3
+      - equal:
+          path: spec.volumeClaimTemplates[1]
+          value:
+            metadata:
+              name: data2
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 10Gi
+              storageClassName: gp3
+
+  - it: should not have resources set by default
+    asserts:
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].resources
+
+  - it: should pass with custom resources
+    set:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
