@@ -6,3 +6,39 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+
+  - it: should create the default policies
+    set:
+      networkPolicies:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+      - documentIndex: 0
+        equal:
+          path: metadata.name
+          value: default-deny-ingress
+      - documentIndex: 0
+        equal:
+          path: spec.podSelector
+          value: {}
+      - documentIndex: 0
+        contains:
+          path: spec.policyTypes
+          content: Ingress
+      - documentIndex: 1
+        equal:
+          path: metadata.name
+          value: ingress-allow-self-namespace
+      - documentIndex: 1
+        equal:
+          path: spec.podSelector
+          value: {}
+      - documentIndex: 1
+        contains:
+          path: spec.policyTypes
+          content: Ingress
+      - documentIndex: 1
+        equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: NAMESPACE
