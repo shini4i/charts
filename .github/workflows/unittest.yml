@@ -14,4 +14,5 @@ jobs:
       - name: Run unit tests
         uses: d3adb5/helm-unittest-action@v2
         with:
+          helm-version: v3.15.0
           unittest-version: v0.5.1
