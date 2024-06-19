@@ -31,7 +31,6 @@ jobs:
           echo "Changed charts: $CHARTS"
           # Convert to JSON array
           CHARTS_JSON=$(echo "$CHARTS" | jq -R -s -c 'split("\n")[:-1]')
-          echo "CHARTS_JSON=$CHARTS_JSON" >> $GITHUB_ENV
           echo "charts=$CHARTS_JSON" >> $GITHUB_OUTPUT
 
   unittest:
