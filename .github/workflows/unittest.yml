@@ -1,18 +1,53 @@
 name: Helm Unit Test
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
 
 jobs:
-  unittest:
-    name: Helm Unit Test
+  find_changed_charts:
+    name: Find Changed Charts
     runs-on: ubuntu-latest
+    outputs:
+      chart_paths: ${{ steps.chart_paths.outputs.charts }}
 
     steps:
       - name: Checkout files in the repository
         uses: actions/checkout@v4
 
-      - name: Run unit tests
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v34
+        with:
+          files: |
+            charts/**
+
+      - name: Find changed chart directories
+        id: chart_paths
+        run: |
+          # Extract unique chart directories from changed files
+          CHARTS=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | grep '^charts/' | awk -F'/' '{print $2}' | sort | uniq)
+          echo "Changed charts: $CHARTS"
+          # Convert to JSON array
+          CHARTS_JSON=$(echo "$CHARTS" | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=charts::$CHARTS_JSON"
+
+  unittest:
+    name: Helm Unit Test
+    runs-on: ubuntu-latest
+    needs: find_changed_charts
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.find_changed_charts.outputs.chart_paths) }}
+
+    steps:
+      - name: Checkout files in the repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests for ${{ matrix.chart }}
         uses: d3adb5/helm-unittest-action@v2
         with:
           helm-version: v3.15.0
           unittest-version: v0.5.1
+          chart_path: charts/${{ matrix.chart }}
