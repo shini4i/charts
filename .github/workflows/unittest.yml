@@ -50,4 +50,4 @@ jobs:
         with:
           helm-version: v3.15.0
           unittest-version: v0.5.1
-          chart_path: charts/${{ matrix.chart }}
+          charts: charts/${{ matrix.chart }}
