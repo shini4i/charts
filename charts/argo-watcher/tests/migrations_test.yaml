@@ -14,6 +14,10 @@ tests:
         tag: demo
       postgres:
         enabled: true
+        migration:
+          image:
+            repository: migration
+            tag: demo
     asserts:
       - hasDocuments:
           count: 1
@@ -31,3 +35,27 @@ tests:
             - /bin/sh
             - -c
             - cp /db/migrations/* /migrations
+      - equal:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          value:
+            - mountPath: /migrations
+              name: migrations
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: migration:demo
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh
+            - -c
+            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - mountPath: /migrations
+              name: migrations
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: migrations
+              emptyDir: {}

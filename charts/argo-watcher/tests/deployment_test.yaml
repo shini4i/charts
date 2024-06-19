@@ -1,0 +1,135 @@
+suite: test deployment
+templates:
+  - templates/deployment.yaml
+tests:
+  - it: should pass custom image assertion
+    set:
+      image:
+        repository: alpine
+        tag: 3.19
+        pullPolicy: Always
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: alpine:3.19
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+      - exists:
+          path: spec.template
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotNullOrEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - hasDocuments:
+          count: 1
+
+  - it: should pass image pull secrets assertion
+    set:
+      imagePullSecrets:
+        - name: regcred
+        - name: regcred2
+    asserts:
+      - hasDocuments:
+          count: 1
+      - exists:
+          path: spec.template.spec.imagePullSecrets
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
+      - equal:
+          path: spec.template.spec.imagePullSecrets[1].name
+          value: regcred2
+
+  - it: should pass pod annotations assertion
+    set:
+      podAnnotations:
+        example: example1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            example: example1
+
+  - it: should pass node selector assertion
+    set:
+      nodeSelector:
+        nodegroup: default
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            nodegroup: default
+
+  - it: should pass tolerations assertion
+    set:
+      tolerations:
+        - key: "default"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+        - key: "stage"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - effect: NoSchedule
+              key: default
+              operator: Equal
+              value: "true"
+            - effect: NoSchedule
+              key: stage
+              operator: Equal
+              value: "true"
+
+  - it: should pass affinity assertion
+    set:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: app
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: kubernetes.io/hostname
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: app
+
+  - it: should not have resources set by default
+    asserts:
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].resources
+
+  - it: should pass with custom resources
+    set:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
