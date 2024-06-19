@@ -9,6 +9,8 @@ jobs:
   find_changed_charts:
     name: Find Changed Charts
     runs-on: ubuntu-latest
+    outputs:
+      chart_paths: ${{ steps.set-paths.outputs.charts }}
 
     steps:
       - name: Checkout files in the repository
@@ -22,7 +24,7 @@ jobs:
             charts/**
 
       - name: Find changed chart directories
-        id: chart_paths
+        id: set-paths
         run: |
           # Extract unique chart directories from changed files
           CHARTS=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | grep '^charts/' | awk -F'/' '{print $2}' | sort | uniq)
@@ -30,6 +32,7 @@ jobs:
           # Convert to JSON array
           CHARTS_JSON=$(echo "$CHARTS" | jq -R -s -c 'split("\n")[:-1]')
           echo "CHARTS_JSON=$CHARTS_JSON" >> $GITHUB_ENV
+          echo "charts=$CHARTS_JSON" >> $GITHUB_OUTPUT
 
   unittest:
     name: Helm Unit Test
@@ -37,7 +40,7 @@ jobs:
     needs: find_changed_charts
     strategy:
       matrix:
-        chart: ${{ fromJson(env.CHARTS_JSON) }}
+        chart: ${{ fromJson(needs.find_changed_charts.outputs.chart_paths) }}
 
     steps:
       - name: Checkout files in the repository
