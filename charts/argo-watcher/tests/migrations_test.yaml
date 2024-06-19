@@ -1,0 +1,61 @@
+suite: test migrations
+templates:
+  - templates/migrations.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should generate a valid migration Job
+    set:
+      image:
+        repository: ghcr.io/shini4i/argo-watcher
+        tag: demo
+      postgres:
+        enabled: true
+        migration:
+          image:
+            repository: migration
+            tag: demo
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.annotations
+          value:
+            "helm.sh/hook": pre-install,pre-upgrade
+            "helm.sh/hook-delete-policy": before-hook-creation
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: ghcr.io/shini4i/argo-watcher:demo
+      - equal:
+          path: spec.template.spec.initContainers[0].command
+          value:
+            - /bin/sh
+            - -c
+            - cp /db/migrations/* /migrations
+      - equal:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          value:
+            - mountPath: /migrations
+              name: migrations
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: migration:demo
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh
+            - -c
+            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - mountPath: /migrations
+              name: migrations
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: migrations
+              emptyDir: {}

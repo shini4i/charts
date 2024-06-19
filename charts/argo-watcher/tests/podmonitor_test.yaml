@@ -1,0 +1,52 @@
+suite: test podmonitor
+templates:
+  - templates/podmonitor.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      podMonitor:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should be created if enabled
+    set:
+      podMonitor:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should set the provided labels
+    set:
+      podMonitor:
+        enabled: true
+        labels:
+          prometheus: main
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels
+          value:
+            prometheus: main
+
+  - it: should set the provided interval and scrapeTimeout
+    set:
+      podMonitor:
+        enabled: true
+        interval: 30
+        scrapeTimeout: 10
+    asserts:
+      - equal:
+          path: spec.podMetricsEndpoints[0].interval
+          value: 30
+      - equal:
+          path: spec.podMetricsEndpoints[0].scrapeTimeout
+          value: 10

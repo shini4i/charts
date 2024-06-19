@@ -1,0 +1,30 @@
+suite: test ssh-known-hosts-cm generation
+templates:
+  - templates/ssh-known-hosts-cm.yaml
+tests:
+  - it: should be created by default
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should not be created if external configmap was provided
+    set:
+      argo:
+        updater:
+          knownHostsConfigMap: externally-created-cm
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should contain extraKnownHosts
+    set:
+      argo:
+        updater:
+          extraKnownHosts:
+            - "gitlab.example.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArZfxUbZXuUy14X7QDDu74gx28fTfU4UwKt8L8Z/MY70y8fheBsd5eC9z8Njs6mnzU2F2J5Kb8RhYeFsS84XLbDGHU8fbB6uj1P1+swGyTgw6gY/m6Mhb9EmLFf5eAFJjB4j6LfZbzO9u1+YxE/YD+4qHgkZdL8qUEcdXYMRch9u+VZm9xCnMC79kIN76QjcQ9kxHVWjt/E/J11K96N7rD7I4a6fJwZTj18mHe9XB/TfAeA7XhjIX72Cm/5j3aOa/A2VPXg1tiyWs3qXUMoZ7vFms8WiOlqLZX3d9gJJxg60c2m1aIaSLh8y0ICmjLb6F1ybRmH/g=="
+    asserts:
+      - hasDocuments:
+          count: 1
+      - matchRegex:
+          path: data.ssh_known_hosts
+          pattern: "gitlab\\.example\\.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArZfxUbZXuUy14X7QDDu74gx28fTfU4UwKt8L8Z/MY70y8fheBsd5eC9z8Njs6mnzU2F2J5Kb8RhYeFsS84XLbDGHU8fbB6uj1P1\\+swGyTgw6gY/m6Mhb9EmLFf5eAFJjB4j6LfZbzO9u1\\+YxE/YD\\+4qHgkZdL8qUEcdXYMRch9u\\+VZm9xCnMC79kIN76QjcQ9kxHVWjt/E/J11K96N7rD7I4a6fJwZTj18mHe9XB/TfAeA7XhjIX72Cm/5j3aOa/A2VPXg1tiyWs3qXUMoZ7vFms8WiOlqLZX3d9gJJxg60c2m1aIaSLh8y0ICmjLb6F1ybRmH/g=="

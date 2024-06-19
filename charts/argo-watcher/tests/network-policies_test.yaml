@@ -1,0 +1,86 @@
+suite: test network policies
+templates:
+  - templates/network-policies.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create the default policies
+    set:
+      networkPolicies:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+      - documentIndex: 0
+        equal:
+          path: metadata.name
+          value: default-deny-ingress
+      - documentIndex: 0
+        equal:
+          path: spec.podSelector
+          value: {}
+      - documentIndex: 0
+        contains:
+          path: spec.policyTypes
+          content: Ingress
+      - documentIndex: 1
+        equal:
+          path: metadata.name
+          value: ingress-allow-self-namespace
+      - documentIndex: 1
+        equal:
+          path: spec.podSelector
+          value: {}
+      - documentIndex: 1
+        contains:
+          path: spec.policyTypes
+          content: Ingress
+      - documentIndex: 1
+        equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: NAMESPACE
+
+  - it: should generate a valid additional rules
+    set:
+      networkPolicies:
+        enabled: true
+        additionalRules:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: traefik
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/instance: traefik
+                app.kubernetes.io/name: traefik
+    asserts:
+      - hasDocuments:
+          count: 3
+      - documentIndex: 2
+        equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher
+      - documentIndex: 2
+        equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+      - documentIndex: 2
+        equal:
+          path: spec.ingress
+          value:
+            - from:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: traefik
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: traefik
+                      app.kubernetes.io/name: traefik
+              ports:
+                - protocol: TCP
+                  port: 8080
