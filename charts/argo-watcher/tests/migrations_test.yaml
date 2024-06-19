@@ -1,0 +1,33 @@
+suite: test migrations
+templates:
+  - templates/migrations.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should generate a valid migration Job
+    set:
+      image:
+        repository: ghcr.io/shini4i/argo-watcher
+        tag: demo
+      postgres:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.annotations
+          value:
+            "helm.sh/hook": pre-install,pre-upgrade
+            "helm.sh/hook-delete-policy": before-hook-creation
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: ghcr.io/shini4i/argo-watcher:demo
+      - equal:
+          path: spec.template.spec.initContainers[0].command
+          value:
+            - /bin/sh
+            - -c
+            - cp /db/migrations/* /migrations

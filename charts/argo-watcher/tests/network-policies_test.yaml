@@ -42,3 +42,45 @@ tests:
         equal:
           path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
           value: NAMESPACE
+
+  - it: should generate a valid additional rules
+    set:
+      networkPolicies:
+        enabled: true
+        additionalRules:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: traefik
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/instance: traefik
+                app.kubernetes.io/name: traefik
+    asserts:
+      - hasDocuments:
+          count: 3
+      - documentIndex: 2
+        equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher
+      - documentIndex: 2
+        equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+      - documentIndex: 2
+        equal:
+          path: spec.ingress
+          value:
+            - from:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: traefik
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: traefik
+                      app.kubernetes.io/name: traefik
+              ports:
+                - protocol: TCP
+                  port: 8080
