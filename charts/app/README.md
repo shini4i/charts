@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -23,6 +23,8 @@ A Helm chart for a simple app deployment
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | app.additionalVolumeMounts | list | `[]` | raw yaml definition of additional volume mounts (requires matching volume definition) |
+| app.args | list | `[]` | A primary container args |
+| app.command | list | `[]` | A primary container command override |
 | app.deployment | object | `{"maxSurge":1,"maxUnavailable":"25%","strategy":"RollingUpdate"}` | Deployment configuration (only used if kind is set to Deployment) |
 | app.env | list | `[]` | Environment variables to pass to main app container |
 | app.envFrom | list | `[]` | envFrom to pass to main app container |
