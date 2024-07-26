@@ -430,3 +430,50 @@ tests:
             requests:
               cpu: 100m
               memory: 128Mi
+
+  - it: should have command and not have args
+    set:
+      app:
+        command:
+          - /bin/sh
+          - -c
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh
+            - -c
+      - notExists:
+          path: spec.template.spec.containers[0].args
+
+  - it: should have args and not have command
+    set:
+      app:
+        args:
+          - echo "Hello, World!"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - echo "Hello, World!"
+      - notExists:
+          path: spec.template.spec.containers[0].command
+
+  - it: should have both command and args
+    set:
+      app:
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - echo "Hello, World!"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh
+            - -c
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - echo "Hello, World!"

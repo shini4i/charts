@@ -96,6 +96,15 @@ app:
       #    accessModes:
       #     - ReadWriteOnce
 
+  # -- A primary container command override
+  command: []
+    # - /bin/sh
+
+  # -- A primary container args
+  args: []
+    # - -c
+    # - echo "Hello, World!"
+
   # -- Deployment configuration (only used if kind is set to Deployment)
   deployment:
     strategy: RollingUpdate
