@@ -176,6 +176,8 @@ job:
   image:
     repository: curlimages/curl
     tag: 8.7.1
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
   command: ["curl", "https://ifconfig.me"]
   restartPolicy: Never
   backoffLimit: 1
