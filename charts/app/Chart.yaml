@@ -2,7 +2,7 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.1.7
+version: 0.1.8
 
 annotations:
   artifacthub.io/signKey: |
@@ -10,7 +10,7 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: added
-      description: support for command and args override
+      description: support for providing imagePullSecrets and pull policy for job
 
 maintainers:
   - name: Vadim Gedz
@@ -19,7 +19,7 @@ maintainers:
 
 dependencies:
   - name: common
-    version: v0.0.1
+    version: v0.0.3
     repository: https://shini4i.github.io/charts
   - name: network-policies
     version: 0.0.6

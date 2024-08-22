@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -15,7 +15,7 @@ A Helm chart for a simple app deployment
 | Repository | Name | Version |
 |------------|------|---------|
 | https://shini4i.github.io/charts/ | network-policies | 0.0.6 |
-| https://shini4i.github.io/charts | common | v0.0.1 |
+| https://shini4i.github.io/charts | common | v0.0.3 |
 
 ## Values
 
@@ -56,8 +56,10 @@ A Helm chart for a simple app deployment
 | job.enabled | bool | `false` |  |
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
+| job.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.image.repository | string | `"curlimages/curl"` |  |
 | job.image.tag | string | `"8.7.1"` |  |
+| job.imagePullSecrets | list | `[]` |  |
 | job.restartPolicy | string | `"Never"` |  |
 | keda.advanced | object | `{}` |  |
 | keda.enabled | bool | `false` |  |
