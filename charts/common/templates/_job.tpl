@@ -10,14 +10,14 @@ metadata:
 spec:
   template:
     spec:
+      {{- with .Values.job.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: job
           image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
           imagePullPolicy: {{ .Values.job.image.pullPolicy }}
-          {{- with .Values.job.imagePullSecrets }}
-          imagePullSecrets:
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
           command:
             {{- range .Values.job.command }}
             - {{ . | quote }}
