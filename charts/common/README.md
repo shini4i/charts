@@ -1,6 +1,6 @@
 # common
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
 A Helm chart library with some common templates
 
@@ -16,8 +16,10 @@ A Helm chart library with some common templates
 | job.command[1] | string | `"https://ifconfig.me"` |  |
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
+| job.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.image.repository | string | `"curlimages/curl"` |  |
 | job.image.tag | string | `"7.85.0"` |  |
+| job.imagePullSecrets | list | `[]` |  |
 | job.restartPolicy | string | `"Never"` |  |
 | keda.advanced | object | `{}` |  |
 | keda.fallback | object | `{}` |  |
