@@ -1770,6 +1770,22 @@ entries:
   common:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: move imagePullSecrets to a correct yaml level
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2024-08-22T15:12:09.299641189Z"
+    description: A Helm chart library with some common templates
+    digest: a342c25ac74381df8f2d7d4d4a3c8911512c95746d8ac94db2e0312fc944fa0c
+    name: common
+    type: library
+    urls:
+    - https://github.com/shini4i/charts/releases/download/common-0.0.4/common-0.0.4.tgz
+    version: 0.0.4
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: support for providing imagePullSecrets and pull policy for job
       artifacthub.io/signKey: |
@@ -2037,4 +2053,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-08-22T15:05:49.748324299Z"
+generated: "2024-08-22T15:12:09.299886689Z"
