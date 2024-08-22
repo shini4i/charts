@@ -9,8 +9,8 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: support for providing imagePullSecrets and pull policy for job
+    - kind: fixed
+      description: move imagePullSecrets in job to a correct yaml level
 
 maintainers:
   - name: Vadim Gedz
@@ -19,7 +19,7 @@ maintainers:
 
 dependencies:
   - name: common
-    version: v0.0.3
+    version: v0.0.4
     repository: https://shini4i.github.io/charts
   - name: network-policies
     version: 0.0.6

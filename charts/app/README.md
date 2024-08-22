@@ -15,7 +15,7 @@ A Helm chart for a simple app deployment
 | Repository | Name | Version |
 |------------|------|---------|
 | https://shini4i.github.io/charts/ | network-policies | 0.0.6 |
-| https://shini4i.github.io/charts | common | v0.0.3 |
+| https://shini4i.github.io/charts | common | v0.0.4 |
 
 ## Values
 
