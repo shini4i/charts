@@ -2,3 +2,4 @@
 charts/**/charts
 **/__snapshot__
 **/*.tgz
+.codebuddy

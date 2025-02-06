@@ -73,6 +73,8 @@ postgres:
   user: ""
   # -- Pre-created secret with DB_PASSWORD variable
   secretName: ""
+  # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
+  secretKey: ""
   migration:
     image:
       repository: migrate/migrate

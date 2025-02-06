@@ -59,3 +59,18 @@ tests:
           value:
             - name: migrations
               emptyDir: {}
+  - it: should expose DB_PASSWORD from a specific key in a specific secret
+    set:
+      postgres:
+        enabled: true
+        secretName: auto-generated-secret
+        secretKey: password
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: auto-generated-secret

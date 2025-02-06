@@ -45,9 +45,18 @@ spec:
               value: {{ .Values.postgres.name }}
             - name: DB_USER
               value: {{ .Values.postgres.user }}
+            {{- if .Values.postgres.secretKey }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secretName }}
+                  key: {{ .Values.postgres.secretKey }}
+            {{- end }}
+          {{- if not .Values.postgres.secretKey }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
+          {{- end }}
           volumeMounts:
             - mountPath: /migrations
               name: migrations
