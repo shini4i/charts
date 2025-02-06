@@ -5,13 +5,13 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.7.2
+version: 0.7.3
 keywords:
 - argocd
 - gitops
 - automation
 kubeVersion: '>=1.21.0-0'
-appVersion: v0.9.0
+appVersion: v0.9.1
 maintainers:
 - name: Vadim Gedz
   email: vadims@linux-tech.io
@@ -23,4 +23,4 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: changed
-      description: Update argo-watcher app version from v0.8.4 to v0.9.0
+      description: Update argo-watcher app version from v0.9.0 to v0.9.1
