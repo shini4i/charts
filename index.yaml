@@ -355,6 +355,36 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: Support for overriding DB_PASSWORD key
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.9.1
+    created: "2025-02-06T14:09:57.684856823Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: ef40355a16d8a535d7382252918b0b2a163d0ea05d496679e4e467a484c966e7
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: vadims@linux-tech.io
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-0.8.0/argo-watcher-0.8.0.tgz
+    version: 0.8.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Update argo-watcher app version from v0.9.0 to v0.9.1
       artifacthub.io/signKey: |
@@ -2110,4 +2140,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2024-11-11T17:56:40.144818916Z"
+generated: "2025-02-06T14:09:57.685233594Z"
