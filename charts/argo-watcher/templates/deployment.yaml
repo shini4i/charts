@@ -86,6 +86,13 @@ spec:
               value: {{ .Values.postgres.name }}
             - name: DB_USER
               value: {{ .Values.postgres.user }}
+            {{- if .Values.postgres.secretKey }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secretName }}
+                  key: {{ .Values.postgres.secretKey }}
+            {{- end }}
             {{- end }}
           {{- range .Values.extraEnvs }}
             - name: {{ .name }}
@@ -94,7 +101,7 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.argo.secretName }}
-            {{- if .Values.postgres.enabled }}
+            {{- if and (.Values.postgres.enabled) (not .Values.postgres.secretKey) }}
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
             {{- end }}

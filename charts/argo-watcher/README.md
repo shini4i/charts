@@ -89,6 +89,7 @@ Kubernetes: `>=1.21.0-0`
 | postgres.migration.securityContext.runAsUser | int | `1000` |  |
 | postgres.name | string | `""` |  |
 | postgres.port | int | `5432` |  |
+| postgres.secretKey | string | `""` | Support for an optional key override (this specific key would be exposed to DB_PASSWORD) |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
 | postgres.user | string | `""` |  |
 | replicaCount | int | `1` |  |
