@@ -79,3 +79,83 @@ tests:
       - equal:
           path: spec.template.spec.restartPolicy
           value: Always
+
+  - it: should set nodeSelector, tolerations and affinity
+    set:
+      job:
+        enabled: true
+        nodeSelector:
+          example: example1
+        tolerations:
+          - key: example
+            operator: Equal
+            value: example1
+            effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: example
+                      operator: In
+                      values:
+                        - example1
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            example: example1
+      - equal:
+          path: spec.template.spec.tolerations[0]
+          value:
+            key: example
+            operator: Equal
+            value: example1
+            effect: NoSchedule
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: example
+                        operator: In
+                        values:
+                          - example1
+
+  - it: should set both securityContext and podSecurityContext
+    set:
+      job:
+        enabled: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ "ALL" ]
+        podSecurityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ "ALL" ]
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+
+  - it: should override ServiceAccount name
+    set:
+      job:
+        enabled: true
+        serviceAccountName: example-service-account
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: example-service-account
