@@ -75,7 +75,7 @@ ingressRoute:
 middleware:
   enabled: false
   labels: {}
-  sourceRange: {}
+  sourceRange: []
   existingMiddlewares: {}
 
 app:
@@ -183,6 +183,24 @@ job:
   backoffLimit: 1
   annotations:
     "helm.sh/hook": pre-upgrade
+  # -- An override for the job service account
+  serviceAccountName: ""
+  # -- NodeSelector to use for the job pod
+  nodeSelector: {}
+  # -- Tolerations to use for the job pod
+  tolerations: []
+  # -- Affinity to use for the job pod
+  affinity: {}
+  # -- securityContext to use for the job pod
+  securityContext: {}
+  #  allowPrivilegeEscalation: false
+  #  capabilities:
+  #    drop: [ "ALL" ]
+  # -- podSecurityContext to use for the job pod
+  podSecurityContext: {}
+  #  runAsUser: 1000
+  #  runAsGroup: 1000
+  #  fsGroup: 1000
   # -- Environment variables to pass to job container
   env: []
   # - name: "ENV_NAME"
