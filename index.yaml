@@ -3,6 +3,32 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: removed common chart dependency
+        - kind: added
+          description: added support for Job additional configuration
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2025-04-15T18:01:40.274945767Z"
+    dependencies:
+    - name: network-policies
+      repository: https://shini4i.github.io/charts/
+      version: 0.0.6
+    description: A Helm chart for a simple app deployment
+    digest: 1e8b8eafcff52499297b3e05cf66eeee25b8c30d22141a8016d0916a5a77ccf5
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.2.0/app-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: fixed
           description: move imagePullSecrets in job to a correct yaml level
       artifacthub.io/signKey: |
@@ -2140,4 +2166,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-06T14:09:57.685233594Z"
+generated: "2025-04-15T18:01:40.275215761Z"
