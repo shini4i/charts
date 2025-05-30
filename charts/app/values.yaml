@@ -80,7 +80,7 @@ middleware:
 
 app:
   # -- Allowed values: Deployment, StatefulSet or Rollout (argo-rollouts)
-  kind: Rollout
+  kind: Deployment
 
   # -- StatefulSet configuration (only used if kind is set to StatefulSet)
   statefulSet:
@@ -105,16 +105,33 @@ app:
     # - -c
     # - echo "Hello, World!"
 
-  rollout:
-    strategy:
-      canary:
-        steps:
-          - setWeight: 20
-          - pause: { duration: 40s }
-          - setWeight: 40
-          - pause: { duration: 20s }
-          - setWeight: 60
-          - pause: { duration: 20s }
+  # -- A raw definition of Argo Rollouts configuration
+  rollout: []
+  #  strategy:
+  #    canary:
+  #      canaryService: whoami-canary
+  #      stableService: whoami
+  #      canaryMetadata:
+  #        annotations:
+  #          role: canary
+  #        labels:
+  #          role: canary
+  #      stableMetadata:
+  #        annotations:
+  #          role: stable
+  #        labels:
+  #          role: stable
+  #      steps:
+  #        - setWeight: 20
+  #        - pause: { duration: 300s }
+  #        - setWeight: 50
+  #        - pause: { duration: 300s }
+  #      trafficRouting:
+  #        nginx:
+  #          stableIngress: whoami
+  #          additionalIngressAnnotations:
+  #            nginx.ingress.kubernetes.io/canary-by-header: x-canary
+  #            nginx.ingress.kubernetes.io/canary-by-header-value: "true"
 
   # -- Deployment configuration (only used if kind is set to Deployment)
   deployment:
