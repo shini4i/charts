@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: {{ ternary "argoproj.io/v1alpha1" "apps/v1" (eq .Values.app.kind "Rollout") }}
 kind: {{ .Values.app.kind }}
 metadata:
   name: {{ include "app.fullname" . }}
@@ -11,13 +11,17 @@ spec:
   selector:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
-  {{- if eq .Values.app.kind "Deployment" }}
+  {{- if has .Values.app.kind (list "Deployment" "Rollout") }}
   strategy:
+    {{- if eq .Values.app.kind "Deployment" }}
     type: {{ .Values.app.deployment.strategy }}
     {{- if eq .Values.app.deployment.strategy "RollingUpdate" }}
     rollingUpdate:
       maxUnavailable: {{ .Values.app.deployment.maxUnavailable }}
       maxSurge: {{ .Values.app.deployment.maxSurge }}
+    {{- end }}
+    {{- else if eq .Values.app.kind "Rollout" }}
+    {{- .Values.app.rollout.strategy | toYaml | nindent 4 }}
     {{- end }}
   {{- else if eq .Values.app.kind "StatefulSet" }}
   serviceName: {{ include "app.fullname" . }}

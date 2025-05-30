@@ -79,8 +79,8 @@ middleware:
   existingMiddlewares: {}
 
 app:
-  # -- Allowed values: Deployment or StatefulSet
-  kind: Deployment
+  # -- Allowed values: Deployment, StatefulSet or Rollout (argo-rollouts)
+  kind: Rollout
 
   # -- StatefulSet configuration (only used if kind is set to StatefulSet)
   statefulSet:
@@ -104,6 +104,17 @@ app:
   args: []
     # - -c
     # - echo "Hello, World!"
+
+  rollout:
+    strategy:
+      canary:
+        steps:
+          - setWeight: 20
+          - pause: { duration: 40s }
+          - setWeight: 40
+          - pause: { duration: 20s }
+          - setWeight: 60
+          - pause: { duration: 20s }
 
   # -- Deployment configuration (only used if kind is set to Deployment)
   deployment:
