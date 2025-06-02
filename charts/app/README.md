@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -43,7 +43,7 @@ A Helm chart for a simple app deployment
 | image.repository | string | `"traefik/whoami"` |  |
 | image.tag | string | `"v1.10.2"` |  |
 | imagePullSecrets | list | `[]` |  |
-| ingress | object | `{"annotations":{},"className":"","enabled":false,"exposedPort":80,"hosts":[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Classical ingress definition |
+| ingress | object | `{"annotations":{},"className":"","enabled":false,"exposedPort":80,"hosts":[],"tls":[]}` | Classical ingress definition |
 | ingress.exposedPort | int | `80` | Port to use with ingress |
 | ingressRoute | object | `{"annotations":{},"enabled":false,"entryPoint":"websecure","exposedPort":80,"host":"example.com","labels":{},"tlsSecret":"example-com-tls"}` | Traefik v2 ingressRoute definition |
 | ingressRoute.exposedPort | int | `80` | Port to use with ingressRoute |

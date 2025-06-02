@@ -2,7 +2,7 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.2.0
+version: 0.2.1
 
 annotations:
   artifacthub.io/signKey: |
@@ -10,9 +10,9 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: changed
-      description: removed common chart dependency
+      description: got rid of heavily outdated kubernetes support in Ingress
     - kind: added
-      description: added support for Job additional configuration
+      description: support for specifying additional services in Ingress
 
 maintainers:
   - name: Vadim Gedz

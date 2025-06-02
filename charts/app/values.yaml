@@ -50,11 +50,16 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   # -- Port to use with ingress
   exposedPort: 80
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  hosts: []
+  #  - host: chart-example.local
+  #    paths:
+  #      - path: /
+  #        pathType: ImplementationSpecific
+  #      - path: /oauth2
+  #        pathType: ImplementationSpecific
+  #        backend:
+  #          serviceName: oauth2-proxy
+  #          servicePort: 8080
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
