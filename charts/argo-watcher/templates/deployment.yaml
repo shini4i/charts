@@ -94,10 +94,10 @@ spec:
                   key: {{ .Values.postgres.secretKey }}
             {{- end }}
             {{- end }}
-          {{- range .Values.extraEnvs }}
+            {{- range .Values.extraEnvs }}
             - name: {{ .name }}
               value: {{ .value | quote }}
-          {{- end }}
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ .Values.argo.secretName }}
@@ -121,8 +121,13 @@ spec:
             timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
             initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
           {{- end }}
-          {{- if .Values.argo.updater.sshSecretName }}
+          {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
           volumeMounts:
+          {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+          {{- if .Values.argo.updater.sshSecretName }}
             - name: ssh-key
               mountPath: /tmp/id_rsa
               subPath: {{ .Values.argo.updater.sshKey }}
@@ -132,10 +137,22 @@ spec:
               subPath: {{ .Values.argo.updater.knownHostsKey }}
               readOnly: true
           {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if .Values.argo.updater.sshSecretName }}
+      {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
       volumes:
+      {{- if .Values.persistence.enabled }}
+        - name: data
+          {{- if .Values.persistence.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "argo-watcher.fullname" . }}
+          {{- end }}
+      {{- end }}
+      {{- if .Values.argo.updater.sshSecretName }}
         - name: ssh-key
           secret:
             secretName: {{ .Values.argo.updater.sshSecretName }}
@@ -148,6 +165,7 @@ spec:
             items:
               - key: {{ .Values.argo.updater.knownHostsKey }}
                 path: {{ .Values.argo.updater.knownHostsKey }}
+      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

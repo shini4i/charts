@@ -183,6 +183,24 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+persistence:
+  # -- Enable persistence using a Persistent Volume Claim
+  enabled: false
+  # -- Annotations to add to the persistent volume claim
+  annotations: {}
+  # -- The name of an existing persistent volume claim to use
+  existingClaim: ""
+  # -- The storage class to use for the persistent volume claim.
+  # If undefined or null, the default storage class will be used.
+  storageClassName: ""
+  # -- The access modes for the persistent volume claim
+  accessModes:
+    - ReadWriteOnce
+  # -- The size of the persistent volume claim
+  size: 1Gi
+  # -- The path to mount the persistent volume in the container
+  mountPath: "/data"
+
 nodeSelector: {}
 
 tolerations: []

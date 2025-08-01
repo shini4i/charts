@@ -5,7 +5,7 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.8.0
+version: 0.8.1
 keywords:
 - argocd
 - gitops
@@ -14,7 +14,7 @@ kubeVersion: '>=1.21.0-0'
 appVersion: v0.9.1
 maintainers:
 - name: Vadim Gedz
-  email: vadims@linux-tech.io
+  email: github@shini4i.dev
   url: https://github.com/shini4i
 icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 annotations:
@@ -23,4 +23,4 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: added
-      description: Support for overriding DB_PASSWORD key
+      description: Support for PVC
