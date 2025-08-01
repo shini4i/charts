@@ -149,3 +149,123 @@ tests:
               secretKeyRef:
                 key: password
                 name: auto-generated-secret
+
+  - it: should not have volumes or volumeMounts by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.volumes
+      - isNull:
+          path: spec.template.spec.containers[0].volumeMounts
+
+  - it: should have persistence volume and volumeMount when enabled
+    set:
+      persistence:
+        enabled: true
+        mountPath: /test-data
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - name: data
+              mountPath: /test-data
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: data
+              persistentVolumeClaim:
+                claimName: RELEASE-NAME-argo-watcher
+
+  - it: should use existingClaim for persistence volume
+    set:
+      persistence:
+        enabled: true
+        existingClaim: my-pvc
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: data
+              persistentVolumeClaim:
+                claimName: my-pvc
+
+  - it: should have ssh volumes and volumeMounts when enabled
+    set:
+      argo:
+        updater:
+          sshSecretName: my-ssh-secret
+          sshKey: id_rsa
+          knownHostsKey: known_hosts
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ssh-key
+            mountPath: /tmp/id_rsa
+            subPath: id_rsa
+            readOnly: true
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: known-hosts
+            mountPath: /tmp/ssh_known_hosts
+            subPath: known_hosts
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ssh-key
+            secret:
+              secretName: my-ssh-secret
+              items:
+                - key: id_rsa
+                  path: id_rsa
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: known-hosts
+            configMap:
+              name: argo-watcher-ssh-known-hosts
+              items:
+                - key: known_hosts
+                  path: known_hosts
+
+  - it: should have all volumes and volumeMounts when everything is enabled
+    set:
+      persistence:
+        enabled: true
+        mountPath: /data
+      argo:
+        updater:
+          sshSecretName: my-ssh-secret
+          sshKey: id_rsa
+          knownHostsKey: known_hosts
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ssh-key
+            mountPath: /tmp/id_rsa
+            subPath: id_rsa
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-argo-watcher
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ssh-key
+            secret:
+              secretName: my-ssh-secret
+              items:
+                - key: id_rsa
+                  path: id_rsa
