@@ -14,7 +14,7 @@ kubeVersion: '>=1.21.0-0'
 appVersion: v0.9.1
 maintainers:
 - name: Vadim Gedz
-  email: vadims@linux-tech.io
+  email: github@shini4i.dev
   url: https://github.com/shini4i
 icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 annotations:
