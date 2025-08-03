@@ -30,10 +30,10 @@ mongod:
       size: 5Gi
       accessModes:
         - ReadWriteOnce
-      storageClassName: ""
+      storageClassName: gp2
     logs:
       size: 1Gi
-      storageClassName: ""
+      storageClassName: gp2
       accessModes:
         - ReadWriteOnce
   resources:
