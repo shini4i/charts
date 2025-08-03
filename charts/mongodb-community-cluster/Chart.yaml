@@ -2,7 +2,7 @@ apiVersion: v2
 name: mongodb-community-cluster
 description: A Helm chart for deploying MongoDBCommunity cluster (community-operator)
 type: application
-version: 0.2.1
+version: 0.2.2
 appVersion: 6.0.2
 icon: https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg
 
