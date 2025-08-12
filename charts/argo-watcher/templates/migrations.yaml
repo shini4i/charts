@@ -41,9 +41,6 @@ spec:
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
           {{- end }}
-          volumeMounts:
-            - mountPath: /migrations
-              name: migrations
           securityContext:
             {{- toYaml .Values.migration.securityContext | nindent 12 }}
           resources:
