@@ -49,15 +49,15 @@ spec:
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
-            {{- if .Values.argo.updater.sshSecretName }}
+            {{- if .Values.updater.sshSecretName }}
             - name: SSH_KEY_PATH
               value: "/tmp/id_rsa"
             - name: SSH_KNOWN_HOSTS
               value: "/tmp/ssh_known_hosts"
             - name: SSH_COMMIT_USER
-              value: {{ .Values.argo.updater.commitAuthor }}
+              value: {{ .Values.updater.commitAuthor }}
             - name: SSH_COMMIT_MAIL
-              value: {{ .Values.argo.updater.commitEmail }}
+              value: {{ .Values.updater.commitEmail }}
             {{- end }}
             {{- if .Values.argo.urlAlias }}
             - name: ARGO_URL_ALIAS
@@ -121,26 +121,26 @@ spec:
             timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
             initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
           {{- end }}
-          {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
+          {{- if or .Values.persistence.enabled .Values.updater.sshSecretName }}
           volumeMounts:
           {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
           {{- end }}
-          {{- if .Values.argo.updater.sshSecretName }}
+          {{- if .Values.updater.sshSecretName }}
             - name: ssh-key
               mountPath: /tmp/id_rsa
-              subPath: {{ .Values.argo.updater.sshKey }}
+              subPath: {{ .Values.updater.sshKey }}
               readOnly: true
             - name: known-hosts
               mountPath: /tmp/ssh_known_hosts
-              subPath: {{ .Values.argo.updater.knownHostsKey }}
+              subPath: {{ .Values.updater.knownHostsKey }}
               readOnly: true
           {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
+      {{- if or .Values.persistence.enabled .Values.updater.sshSecretName }}
       volumes:
       {{- if .Values.persistence.enabled }}
         - name: data
@@ -152,19 +152,19 @@ spec:
             claimName: {{ include "argo-watcher.fullname" . }}
           {{- end }}
       {{- end }}
-      {{- if .Values.argo.updater.sshSecretName }}
+      {{- if .Values.updater.sshSecretName }}
         - name: ssh-key
           secret:
-            secretName: {{ .Values.argo.updater.sshSecretName }}
+            secretName: {{ .Values.updater.sshSecretName }}
             items:
-              - key: {{ .Values.argo.updater.sshKey }}
-                path: {{ .Values.argo.updater.sshKey }}
+              - key: {{ .Values.updater.sshKey }}
+                path: {{ .Values.updater.sshKey }}
         - name: known-hosts
           configMap:
-            name: {{ .Values.argo.updater.knownHostsConfigMap | default "argo-watcher-ssh-known-hosts" }}
+            name: {{ .Values.updater.knownHostsConfigMap | default "argo-watcher-ssh-known-hosts" }}
             items:
-              - key: {{ .Values.argo.updater.knownHostsKey }}
-                path: {{ .Values.argo.updater.knownHostsKey }}
+              - key: {{ .Values.updater.knownHostsKey }}
+                path: {{ .Values.updater.knownHostsKey }}
       {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
