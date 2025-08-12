@@ -49,5 +49,5 @@ spec:
           resources:
             {{- toYaml .Values.migration.resources | nindent 12 }}
       restartPolicy: {{ .Values.migration.restartPolicy }}
-  backoffLimit: {{ .Values.postgres.migration.backoffLimit }}
+  backoffLimit: {{ .Values.migration.backoffLimit }}
 {{- end }}
