@@ -12,14 +12,14 @@ spec:
   template:
     spec:
       securityContext:
-        {{- toYaml .Values.postgres.migration.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.migration.podSecurityContext | nindent 8 }}
       containers:
         - name: migration
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - /argo-watcher
-            - -migrate
+            - --migrate
           env:
             - name: DB_HOST
               value: {{ .Values.postgres.host }}
@@ -45,12 +45,9 @@ spec:
             - mountPath: /migrations
               name: migrations
           securityContext:
-            {{- toYaml .Values.postgres.migration.securityContext | nindent 12 }}
+            {{- toYaml .Values.migration.securityContext | nindent 12 }}
           resources:
-            {{- toYaml .Values.postgres.migration.resources | nindent 12 }}
-      restartPolicy: {{ .Values.postgres.migration.restartPolicy }}
-      volumes:
-        - name: migrations
-          emptyDir: {}
+            {{- toYaml .Values.migration.resources | nindent 12 }}
+      restartPolicy: {{ .Values.migration.restartPolicy }}
   backoffLimit: {{ .Values.postgres.migration.backoffLimit }}
 {{- end }}

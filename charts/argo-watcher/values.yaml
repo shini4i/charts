@@ -75,17 +75,29 @@ postgres:
   secretName: ""
   # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
   secretKey: ""
-  migration:
-    restartPolicy: OnFailure
-    backoffLimit: 5
 
-    podSecurityContext:
-      seccompProfile:
-        type: RuntimeDefault
-      runAsNonRoot: true
+migration:
+  restartPolicy: OnFailure
+  backoffLimit: 5
 
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+    runAsNonRoot: true
+
+  resources: {}
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  initContainer:
     resources: {}
-
     securityContext:
       readOnlyRootFilesystem: true
       runAsNonRoot: true
@@ -94,17 +106,6 @@ postgres:
       capabilities:
         drop:
           - ALL
-
-    initContainer:
-      resources: {}
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-        runAsUser: 1000
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
 
 serviceAccount:
   # Specifies whether a service account should be created
