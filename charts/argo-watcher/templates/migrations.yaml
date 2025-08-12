@@ -13,29 +13,13 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.postgres.migration.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: copy-migration-files
+      containers:
+        - name: migration
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /bin/sh
-            - -c
-            - cp /db/migrations/* /migrations
-          volumeMounts:
-            - mountPath: /migrations
-              name: migrations
-          securityContext:
-            {{- toYaml .Values.postgres.migration.initContainer.securityContext | nindent 12 }}
-          resources:
-            {{- toYaml .Values.postgres.migration.initContainer.resources | nindent 12 }}
-      containers:
-        - name: migration
-          image: {{ .Values.postgres.migration.image.repository }}:{{ .Values.postgres.migration.image.tag }}
-          imagePullPolicy: {{ .Values.postgres.migration.image.pullPolicy }}
-          command:
-            - /bin/sh
-            - -c
-            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+            - /argo-watcher
+            - -migrate
           env:
             - name: DB_HOST
               value: {{ .Values.postgres.host }}

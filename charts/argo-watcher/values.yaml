@@ -76,10 +76,6 @@ postgres:
   # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
   secretKey: ""
   migration:
-    image:
-      repository: migrate/migrate
-      tag: "v4.17.0"
-      pullPolicy: IfNotPresent
     restartPolicy: OnFailure
     backoffLimit: 5
 
