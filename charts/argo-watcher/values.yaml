@@ -175,8 +175,6 @@ persistence:
   enabled: true
   # -- Annotations to add to the persistent volume claim
   annotations: {}
-  # -- The name of an existing persistent volume claim to use
-  existingClaim: ""
   # -- The storage class to use for the persistent volume claim.
   # If undefined or null, the default storage class will be used.
   storageClassName: ""
