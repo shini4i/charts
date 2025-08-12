@@ -172,7 +172,7 @@ resources: {}
 
 persistence:
   # -- Enable persistence using a Persistent Volume Claim
-  enabled: false
+  enabled: true
   # -- Annotations to add to the persistent volume claim
   annotations: {}
   # -- The name of an existing persistent volume claim to use
