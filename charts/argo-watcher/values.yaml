@@ -114,8 +114,8 @@ podMonitor:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+   fsGroup: 65532
 
 securityContext:
   seccompProfile:
@@ -125,7 +125,7 @@ securityContext:
      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 65532
   allowPrivilegeEscalation: false
 
 service:
