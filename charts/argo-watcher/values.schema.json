@@ -68,7 +68,7 @@
     },
     "logLevel": {
       "type": "string",
-      "enum": ["debug", "info", "warn", "error"]
+      "enum": ["debug", "info", "warn", "error", "DEBUG", "INFO", "WARN", "ERROR"]
     },
     "argo": {
       "type": "object",
