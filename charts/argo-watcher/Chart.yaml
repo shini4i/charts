@@ -22,5 +22,23 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: Support for PVC
+    - kind: changed
+      description: Migrated from Deployment to StatefulSet with volumeClaimTemplates
+    - kind: changed
+      description: Simplified migration Job to use main image with --migrate flag
+    - kind: changed
+      description: Moved updater config from argo.updater to top-level updater key
+    - kind: fixed
+      description: Fixed empty secretRef rendering when argo.secretName is not set
+    - kind: fixed
+      description: Fixed storageClassName field mismatch in volumeClaimTemplates
+    - kind: fixed
+      description: ssh-known-hosts ConfigMap now only created when updater is enabled
+    - kind: fixed
+      description: Network policies scoped to release pods instead of entire namespace
+    - kind: fixed
+      description: Network policy names prefixed with release name to avoid conflicts
+    - kind: fixed
+      description: Added serviceAccountName and imagePullSecrets to migration Job
+    - kind: fixed
+      description: PodMonitor now includes standard chart labels

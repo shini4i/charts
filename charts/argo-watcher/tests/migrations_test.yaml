@@ -68,6 +68,9 @@ tests:
       - equal:
           path: spec.template.spec.restartPolicy
           value: OnFailure
+      - matchRegex:
+          path: spec.template.spec.serviceAccountName
+          pattern: ".*argo-watcher"
 
   - it: should expose DB_PASSWORD from a specific key in a specific secret
     set:
@@ -117,3 +120,15 @@ tests:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
+
+  - it: should use imagePullSecrets when provided
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+      imagePullSecrets:
+        - name: regcred
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred

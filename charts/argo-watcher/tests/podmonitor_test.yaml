@@ -15,15 +15,21 @@ tests:
       - hasDocuments:
           count: 0
 
-  - it: should be created if enabled
+  - it: should be created if enabled with standard labels
     set:
       podMonitor:
         enabled: true
     asserts:
       - hasDocuments:
           count: 1
+      - isSubset:
+          path: metadata.labels
+          content:
+            app.kubernetes.io/name: argo-watcher
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
 
-  - it: should set the provided labels
+  - it: should merge user labels with standard labels
     set:
       podMonitor:
         enabled: true
@@ -32,10 +38,15 @@ tests:
     asserts:
       - hasDocuments:
           count: 1
-      - equal:
+      - isSubset:
           path: metadata.labels
-          value:
+          content:
             prometheus: main
+      - isSubset:
+          path: metadata.labels
+          content:
+            app.kubernetes.io/name: argo-watcher
+            app.kubernetes.io/instance: RELEASE-NAME
 
   - it: should set the provided interval and scrapeTimeout
     set:
