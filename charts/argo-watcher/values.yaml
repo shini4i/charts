@@ -177,7 +177,7 @@ persistence:
   annotations: {}
   # -- The storage class to use for the persistent volume claim.
   # If undefined or null, the default storage class will be used.
-  storageClassName: ""
+  # storageClassName: ""
   # -- The access modes for the persistent volume claim
   accessModes:
     - ReadWriteOnce

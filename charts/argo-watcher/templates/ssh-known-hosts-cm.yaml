@@ -1,4 +1,4 @@
-{{- if eq .Values.updater.knownHostsConfigMap "" }}
+{{- if and .Values.updater.sshSecretName (eq .Values.updater.knownHostsConfigMap "") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

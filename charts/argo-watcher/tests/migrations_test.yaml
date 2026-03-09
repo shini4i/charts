@@ -14,51 +14,61 @@ tests:
         tag: demo
       postgres:
         enabled: true
-        migration:
-          image:
-            repository: migration
-            tag: demo
+        host: db-host
+        port: 5432
+        name: mydb
+        user: myuser
+        secretName: db-secret
     asserts:
       - hasDocuments:
           count: 1
+      - isKind:
+          of: Job
       - equal:
           path: metadata.annotations
           value:
             "helm.sh/hook": pre-install,pre-upgrade
             "helm.sh/hook-delete-policy": before-hook-creation
       - equal:
-          path: spec.template.spec.initContainers[0].image
-          value: ghcr.io/shini4i/argo-watcher:demo
-      - equal:
-          path: spec.template.spec.initContainers[0].command
-          value:
-            - /bin/sh
-            - -c
-            - cp /db/migrations/* /migrations
-      - equal:
-          path: spec.template.spec.initContainers[0].volumeMounts
-          value:
-            - mountPath: /migrations
-              name: migrations
-      - equal:
           path: spec.template.spec.containers[0].image
-          value: migration:demo
+          value: ghcr.io/shini4i/argo-watcher:demo
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - /bin/sh
-            - -c
-            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+            - /usr/local/bin/argo-watcher
+            - --migrate
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_HOST
+            value: db-host
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_PORT
+            value: "5432"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_NAME
+            value: mydb
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_USER
+            value: myuser
       - equal:
-          path: spec.template.spec.containers[0].volumeMounts
+          path: spec.template.spec.containers[0].envFrom
           value:
-            - mountPath: /migrations
-              name: migrations
+            - secretRef:
+                name: db-secret
       - equal:
-          path: spec.template.spec.volumes
-          value:
-            - name: migrations
-              emptyDir: {}
+          path: spec.backoffLimit
+          value: 5
+      - equal:
+          path: spec.template.spec.restartPolicy
+          value: OnFailure
+
   - it: should expose DB_PASSWORD from a specific key in a specific secret
     set:
       postgres:
@@ -74,3 +84,36 @@ tests:
               secretKeyRef:
                 key: password
                 name: auto-generated-secret
+
+  - it: should not use envFrom when secretKey is provided
+    set:
+      postgres:
+        enabled: true
+        secretName: auto-generated-secret
+        secretKey: password
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].envFrom
+
+  - it: should apply pod and container security contexts
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000

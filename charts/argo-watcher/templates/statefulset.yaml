@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "argo-watcher.fullname" . }}
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistory }}
   selector:
@@ -98,13 +99,17 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+          {{- if or .Values.argo.secretName (and .Values.postgres.enabled (not .Values.postgres.secretKey)) }}
           envFrom:
+            {{- if .Values.argo.secretName }}
             - secretRef:
                 name: {{ .Values.argo.secretName }}
+            {{- end }}
             {{- if and (.Values.postgres.enabled) (not .Values.postgres.secretKey) }}
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
             {{- end }}
+          {{- end }}
           {{- if .Values.healthChecks.enabled }}
           livenessProbe:
             httpGet:
@@ -171,6 +176,10 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: data
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       spec:
         {{- with .Values.persistence.accessModes }}
         accessModes:
@@ -179,7 +188,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- if .Values.persistence.storageClassName }}
+        storageClassName: {{ .Values.persistence.storageClassName }}
         {{- end }}
   {{- end }}
