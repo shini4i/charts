@@ -5,7 +5,7 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 0.8.1
+version: 1.0.0
 keywords:
 - argocd
 - gitops
@@ -33,6 +33,8 @@ annotations:
     - kind: changed
       description: Renamed container from generic 'app' to chart name
     - kind: changed
+      description: Changed persistence.enabled default from false to true
+    - kind: changed
       description: Replaced default scaffold NOTES.txt with argo-watcher-specific output
     - kind: added
       description: Added valueFrom support for extraEnvs
@@ -46,6 +48,18 @@ annotations:
       description: Added automountServiceAccountToken control on ServiceAccount
     - kind: added
       description: Added terminationGracePeriodSeconds support
+    - kind: removed
+      description: Removed healthChecks values key (replaced by livenessProbe, readinessProbe, startupProbe)
+    - kind: removed
+      description: Removed persistence.existingClaim (StatefulSet manages PVCs via volumeClaimTemplates)
+    - kind: removed
+      description: Removed separate migrate image and initContainer from migration Job
+    - kind: security
+      description: Changed default runAsUser from 1000 to 65532 and set podSecurityContext.fsGroup
+    - kind: security
+      description: Added securityContext to test-connection pod for restricted cluster compatibility
+    - kind: security
+      description: Pinned busybox image version in test-connection pod
     - kind: fixed
       description: Fixed empty secretRef rendering when argo.secretName is not set
     - kind: fixed
@@ -61,9 +75,7 @@ annotations:
     - kind: fixed
       description: PodMonitor now includes standard chart labels
     - kind: fixed
-      description: Pinned busybox image version in test-connection pod
-    - kind: fixed
-      description: Added securityContext to test-connection pod for restricted cluster compatibility
+      description: Fixed logLevel schema to accept both lowercase and uppercase values
     - kind: fixed
       description: Fixed inconsistent YAML indentation in values.yaml
     - kind: fixed
