@@ -99,16 +99,16 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-          {{- if or .Values.argo.secretName (and .Values.postgres.enabled (not .Values.postgres.secretKey)) }}
+          {{- $envFrom := list }}
+          {{- if .Values.argo.secretName }}
+          {{- $envFrom = append $envFrom (dict "secretRef" (dict "name" .Values.argo.secretName)) }}
+          {{- end }}
+          {{- if and .Values.postgres.enabled (not .Values.postgres.secretKey) }}
+          {{- $envFrom = append $envFrom (dict "secretRef" (dict "name" .Values.postgres.secretName)) }}
+          {{- end }}
+          {{- with $envFrom }}
           envFrom:
-            {{- if .Values.argo.secretName }}
-            - secretRef:
-                name: {{ .Values.argo.secretName }}
-            {{- end }}
-            {{- if and (.Values.postgres.enabled) (not .Values.postgres.secretKey) }}
-            - secretRef:
-                name: {{ .Values.postgres.secretName }}
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- if .Values.healthChecks.enabled }}
           livenessProbe:
