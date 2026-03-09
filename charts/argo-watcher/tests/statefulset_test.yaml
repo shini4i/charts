@@ -2,6 +2,14 @@ suite: test statefulset
 templates:
   - templates/statefulset.yaml
 tests:
+  - it: should fail when deprecated healthChecks key is used
+    set:
+      healthChecks:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: "healthChecks has been removed; use livenessProbe, readinessProbe, and startupProbe instead"
+
   - it: should pass custom image assertion
     set:
       image:
@@ -268,6 +276,116 @@ tests:
               items:
                 - key: known_hosts
                   path: known_hosts
+
+  - it: should render extraEnvs with valueFrom
+    set:
+      extraEnvs:
+        - name: PLAIN_VAR
+          value: "plain-value"
+        - name: SECRET_VAR
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: secret-key
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PLAIN_VAR
+            value: "plain-value"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SECRET_VAR
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+
+  - it: should render separate liveness and readiness probes with different defaults
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.periodSeconds
+          value: 30
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.periodSeconds
+          value: 10
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.timeoutSeconds
+          value: 3
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.failureThreshold
+          value: 3
+
+  - it: should not render startup probe by default
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].startupProbe
+
+  - it: should render startup probe when enabled
+    set:
+      startupProbe:
+        enabled: true
+        path: /healthz
+        periodSeconds: 5
+        timeoutSeconds: 3
+        failureThreshold: 30
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.periodSeconds
+          value: 5
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 30
+
+  - it: should use chart name as container name
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: argo-watcher
+
+  - it: should render topologySpreadConstraints when set
+    set:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: argo-watcher
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].topologyKey
+          value: kubernetes.io/hostname
+
+  - it: should not render topologySpreadConstraints by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.topologySpreadConstraints
+
+  - it: should render terminationGracePeriodSeconds when set
+    set:
+      terminationGracePeriodSeconds: 60
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 60
+
+  - it: should render terminationGracePeriodSeconds when set to 0
+    set:
+      terminationGracePeriodSeconds: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 0
+
+  - it: should not render terminationGracePeriodSeconds by default
+    asserts:
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
 
   - it: should have all volumes and volumeMounts when everything is enabled
     set:

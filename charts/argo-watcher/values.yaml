@@ -12,11 +12,31 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-healthChecks:
+# -- Liveness probe configuration
+livenessProbe:
   enabled: true
+  path: /healthz
   periodSeconds: 30
   timeoutSeconds: 5
   initialDelaySeconds: 5
+  failureThreshold: 3
+
+# -- Readiness probe configuration
+readinessProbe:
+  enabled: true
+  path: /healthz
+  periodSeconds: 10
+  timeoutSeconds: 3
+  initialDelaySeconds: 3
+  failureThreshold: 3
+
+# -- Startup probe configuration
+startupProbe:
+  enabled: false
+  path: /healthz
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 30
 
 logLevel: info
 
@@ -60,10 +80,15 @@ scheduledLockdown: []
 #  - "Fri 20:00 - Mon 08:00"
 #  - "Tue 22:00 - Tue 23:15"
 
-# -- Additional environment variables to add to the container
+# -- Additional environment variables to add to the container (supports both value and valueFrom)
 extraEnvs: []
 #  - name: EXTRA_ENV
 #    value: "extra-value"
+#  - name: SECRET_ENV
+#    valueFrom:
+#      secretKeyRef:
+#        name: my-secret
+#        key: secret-key
 
 postgres:
   # -- Sets STATE_TYPE to postgres
@@ -98,13 +123,15 @@ migration:
         - ALL
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # -- Whether to automount the service account token
+  automountServiceAccountToken: true
 
 podMonitor:
   enabled: false
@@ -114,15 +141,18 @@ podMonitor:
 
 podAnnotations: {}
 
+# -- Duration in seconds the pod needs to terminate gracefully
+# terminationGracePeriodSeconds: 30
+
 podSecurityContext:
-   fsGroup: 65532
+  fsGroup: 65532
 
 securityContext:
   seccompProfile:
     type: RuntimeDefault
   capabilities:
-     drop:
-     - ALL
+    drop:
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 65532
@@ -191,3 +221,11 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+topologySpreadConstraints: []
+
+# -- PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 1
+  # maxUnavailable: 1

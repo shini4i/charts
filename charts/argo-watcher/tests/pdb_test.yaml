@@ -1,0 +1,56 @@
+suite: test pod disruption budget
+templates:
+  - templates/pdb.yaml
+tests:
+  - it: should not create PDB by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create PDB with minAvailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PodDisruptionBudget
+      - isAPIVersion:
+          of: policy/v1
+      - equal:
+          path: spec.minAvailable
+          value: 1
+
+  - it: should create PDB with maxUnavailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.maxUnavailable
+          value: 1
+      - notExists:
+          path: spec.minAvailable
+
+  - it: should fail when enabled without minAvailable or maxUnavailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: "podDisruptionBudget: must set either minAvailable or maxUnavailable when enabled"
+
+  - it: should fail when both minAvailable and maxUnavailable are set
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+        maxUnavailable: 1
+    asserts:
+      - failedTemplate:
+          errorMessage: "podDisruptionBudget: cannot set both minAvailable and maxUnavailable"

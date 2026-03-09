@@ -28,6 +28,24 @@ annotations:
       description: Simplified migration Job to use main image with --migrate flag
     - kind: changed
       description: Moved updater config from argo.updater to top-level updater key
+    - kind: changed
+      description: Split healthChecks into separate livenessProbe, readinessProbe, and startupProbe configs
+    - kind: changed
+      description: Renamed container from generic 'app' to chart name
+    - kind: changed
+      description: Replaced default scaffold NOTES.txt with argo-watcher-specific output
+    - kind: added
+      description: Added valueFrom support for extraEnvs
+    - kind: added
+      description: Added values.schema.json for input validation
+    - kind: added
+      description: Added PodDisruptionBudget support
+    - kind: added
+      description: Added topologySpreadConstraints support
+    - kind: added
+      description: Added automountServiceAccountToken control on ServiceAccount
+    - kind: added
+      description: Added terminationGracePeriodSeconds support
     - kind: fixed
       description: Fixed empty secretRef rendering when argo.secretName is not set
     - kind: fixed
@@ -42,3 +60,11 @@ annotations:
       description: Added serviceAccountName and imagePullSecrets to migration Job
     - kind: fixed
       description: PodMonitor now includes standard chart labels
+    - kind: fixed
+      description: Pinned busybox image version in test-connection pod
+    - kind: fixed
+      description: Added securityContext to test-connection pod for restricted cluster compatibility
+    - kind: fixed
+      description: Fixed inconsistent YAML indentation in values.yaml
+    - kind: fixed
+      description: Added tests/ to .helmignore to exclude unit tests from packaged chart
