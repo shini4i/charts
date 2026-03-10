@@ -1,6 +1,9 @@
 {{- if .Values.healthChecks }}
 {{- fail "healthChecks has been removed; use livenessProbe, readinessProbe, and startupProbe instead" }}
 {{- end }}
+{{- if and (not .Values.postgres.enabled) (gt (int .Values.replicaCount) 1) }}
+{{- fail "replicaCount > 1 is not supported with in-memory state (postgres.enabled: false); enable postgres for multi-replica deployments" }}
+{{- end }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -144,12 +147,9 @@ spec:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
-          {{- if or .Values.persistence.enabled .Values.updater.sshSecretName }}
           volumeMounts:
-          {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
-          {{- end }}
           {{- if .Values.updater.sshSecretName }}
             - name: ssh-key
               mountPath: /tmp/id_rsa
@@ -160,11 +160,17 @@ spec:
               subPath: {{ .Values.updater.knownHostsKey }}
               readOnly: true
           {{- end }}
-          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if .Values.updater.sshSecretName }}
+      {{- if or (not .Values.persistence.enabled) .Values.updater.sshSecretName }}
       volumes:
+      {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.persistence.emptyDirSizeLimit }}
+      {{- end }}
+      {{- if .Values.updater.sshSecretName }}
         - name: ssh-key
           secret:
             secretName: {{ .Values.updater.sshSecretName }}
@@ -177,6 +183,7 @@ spec:
             items:
               - key: {{ .Values.updater.knownHostsKey }}
                 path: {{ .Values.updater.knownHostsKey }}
+      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

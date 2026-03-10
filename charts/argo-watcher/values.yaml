@@ -213,6 +213,8 @@ persistence:
     - ReadWriteOnce
   # -- The size of the persistent volume claim
   size: 1Gi
+  # -- Size limit for emptyDir volume used when persistence is disabled (tmpfs)
+  emptyDirSizeLimit: "256Mi"
   # -- The path to mount the persistent volume in the container
   mountPath: "/data"
 

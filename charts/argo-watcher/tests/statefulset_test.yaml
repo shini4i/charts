@@ -10,6 +10,32 @@ tests:
       - failedTemplate:
           errorMessage: "healthChecks has been removed; use livenessProbe, readinessProbe, and startupProbe instead"
 
+  - it: should fail when replicaCount > 1 with in-memory state
+    set:
+      replicaCount: 2
+      postgres:
+        enabled: false
+    asserts:
+      - failedTemplate:
+          errorMessage: "replicaCount > 1 is not supported with in-memory state (postgres.enabled: false); enable postgres for multi-replica deployments"
+
+  - it: should allow replicaCount > 1 when postgres is enabled
+    set:
+      replicaCount: 2
+      postgres:
+        enabled: true
+        host: localhost
+        name: argo_watcher
+        user: postgres
+        secretName: pg-secret
+        secretKey: password
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: spec.replicas
+          value: 2
+
   - it: should pass custom image assertion
     set:
       image:
@@ -227,15 +253,74 @@ tests:
           path: spec.volumeClaimTemplates[0].metadata.annotations["helm.sh/resource-policy"]
           value: keep
 
-  - it: should not have volumes or volumeMounts when persistence and updater are disabled
+  - it: should use emptyDir memory volume when persistence is disabled
     set:
       persistence:
         enabled: false
     asserts:
-      - isNull:
+      - contains:
           path: spec.template.spec.volumes
-      - isNull:
+          content:
+            name: data
+            emptyDir:
+              medium: Memory
+              sizeLimit: 256Mi
+      - contains:
           path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - notExists:
+          path: spec.volumeClaimTemplates
+
+  - it: should have emptyDir and ssh volumes when persistence is disabled and updater is enabled
+    set:
+      persistence:
+        enabled: false
+      updater:
+        sshSecretName: my-ssh-secret
+        sshKey: id_rsa
+        knownHostsKey: known_hosts
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            emptyDir:
+              medium: Memory
+              sizeLimit: 256Mi
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ssh-key
+            secret:
+              secretName: my-ssh-secret
+              items:
+                - key: id_rsa
+                  path: id_rsa
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: known-hosts
+            configMap:
+              name: argo-watcher-ssh-known-hosts
+              items:
+                - key: known_hosts
+                  path: known_hosts
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ssh-key
+            mountPath: /tmp/id_rsa
+            subPath: id_rsa
+            readOnly: true
+      - notExists:
+          path: spec.volumeClaimTemplates
 
   - it: should have ssh volumes and volumeMounts when updater is enabled
     set:

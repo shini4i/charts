@@ -197,6 +197,7 @@
           "items": { "type": "string", "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany"] }
         },
         "size": { "type": "string" },
+        "emptyDirSizeLimit": { "type": "string" },
         "mountPath": { "type": "string" }
       },
       "required": ["enabled"]
