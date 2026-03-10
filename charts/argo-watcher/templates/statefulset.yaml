@@ -150,6 +150,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
+            - name: tmp
+              mountPath: /tmp
           {{- if .Values.updater.sshSecretName }}
             - name: ssh-key
               mountPath: /tmp/id_rsa
@@ -162,8 +164,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if or (not .Values.persistence.enabled) .Values.updater.sshSecretName }}
       volumes:
+        - name: tmp
+          emptyDir: {}
       {{- if not .Values.persistence.enabled }}
         - name: data
           emptyDir:
@@ -183,7 +186,6 @@ spec:
             items:
               - key: {{ .Values.updater.knownHostsKey }}
                 path: {{ .Values.updater.knownHostsKey }}
-      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

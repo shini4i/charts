@@ -253,6 +253,19 @@ tests:
           path: spec.volumeClaimTemplates[0].metadata.annotations["helm.sh/resource-policy"]
           value: keep
 
+  - it: should always mount writable tmp volume
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tmp
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tmp
+            mountPath: /tmp
+
   - it: should use emptyDir memory volume when persistence is disabled
     set:
       persistence:
