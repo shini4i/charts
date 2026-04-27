@@ -407,6 +407,92 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Migrated from Deployment to StatefulSet with volumeClaimTemplates
+        - kind: changed
+          description: Simplified migration Job to use main image with --migrate flag
+        - kind: changed
+          description: Moved updater config from argo.updater to top-level updater key
+        - kind: changed
+          description: Split healthChecks into separate livenessProbe, readinessProbe, and startupProbe configs
+        - kind: changed
+          description: Renamed container from generic 'app' to chart name
+        - kind: changed
+          description: Changed persistence.enabled default from false to true
+        - kind: changed
+          description: Replaced default scaffold NOTES.txt with argo-watcher-specific output
+        - kind: added
+          description: Added valueFrom support for extraEnvs
+        - kind: added
+          description: Added values.schema.json for input validation
+        - kind: added
+          description: Added PodDisruptionBudget support
+        - kind: added
+          description: Added topologySpreadConstraints support
+        - kind: added
+          description: Added automountServiceAccountToken control on ServiceAccount
+        - kind: added
+          description: Added terminationGracePeriodSeconds support
+        - kind: removed
+          description: Removed healthChecks values key (replaced by livenessProbe, readinessProbe, startupProbe)
+        - kind: removed
+          description: Removed persistence.existingClaim (StatefulSet manages PVCs via volumeClaimTemplates)
+        - kind: removed
+          description: Removed separate migrate image and initContainer from migration Job
+        - kind: security
+          description: Changed default runAsUser from 1000 to 65532 and set podSecurityContext.fsGroup
+        - kind: security
+          description: Added securityContext to test-connection pod for restricted cluster compatibility
+        - kind: security
+          description: Pinned busybox image version in test-connection pod
+        - kind: fixed
+          description: Fixed empty secretRef rendering when argo.secretName is not set
+        - kind: fixed
+          description: Fixed storageClassName field mismatch in volumeClaimTemplates
+        - kind: fixed
+          description: ssh-known-hosts ConfigMap now only created when updater is enabled
+        - kind: fixed
+          description: Network policies scoped to release pods instead of entire namespace
+        - kind: fixed
+          description: Network policy names prefixed with release name to avoid conflicts
+        - kind: fixed
+          description: Added serviceAccountName and imagePullSecrets to migration Job
+        - kind: fixed
+          description: PodMonitor now includes standard chart labels
+        - kind: fixed
+          description: Fixed logLevel schema to accept both lowercase and uppercase values
+        - kind: fixed
+          description: Fixed inconsistent YAML indentation in values.yaml
+        - kind: fixed
+          description: Added tests/ to .helmignore to exclude unit tests from packaged chart
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.9.1
+    created: "2026-04-27T07:07:12.650710086Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 81d05bfeedda612f9dbbf24a693c4711c8ccf66596059a1ed612f152535c8c9c
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-1.0.0/argo-watcher-1.0.0.tgz
+    version: 1.0.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: Support for PVC
       artifacthub.io/signKey: |
@@ -2222,4 +2308,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-01T16:29:05.377260438Z"
+generated: "2026-04-27T07:07:12.651030503Z"
