@@ -12,11 +12,31 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-healthChecks:
+# -- Liveness probe configuration
+livenessProbe:
   enabled: true
+  path: /healthz
   periodSeconds: 30
   timeoutSeconds: 5
   initialDelaySeconds: 5
+  failureThreshold: 3
+
+# -- Readiness probe configuration
+readinessProbe:
+  enabled: true
+  path: /healthz
+  periodSeconds: 10
+  timeoutSeconds: 3
+  initialDelaySeconds: 3
+  failureThreshold: 3
+
+# -- Startup probe configuration
+startupProbe:
+  enabled: false
+  path: /healthz
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 30
 
 logLevel: info
 
@@ -36,33 +56,39 @@ argo:
   refreshApp: true
   # -- Pre-created secret with ARGO_TOKEN variable and optional ARGO_WATCHER_DEPLOY_TOKEN
   secretName: ""
-  # -- Configuration for argo image updater logic replacement (optional)
-  updater:
-    # -- Pre-created secret with ssh key
-    sshSecretName: ""
-    # -- Key to mount from sshSecretName
-    sshKey: "sshPrivateKey"
-    # -- Extra known hosts to add to ssh config, will be skipped if knownHostsConfigMap is set (optional)
-    extraKnownHosts: []
-      # - bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
-    # -- Known hosts configmap override (optional)
-    knownHostsConfigMap: ""
-    # -- Known hosts configmap key (optional)
-    knownHostsKey: "ssh_known_hosts"
-    # -- User to use for git operations
-    commitAuthor: "argo-watcher"
-    # -- Email to use for git operations
-    commitEmail: "argo-watcher@example.com"
+
+# -- Configuration for argo image updater logic replacement (optional)
+updater:
+  # -- Pre-created secret with ssh key
+  sshSecretName: ""
+  # -- Key to mount from sshSecretName
+  sshKey: "sshPrivateKey"
+  # -- Extra known hosts to add to ssh config, will be skipped if knownHostsConfigMap is set (optional)
+  extraKnownHosts: []
+    # - bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
+  # -- Known hosts configmap override (optional)
+  knownHostsConfigMap: ""
+  # -- Known hosts configmap key (optional)
+  knownHostsKey: "ssh_known_hosts"
+  # -- User to use for git operations
+  commitAuthor: "argo-watcher"
+  # -- Email to use for git operations
+  commitEmail: "argo-watcher@example.com"
 
 # -- Schedule lockdown configuration
 scheduledLockdown: []
 #  - "Fri 20:00 - Mon 08:00"
 #  - "Tue 22:00 - Tue 23:15"
 
-# -- Additional environment variables to add to the container
+# -- Additional environment variables to add to the container (supports both value and valueFrom)
 extraEnvs: []
 #  - name: EXTRA_ENV
 #    value: "extra-value"
+#  - name: SECRET_ENV
+#    valueFrom:
+#      secretKeyRef:
+#        name: my-secret
+#        key: secret-key
 
 postgres:
   # -- Sets STATE_TYPE to postgres
@@ -75,49 +101,37 @@ postgres:
   secretName: ""
   # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
   secretKey: ""
-  migration:
-    image:
-      repository: migrate/migrate
-      tag: "v4.17.0"
-      pullPolicy: IfNotPresent
-    restartPolicy: OnFailure
-    backoffLimit: 5
 
-    podSecurityContext:
-      seccompProfile:
-        type: RuntimeDefault
-      runAsNonRoot: true
+migration:
+  restartPolicy: OnFailure
+  backoffLimit: 5
 
-    resources: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+    runAsNonRoot: true
 
-    securityContext:
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1000
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
+  resources: {}
 
-    initContainer:
-      resources: {}
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-        runAsUser: 1000
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # -- Whether to automount the service account token
+  automountServiceAccountToken: true
 
 podMonitor:
   enabled: false
@@ -127,18 +141,21 @@ podMonitor:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+# -- Duration in seconds the pod needs to terminate gracefully
+# terminationGracePeriodSeconds: 30
+
+podSecurityContext:
+  fsGroup: 65532
 
 securityContext:
   seccompProfile:
     type: RuntimeDefault
   capabilities:
-     drop:
-     - ALL
+    drop:
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 65532
   allowPrivilegeEscalation: false
 
 service:
@@ -185,19 +202,19 @@ resources: {}
 
 persistence:
   # -- Enable persistence using a Persistent Volume Claim
-  enabled: false
+  enabled: true
   # -- Annotations to add to the persistent volume claim
   annotations: {}
-  # -- The name of an existing persistent volume claim to use
-  existingClaim: ""
   # -- The storage class to use for the persistent volume claim.
   # If undefined or null, the default storage class will be used.
-  storageClassName: ""
+  # storageClassName: ""
   # -- The access modes for the persistent volume claim
   accessModes:
     - ReadWriteOnce
   # -- The size of the persistent volume claim
   size: 1Gi
+  # -- Size limit for emptyDir volume used when persistence is disabled (tmpfs)
+  emptyDirSizeLimit: "256Mi"
   # -- The path to mount the persistent volume in the container
   mountPath: "/data"
 
@@ -206,3 +223,11 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+topologySpreadConstraints: []
+
+# -- PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 1
+  # maxUnavailable: 1

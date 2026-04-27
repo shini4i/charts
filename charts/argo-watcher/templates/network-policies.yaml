@@ -2,18 +2,26 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: default-deny-ingress
+  name: {{ include "argo-watcher.fullname" . }}-deny-ingress
+  labels:
+    {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: ingress-allow-self-namespace
+  name: {{ include "argo-watcher.fullname" . }}-allow-self-namespace
+  labels:
+    {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
   ingress:
@@ -26,12 +34,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: additional-ingress-rules
+  name: {{ include "argo-watcher.fullname" . }}-additional-ingress
+  labels:
+    {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: {{ include "argo-watcher.name" . }}
+      {{- include "argo-watcher.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
   ingress:

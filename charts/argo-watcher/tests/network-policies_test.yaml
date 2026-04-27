@@ -15,25 +15,29 @@ tests:
       - hasDocuments:
           count: 2
       - documentIndex: 0
-        equal:
+        matchRegex:
           path: metadata.name
-          value: default-deny-ingress
+          pattern: ".*-deny-ingress$"
       - documentIndex: 0
         equal:
-          path: spec.podSelector
-          value: {}
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher
       - documentIndex: 0
         contains:
           path: spec.policyTypes
           content: Ingress
       - documentIndex: 1
-        equal:
+        matchRegex:
           path: metadata.name
-          value: ingress-allow-self-namespace
+          pattern: ".*-allow-self-namespace$"
       - documentIndex: 1
         equal:
-          path: spec.podSelector
-          value: {}
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher
       - documentIndex: 1
         contains:
           path: spec.policyTypes

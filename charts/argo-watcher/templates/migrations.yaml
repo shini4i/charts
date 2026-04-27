@@ -11,31 +11,20 @@ metadata:
 spec:
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "argo-watcher.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.postgres.migration.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: copy-migration-files
+        {{- toYaml .Values.migration.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migration
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /bin/sh
-            - -c
-            - cp /db/migrations/* /migrations
-          volumeMounts:
-            - mountPath: /migrations
-              name: migrations
-          securityContext:
-            {{- toYaml .Values.postgres.migration.initContainer.securityContext | nindent 12 }}
-          resources:
-            {{- toYaml .Values.postgres.migration.initContainer.resources | nindent 12 }}
-      containers:
-        - name: migration
-          image: {{ .Values.postgres.migration.image.repository }}:{{ .Values.postgres.migration.image.tag }}
-          imagePullPolicy: {{ .Values.postgres.migration.image.pullPolicy }}
-          command:
-            - /bin/sh
-            - -c
-            - migrate -source file://migrations/ -database postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME up
+            - /usr/local/bin/argo-watcher
+            - --migrate
           env:
             - name: DB_HOST
               value: {{ .Values.postgres.host }}
@@ -57,16 +46,10 @@ spec:
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
           {{- end }}
-          volumeMounts:
-            - mountPath: /migrations
-              name: migrations
           securityContext:
-            {{- toYaml .Values.postgres.migration.securityContext | nindent 12 }}
+            {{- toYaml .Values.migration.securityContext | nindent 12 }}
           resources:
-            {{- toYaml .Values.postgres.migration.resources | nindent 12 }}
-      restartPolicy: {{ .Values.postgres.migration.restartPolicy }}
-      volumes:
-        - name: migrations
-          emptyDir: {}
-  backoffLimit: {{ .Values.postgres.migration.backoffLimit }}
+            {{- toYaml .Values.migration.resources | nindent 12 }}
+      restartPolicy: {{ .Values.migration.restartPolicy }}
+  backoffLimit: {{ .Values.migration.backoffLimit }}
 {{- end }}

@@ -1,10 +1,17 @@
+{{- if .Values.healthChecks }}
+{{- fail "healthChecks has been removed; use livenessProbe, readinessProbe, and startupProbe instead" }}
+{{- end }}
+{{- if and (not .Values.postgres.enabled) (gt (int .Values.replicaCount) 1) }}
+{{- fail "replicaCount > 1 is not supported with in-memory state (postgres.enabled: false); enable postgres for multi-replica deployments" }}
+{{- end }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "argo-watcher.fullname" . }}
   labels:
     {{- include "argo-watcher.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "argo-watcher.fullname" . }}
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistory }}
   selector:
@@ -24,10 +31,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "argo-watcher.serviceAccountName" . }}
+      {{- if not (kindIs "invalid" .Values.terminationGracePeriodSeconds) }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: app
+        - name: {{ include "argo-watcher.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -49,15 +59,15 @@ spec:
               value: {{ .Values.argo.skipTlsVerify | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | upper }}
-            {{- if .Values.argo.updater.sshSecretName }}
+            {{- if .Values.updater.sshSecretName }}
             - name: SSH_KEY_PATH
               value: "/tmp/id_rsa"
             - name: SSH_KNOWN_HOSTS
               value: "/tmp/ssh_known_hosts"
             - name: SSH_COMMIT_USER
-              value: {{ .Values.argo.updater.commitAuthor }}
+              value: {{ .Values.updater.commitAuthor }}
             - name: SSH_COMMIT_MAIL
-              value: {{ .Values.argo.updater.commitEmail }}
+              value: {{ .Values.updater.commitEmail }}
             {{- end }}
             {{- if .Values.argo.urlAlias }}
             - name: ARGO_URL_ALIAS
@@ -94,78 +104,88 @@ spec:
                   key: {{ .Values.postgres.secretKey }}
             {{- end }}
             {{- end }}
-            {{- range .Values.extraEnvs }}
-            - name: {{ .name }}
-              value: {{ .value | quote }}
+            {{- with .Values.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- $envFrom := list }}
+          {{- if .Values.argo.secretName }}
+          {{- $envFrom = append $envFrom (dict "secretRef" (dict "name" .Values.argo.secretName)) }}
+          {{- end }}
+          {{- if and .Values.postgres.enabled (not .Values.postgres.secretKey) }}
+          {{- $envFrom = append $envFrom (dict "secretRef" (dict "name" .Values.postgres.secretName)) }}
+          {{- end }}
+          {{- with $envFrom }}
           envFrom:
-            - secretRef:
-                name: {{ .Values.argo.secretName }}
-            {{- if and (.Values.postgres.enabled) (not .Values.postgres.secretKey) }}
-            - secretRef:
-                name: {{ .Values.postgres.secretName }}
-            {{- end }}
-          {{- if .Values.healthChecks.enabled }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.startupProbe.path }}
+              port: http
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: {{ .Values.livenessProbe.path }}
               port: http
-            periodSeconds: {{ .Values.healthChecks.periodSeconds }}
-            timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
-            initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: {{ .Values.readinessProbe.path }}
               port: http
-            periodSeconds: {{ .Values.healthChecks.periodSeconds }}
-            timeoutSeconds: {{ .Values.healthChecks.timeoutSeconds }}
-            initialDelaySeconds: {{ .Values.healthChecks.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
-          {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
           volumeMounts:
-          {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
-          {{- end }}
-          {{- if .Values.argo.updater.sshSecretName }}
+            - name: tmp
+              mountPath: /tmp
+          {{- if .Values.updater.sshSecretName }}
             - name: ssh-key
               mountPath: /tmp/id_rsa
-              subPath: {{ .Values.argo.updater.sshKey }}
+              subPath: {{ .Values.updater.sshKey }}
               readOnly: true
             - name: known-hosts
               mountPath: /tmp/ssh_known_hosts
-              subPath: {{ .Values.argo.updater.knownHostsKey }}
+              subPath: {{ .Values.updater.knownHostsKey }}
               readOnly: true
-          {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if or .Values.persistence.enabled .Values.argo.updater.sshSecretName }}
       volumes:
-      {{- if .Values.persistence.enabled }}
+        - name: tmp
+          emptyDir: {}
+      {{- if not .Values.persistence.enabled }}
         - name: data
-          {{- if .Values.persistence.existingClaim }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim }}
-          {{- else }}
-          persistentVolumeClaim:
-            claimName: {{ include "argo-watcher.fullname" . }}
-          {{- end }}
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.persistence.emptyDirSizeLimit }}
       {{- end }}
-      {{- if .Values.argo.updater.sshSecretName }}
+      {{- if .Values.updater.sshSecretName }}
         - name: ssh-key
           secret:
-            secretName: {{ .Values.argo.updater.sshSecretName }}
+            secretName: {{ .Values.updater.sshSecretName }}
             items:
-              - key: {{ .Values.argo.updater.sshKey }}
-                path: {{ .Values.argo.updater.sshKey }}
+              - key: {{ .Values.updater.sshKey }}
+                path: {{ .Values.updater.sshKey }}
         - name: known-hosts
           configMap:
-            name: {{ .Values.argo.updater.knownHostsConfigMap | default "argo-watcher-ssh-known-hosts" }}
+            name: {{ .Values.updater.knownHostsConfigMap | default "argo-watcher-ssh-known-hosts" }}
             items:
-              - key: {{ .Values.argo.updater.knownHostsKey }}
-                path: {{ .Values.argo.updater.knownHostsKey }}
-      {{- end }}
+              - key: {{ .Values.updater.knownHostsKey }}
+                path: {{ .Values.updater.knownHostsKey }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -179,3 +199,27 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        {{- with .Values.persistence.accessModes }}
+        accessModes:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+        {{- if .Values.persistence.storageClassName }}
+        storageClassName: {{ .Values.persistence.storageClassName }}
+        {{- end }}
+  {{- end }}

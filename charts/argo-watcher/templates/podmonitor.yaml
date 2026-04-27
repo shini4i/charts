@@ -1,12 +1,13 @@
-{{ if .Values.podMonitor.enabled }}
+{{- if .Values.podMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ include "argo-watcher.fullname" . }}-metrics
-  {{- with .Values.podMonitor.labels }}
   labels:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- include "argo-watcher.labels" . | nindent 4 }}
+    {{- with .Values.podMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -20,4 +21,4 @@ spec:
       {{- with .Values.podMonitor.scrapeTimeout }}
       scrapeTimeout: {{ . }}
       {{- end }}
-{{ end }}
+{{- end }}
