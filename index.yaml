@@ -408,6 +408,36 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: changed
+          description: Update argo-watcher app version from v0.9.1 to v0.10.0
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.10.0
+    created: "2026-04-27T07:11:47.661270023Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 629d41f2db13effb9d3a4d95e2e9f1472028039b2052de9b0b9ac850b0ab3873
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-1.0.1/argo-watcher-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
           description: Migrated from Deployment to StatefulSet with volumeClaimTemplates
         - kind: changed
           description: Simplified migration Job to use main image with --migrate flag
@@ -2308,4 +2338,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-27T07:07:12.651030503Z"
+generated: "2026-04-27T07:11:47.66161997Z"
