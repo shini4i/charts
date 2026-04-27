@@ -64,7 +64,9 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.mongod.persistence.data.size }}
-            storageClassName: {{ .Values.mongod.persistence.data.storageClassName | default "gp2" }}
+            {{- if .Values.mongod.persistence.data.storageClassName }}
+            storageClassName: {{ .Values.mongod.persistence.data.storageClassName }}
+            {{- end }}
         - metadata:
             name: logs-volume
           spec:
@@ -73,6 +75,8 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.mongod.persistence.logs.size }}
-            storageClassName: {{ .Values.mongod.persistence.logs.storageClassName | default "gp2" }}
+            {{- if .Values.mongod.persistence.logs.storageClassName }}
+            storageClassName: {{ .Values.mongod.persistence.logs.storageClassName }}
+            {{- end }}
   users:
     {{- include "mongodb-users" . | nindent 4 }}
