@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.9.1](https://img.shields.io/badge/AppVersion-v0.9.1-informational?style=flat-square)
+![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.10.0](https://img.shields.io/badge/AppVersion-v0.10.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -63,6 +63,7 @@ Kubernetes: `>=1.21.0-0`
 | nodeSelector | object | `{}` |  |
 | persistence.accessModes | list | `["ReadWriteOnce"]` | The access modes for the persistent volume claim |
 | persistence.annotations | object | `{}` | Annotations to add to the persistent volume claim |
+| persistence.emptyDirSizeLimit | string | `"256Mi"` | Size limit for emptyDir volume used when persistence is disabled (tmpfs) |
 | persistence.enabled | bool | `true` | Enable persistence using a Persistent Volume Claim |
 | persistence.mountPath | string | `"/data"` | The path to mount the persistent volume in the container |
 | persistence.size | string | `"1Gi"` | The size of the persistent volume claim |
