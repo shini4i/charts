@@ -407,6 +407,36 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Update argo-watcher app version from v0.12.1 to v0.12.2
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v0.12.2
+    created: "2026-07-21T19:34:29.678200138Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: af2c08dc82d452c4595cbbbdbd180f84f6ebc793664c67957c472fac0c819682
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-1.1.1/argo-watcher-1.1.1.tgz
+    version: 1.1.1
+  - annotations:
+      artifacthub.io/changes: |
         - kind: fixed
           description: Migration hook now uses a dedicated hook-scoped ServiceAccount so its pod no longer fails with "serviceaccount not found"
       artifacthub.io/signKey: |
@@ -2668,4 +2698,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-21T11:47:41.210370297Z"
+generated: "2026-07-21T19:34:29.678582848Z"
