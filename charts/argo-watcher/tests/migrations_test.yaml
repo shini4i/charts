@@ -28,6 +28,7 @@ tests:
           path: metadata.annotations
           value:
             "helm.sh/hook": pre-install,pre-upgrade
+            "helm.sh/hook-weight": "0"
             "helm.sh/hook-delete-policy": before-hook-creation
       - equal:
           path: spec.template.spec.containers[0].image
@@ -68,9 +69,9 @@ tests:
       - equal:
           path: spec.template.spec.restartPolicy
           value: OnFailure
-      - matchRegex:
+      - equal:
           path: spec.template.spec.serviceAccountName
-          pattern: ".*argo-watcher"
+          value: RELEASE-NAME-argo-watcher-migration
 
   - it: should expose DB_PASSWORD from a specific key in a specific secret
     set:
