@@ -5,7 +5,7 @@ type: application
 sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 1.0.11
+version: 1.1.0
 keywords:
 - argocd
 - gitops
@@ -22,5 +22,5 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: changed
-      description: Update argo-watcher app version from v0.12.0 to v0.12.1
+    - kind: fixed
+      description: Migration hook now uses a dedicated hook-scoped ServiceAccount so its pod no longer fails with "serviceaccount not found"

@@ -7,6 +7,7 @@ metadata:
     {{- include "argo-watcher.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
@@ -15,7 +16,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "argo-watcher.serviceAccountName" . }}
+      serviceAccountName: {{ include "argo-watcher.fullname" . }}-migration
       securityContext:
         {{- toYaml .Values.migration.podSecurityContext | nindent 8 }}
       containers:
