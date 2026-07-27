@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'charts/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
 
 jobs:
   find_changed_charts:
@@ -14,11 +19,11 @@ jobs:
 
     steps:
       - name: Checkout files in the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v34
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
           files: |
             charts/**
@@ -43,11 +48,11 @@ jobs:
 
     steps:
       - name: Checkout files in the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run unit tests for ${{ matrix.chart }}
-        uses: d3adb5/helm-unittest-action@v2
+        uses: d3adb5/helm-unittest-action@850bc76597579183998069830d5fa8c3ef0ea34a # v2.5.0
         with:
-          helm-version: v3.15.0
-          unittest-version: v0.5.1
+          helm-version: v4.2.3
+          unittest-version: v1.1.2
           charts: charts/${{ matrix.chart }}
