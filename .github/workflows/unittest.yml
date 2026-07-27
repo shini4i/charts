@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'charts/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
 
 jobs:
   find_changed_charts:
@@ -14,11 +19,17 @@ jobs:
 
     steps:
       - name: Checkout files in the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # changed-files diffs a push against the event's "before" commit,
+          # which the default depth of 1 does not contain. Full history keeps a
+          # push of any length correct; the repository is small enough that
+          # cloning all of it costs nothing.
+          fetch-depth: 0
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v34
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
           files: |
             charts/**
@@ -43,11 +54,19 @@ jobs:
 
     steps:
       - name: Checkout files in the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v4.2.3
+
+      - name: Install helm-unittest
+        # Helm 4 verifies plugin sources by default, and a git source cannot be
+        # verified; the version is pinned instead.
+        run: helm plugin install --verify=false --version v1.1.2 https://github.com/helm-unittest/helm-unittest
 
       - name: Run unit tests for ${{ matrix.chart }}
-        uses: d3adb5/helm-unittest-action@v2
-        with:
-          helm-version: v3.15.0
-          unittest-version: v0.5.1
-          charts: charts/${{ matrix.chart }}
+        run: |
+          helm dependency update charts/${{ matrix.chart }}
+          helm unittest charts/${{ matrix.chart }}

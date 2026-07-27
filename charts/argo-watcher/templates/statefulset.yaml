@@ -4,6 +4,14 @@
 {{- if and (not .Values.postgres.enabled) (gt (int .Values.replicaCount) 1) }}
 {{- fail "replicaCount > 1 is not supported with in-memory state (postgres.enabled: false); enable postgres for multi-replica deployments" }}
 {{- end }}
+{{- if .Values.oidc.enabled }}
+{{- if not .Values.oidc.issuerUrl }}
+{{- fail "oidc.issuerUrl is required when oidc.enabled is true" }}
+{{- end }}
+{{- if not .Values.oidc.clientId }}
+{{- fail "oidc.clientId is required when oidc.enabled is true" }}
+{{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -80,6 +88,20 @@ spec:
             {{- if .Values.argo.registryProxyUrl }}
             - name: DOCKER_IMAGES_PROXY
               value: {{ .Values.argo.registryProxyUrl }}
+            {{- end }}
+            {{- if .Values.oidc.enabled }}
+            - name: OIDC_ENABLED
+              value: "true"
+            - name: OIDC_ISSUER_URL
+              value: {{ .Values.oidc.issuerUrl | quote }}
+            - name: OIDC_CLIENT_ID
+              value: {{ .Values.oidc.clientId | quote }}
+            - name: OIDC_TOKEN_VALIDATION_INTERVAL
+              value: {{ .Values.oidc.tokenValidationInterval | quote }}
+            {{- with .Values.oidc.privilegedGroups }}
+            - name: OIDC_PRIVILEGED_GROUPS
+              value: {{ join "," . | quote }}
+            {{- end }}
             {{- end }}
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}

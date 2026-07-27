@@ -16,7 +16,7 @@ helm repo add shini4i https://shini4i.github.io/charts/
 ## Table of Contents
 <!-- table_start -->
 |                                                 Name                                                |     Type    |                               Description                                | Version | App Version |
-|:---------------------------------------------------------------------------------------------------:|:-----------:|:------------------------------------------------------------------------:|:-------:|:-----------:|
+| :-------------------------------------------------------------------------------------------------: | :---------: | :----------------------------------------------------------------------: | :-----: | :---------: |
 |                       [app](https://artifacthub.io/packages/helm/shini4i/app)                       | application |                 A Helm chart for a simple app deployment                 |  0.2.1  |     None    |
 |              [argo-watcher](https://artifacthub.io/packages/helm/shini4i/argo-watcher)              | application |                 A Helm chart for deploying argo-watcher                  |  1.1.1  |   v0.12.2   |
 |                    [common](https://artifacthub.io/packages/helm/shini4i/common)                    |   library   |             A Helm chart library with some common templates              |  0.0.4  |     None    |
@@ -45,3 +45,14 @@ Signed by: Vadim Gedz <vadims@linux-tech.io>
 Using Key With Fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
 Chart Hash Verified: sha256:66555b4f6ac47a4ff67beb20963e6bd3ffcb0a8a1c33bfd8bba1d89011b0355a
 ```
+
+## Development
+A `flake.nix` provides every tool needed to work on the charts (helm with the
+unittest plugin, helm-docs, pre-commit):
+```
+nix develop
+helm unittest charts/argo-watcher
+```
+
+## License
+This repository is licensed under the [Apache License 2.0](LICENSE).

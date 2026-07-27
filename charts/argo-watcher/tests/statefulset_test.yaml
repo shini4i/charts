@@ -400,6 +400,150 @@ tests:
                 name: my-secret
                 key: secret-key
 
+  - it: should not render OIDC env vars by default
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_ENABLED
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_ISSUER_URL
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_CLIENT_ID
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_TOKEN_VALIDATION_INTERVAL
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_PRIVILEGED_GROUPS
+
+  - it: should not render OIDC env vars when disabled but configured
+    set:
+      oidc:
+        enabled: false
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: argo-watcher
+        privilegedGroups:
+          - platform-team
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_ENABLED
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_PRIVILEGED_GROUPS
+
+  - it: should render OIDC env vars when enabled
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: argo-watcher
+        privilegedGroups:
+          - platform-team
+          - sre-team
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_ENABLED
+            value: "true"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_ISSUER_URL
+            value: "https://keycloak.example.com/realms/example"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_CLIENT_ID
+            value: "argo-watcher"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_TOKEN_VALIDATION_INTERVAL
+            value: "10000"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_PRIVILEGED_GROUPS
+            value: "platform-team,sre-team"
+
+  - it: should render custom OIDC token validation interval
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://authentik.example.com/application/o/argo-watcher/
+        clientId: argo-watcher
+        tokenValidationInterval: 30000
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_TOKEN_VALIDATION_INTERVAL
+            value: "30000"
+
+  - it: should quote a numeric-looking OIDC client id
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: "123456"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_CLIENT_ID
+            value: "123456"
+
+  - it: should not render OIDC_PRIVILEGED_GROUPS when no groups are set
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: argo-watcher
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_PRIVILEGED_GROUPS
+
+  - it: should fail when oidc is enabled without issuerUrl
+    set:
+      oidc:
+        enabled: true
+        clientId: argo-watcher
+    asserts:
+      - failedTemplate:
+          errorMessage: "oidc.issuerUrl is required when oidc.enabled is true"
+
+  - it: should fail when oidc is enabled without clientId
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+    asserts:
+      - failedTemplate:
+          errorMessage: "oidc.clientId is required when oidc.enabled is true"
+
   - it: should render separate liveness and readiness probes with different defaults
     asserts:
       - equal:

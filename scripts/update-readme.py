@@ -4,8 +4,8 @@ import os
 
 import yaml
 
-from prettytable import MARKDOWN
 from prettytable import PrettyTable
+from prettytable import TableStyle
 
 
 class Readme:
@@ -37,7 +37,7 @@ class Readme:
             )
 
         table = PrettyTable(headers)
-        table.set_style(MARKDOWN)
+        table.set_style(TableStyle.MARKDOWN)
         table.add_rows(rows)
         table.sortby = "Name"
 
