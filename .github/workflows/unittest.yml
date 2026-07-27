@@ -21,9 +21,11 @@ jobs:
       - name: Checkout files in the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # changed-files needs the preceding commit to diff a push event
-          # against; the default depth of 1 is enough for pull requests only.
-          fetch-depth: 2
+          # changed-files diffs a push against the event's "before" commit,
+          # which the default depth of 1 does not contain. Full history keeps a
+          # push of any length correct; the repository is small enough that
+          # cloning all of it costs nothing.
+          fetch-depth: 0
 
       - name: Get changed files
         id: changed-files
