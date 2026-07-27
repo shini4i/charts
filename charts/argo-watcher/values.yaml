@@ -80,6 +80,24 @@ scheduledLockdown: []
 #  - "Fri 20:00 - Mon 08:00"
 #  - "Tue 22:00 - Tue 23:15"
 
+# -- OIDC / SSO authentication configuration. Requires argo-watcher >= v0.13.0;
+# earlier versions only honor the deprecated KEYCLOAK_* variables, which can be
+# set via extraEnvs.
+oidc:
+  # -- Enables OIDC authentication for the Web UI and privileged operations
+  enabled: false
+  # -- Identity provider issuer URL used for OIDC discovery, e.g.
+  # https://keycloak.example.com/realms/example (required when enabled)
+  issuerUrl: ""
+  # -- Client ID registered with the identity provider (required when enabled)
+  clientId: ""
+  # -- Interval in milliseconds between token validations
+  tokenValidationInterval: 10000
+  # -- Groups whose members may redeploy applications and manage the deployment lock
+  privilegedGroups: []
+  #  - platform-team
+  #  - sre-team
+
 # -- Additional environment variables to add to the container (supports both value and valueFrom)
 extraEnvs: []
 #  - name: EXTRA_ENV

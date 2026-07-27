@@ -100,6 +100,20 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "oidc": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "issuerUrl": { "type": "string" },
+        "clientId": { "type": "string" },
+        "tokenValidationInterval": { "type": "integer", "minimum": 1 },
+        "privilegedGroups": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["enabled"]
+    },
     "extraEnvs": {
       "type": "array",
       "items": {
