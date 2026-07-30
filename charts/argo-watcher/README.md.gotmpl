@@ -1,0 +1,139 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## MCP server
+
+Setting `mcp.enabled: true` deploys [argo-watcher-mcp](https://github.com/shini4i/argo-watcher-mcp),
+which exposes argo-watcher's read-only API as [Model Context Protocol](https://modelcontextprotocol.io)
+tools so AI agents can ask what was deployed, when, by whom, and whether it
+succeeded. Upstream describes the project as a proof of concept.
+
+It runs as its own Deployment rather than as a sidecar, so its image and
+configuration can change without restarting argo-watcher — which matters because
+argo-watcher is a StatefulSet that holds task history in memory unless
+`postgres.enabled` is set.
+
+The image tag lives in `mcp.image.tag` and is pinned independently of the chart
+`appVersion`, which tracks argo-watcher itself. The `get_reachability` tool needs
+argo-watcher v0.13.0 or newer.
+
+### Exposing the MCP server
+
+> [!WARNING]
+> **argo-watcher-mcp performs no authentication and no authorization.** Every
+> request is anonymous, there is no token or OIDC support, and no per-tool
+> permission model. Anything that can reach the endpoint can read your full
+> deployment history and instance configuration.
+
+Enabling `oidc.*` does not change this. The endpoints the MCP server reads —
+`GET /api/v1/tasks`, `/version`, `/config`, `/reachability` and `GET /deploy-lock`
+— are registered on argo-watcher without auth middleware whether or not OIDC is
+enabled, so the MCP server discloses nothing argo-watcher's own API does not
+already serve unauthenticated. What an Ingress changes is *who can reach it*.
+
+What an anonymous caller can read: every deployment's application, image tags,
+author, timestamp and outcome, including rollbacks; the deploy-lock state;
+ArgoCD and state-backend reachability; and an allowlisted subset of the
+instance's configuration. The MCP server strips `user:password@` credentials
+from URL-valued config fields, but `ARGO_URL_ALIAS` and `DOCKER_IMAGES_PROXY`
+are forwarded as argo-watcher reports them. The server cannot create deployments
+or change the deploy lock, so the exposure is disclosure and request load, not
+tampering.
+
+Pick the least exposure that works for you.
+
+**Port-forward — nothing is exposed.** Enough for a developer workstation and
+the recommended default:
+
+```console
+kubectl --namespace <namespace> port-forward svc/<release>-argo-watcher-mcp 8000:80
+```
+
+Then point the MCP client at `http://localhost:8000`.
+
+**In-cluster only.** An agent running in another namespace reaches the endpoint
+without any Ingress. With `networkPolicies.enabled: true`, grant that namespace
+access explicitly:
+
+```yaml
+networkPolicies:
+  enabled: true
+mcp:
+  enabled: true
+  networkPolicies:
+    additionalRules:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: my-agent-namespace
+```
+
+`mcp.networkPolicies.additionalRules` is deliberately separate from
+`networkPolicies.additionalRules`, and the MCP pods carry their own
+`app.kubernetes.io/name` label, so widening access to the MCP endpoint cannot
+also widen access to the argo-watcher API.
+
+**Ingress, behind an authenticating proxy.** Since the endpoint authenticates
+nobody, the proxy in front of it is the only thing standing between your
+deployment history and the internet. Terminate authentication there — for
+example with [oauth2-proxy](https://oauth2-proxy.github.io/oauth2-proxy/) or
+your ingress controller's external-auth support — and keep `mcp.ingress.hosts`
+off any public wildcard DNS you do not control:
+
+```yaml
+mcp:
+  enabled: true
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/auth-url: "https://oauth2-proxy.example.com/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://oauth2-proxy.example.com/oauth2/start?rd=$escaped_request_uri"
+    hosts:
+      - host: argo-watcher-mcp.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: argo-watcher-mcp-tls
+        hosts:
+          - argo-watcher-mcp.example.com
+```
+
+With `networkPolicies.enabled: true`, the ingress controller also needs an
+`mcp.networkPolicies.additionalRules` entry for its own namespace. Without one
+the deny-by-default policy drops its traffic and the Ingress returns 502 with
+nothing pointing at the NetworkPolicy as the cause.
+
+Two transport details to check against your proxy when you do this: the MCP
+endpoint is mounted at `/`, so it cannot share a host with another backend
+without a path prefix, and its streamable transport holds a long-lived
+server-sent-events stream open — a proxy that buffers responses or applies a
+short read timeout will break sessions rather than fail outright.
+
+### Metrics
+
+The MCP server serves Prometheus metrics on `/metrics` on the same port as the
+MCP endpoint itself. Set `mcp.podMonitor.enabled: true` to scrape it.
+OpenTelemetry export is configured through `mcp.extraEnvs` using the upstream
+`OTEL_*` variables.
+
+Because the two share a port, a NetworkPolicy rule that lets a monitoring
+namespace scrape `/metrics` also lets it call every MCP tool. The argo-watcher
+PodMonitor has the same property.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

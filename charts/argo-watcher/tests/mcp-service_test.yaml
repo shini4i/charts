@@ -1,13 +1,16 @@
-suite: test service
+suite: test mcp service
 templates:
-  - templates/service.yaml
+  - templates/mcp-service.yaml
 tests:
-  - it: should be enabled by default
+  - it: should be disabled by default
     asserts:
       - hasDocuments:
-          count: 1
+          count: 0
 
-  - it: should pass default values
+  - it: should pass default values when enabled
+    set:
+      mcp:
+        enabled: true
     asserts:
       - hasDocuments:
           count: 1
@@ -15,6 +18,9 @@ tests:
           of: v1
       - isKind:
           of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-argo-watcher-mcp
       - equal:
           path: spec.type
           value: ClusterIP
@@ -29,52 +35,50 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[0].targetPort
-          value: 8080
-      - equal:
-          path: spec.selector
-          value:
-            app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/name: argo-watcher
+          value: 8000
 
-  - it: should pass custom port values
-    set:
-      service:
-        type: ClusterIP
-        port: 8080
-        containerPort: 8081
-    asserts:
-      - hasDocuments:
-          count: 1
-      - equal:
-          path: spec.type
-          value: ClusterIP
-      - equal:
-          path: spec.ports[0].port
-          value: 8080
-      - equal:
-          path: spec.ports[0].protocol
-          value: TCP
-      - equal:
-          path: spec.ports[0].targetPort
-          value: 8081
-
-  - it: should pass custom release name
-    release:
-      name: example
-    asserts:
-      - equal:
-          path: spec.selector
-          value:
-            app.kubernetes.io/instance: example
-            app.kubernetes.io/name: argo-watcher
-
-  - it: should not select the mcp pods when the mcp server is enabled
+  - it: should only select the mcp pods
     set:
       mcp:
         enabled: true
     asserts:
-      - hasDocuments:
-          count: 1
       - equal:
-          path: spec.selector["app.kubernetes.io/name"]
-          value: argo-watcher
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher-mcp
+
+  - it: should pass custom port values
+    set:
+      mcp:
+        enabled: true
+        service:
+          type: NodePort
+          port: 8080
+          containerPort: 9000
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 9000
+
+  - it: should pass custom release name
+    release:
+      name: example
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: example-argo-watcher-mcp
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: example
+            app.kubernetes.io/name: argo-watcher-mcp
