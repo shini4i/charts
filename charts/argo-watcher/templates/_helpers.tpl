@@ -65,18 +65,27 @@ Create the name of the service account to use
 Name of the MCP server workload. Kept distinct from the argo-watcher name so the
 argo-watcher selectors, NetworkPolicies and PodMonitor never match MCP pods.
 
-The suffix is appended after truncating the base to 59 characters, not before:
-truncating the joined string would collapse any 63-character name back onto the
-argo-watcher name, silently giving both workloads the same selector labels. The
-one input this does not separate is a 63-character name that already ends in
-"-mcp".
+Truncation happens before the suffix is appended, and the result is compared
+against the base rather than length-checked: a base of 62 or 63 characters that
+already ends in "-mcp" reduces back to itself, which would hand both workloads
+the same selector labels.
 */}}
 {{- define "argo-watcher.mcp.name" -}}
-{{- printf "%s-mcp" (include "argo-watcher.name" . | trunc 59 | trimSuffix "-") }}
+{{- $base := include "argo-watcher.name" . }}
+{{- $name := printf "%s-mcp" ($base | trunc 59 | trimSuffix "-") }}
+{{- if eq $name $base }}
+{{- fail (printf "nameOverride %q yields an MCP workload name identical to argo-watcher's; shorten it to at most 61 characters or drop its \"-mcp\" suffix" $base) }}
+{{- end }}
+{{- $name }}
 {{- end }}
 
 {{- define "argo-watcher.mcp.fullname" -}}
-{{- printf "%s-mcp" (include "argo-watcher.fullname" . | trunc 59 | trimSuffix "-") }}
+{{- $base := include "argo-watcher.fullname" . }}
+{{- $name := printf "%s-mcp" ($base | trunc 59 | trimSuffix "-") }}
+{{- if eq $name $base }}
+{{- fail (printf "fullname %q yields an MCP object name identical to argo-watcher's; shorten the release name, nameOverride or fullnameOverride to at most 61 characters" $base) }}
+{{- end }}
+{{- $name }}
 {{- end }}
 
 {{/*

@@ -283,10 +283,9 @@ mcp:
     initialDelaySeconds: 5
     failureThreshold: 3
 
-  # -- Readiness probe configuration. Defaults to /healthz so the server keeps
-  # serving while argo-watcher is down, which is what lets its get_reachability
-  # tool report the outage. Set path to /readyz to gate readiness on argo-watcher
-  # being reachable instead, accepting that the endpoint disappears with it.
+  # -- Readiness probe configuration. /healthz keeps the server serving while
+  # argo-watcher is down, so its get_reachability tool can report the outage;
+  # /readyz gates readiness on argo-watcher instead, and drops out with it.
   readinessProbe:
     enabled: true
     path: /healthz
@@ -317,13 +316,10 @@ mcp:
     port: 80
     containerPort: 8000
 
-  # Ingress for the MCP endpoint. WARNING: argo-watcher-mcp performs no
-  # authentication or authorization; anything that can reach this Ingress can
-  # read the full deployment history and instance configuration. Only enable it
-  # with an authenticating proxy in front — see the chart README.
   ingress:
-    # -- Expose the MCP endpoint via Ingress. The endpoint is UNAUTHENTICATED;
-    # put an authenticating proxy in front of it.
+    # -- Expose the MCP endpoint via Ingress. Anything that can reach it can read
+    # the full deployment history and instance configuration, so put an
+    # authenticating proxy in front — see "Exposing the MCP server" in the README.
     enabled: false
     className: ""
     annotations: {}

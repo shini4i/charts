@@ -176,7 +176,7 @@ PodMonitor has the same property.
 | mcp.image.tag | string | `"v0.3.0"` | MCP server image tag. Pinned here rather than derived from the chart appVersion, which tracks argo-watcher itself. Required when mcp is enabled. |
 | mcp.ingress.annotations | object | `{}` |  |
 | mcp.ingress.className | string | `""` |  |
-| mcp.ingress.enabled | bool | `false` | Expose the MCP endpoint via Ingress. The endpoint is UNAUTHENTICATED; put an authenticating proxy in front of it. |
+| mcp.ingress.enabled | bool | `false` | Expose the MCP endpoint via Ingress. Anything that can reach it can read the full deployment history and instance configuration, so put an authenticating proxy in front — see "Exposing the MCP server" in the README. |
 | mcp.ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | mcp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | mcp.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -188,7 +188,7 @@ PodMonitor has the same property.
 | mcp.podMonitor.enabled | bool | `false` |  |
 | mcp.podMonitor.labels | object | `{}` |  |
 | mcp.podSecurityContext | object | `{}` |  |
-| mcp.readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/healthz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. Defaults to /healthz so the server keeps serving while argo-watcher is down, which is what lets its get_reachability tool report the outage. Set path to /readyz to gate readiness on argo-watcher being reachable instead, accepting that the endpoint disappears with it. |
+| mcp.readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/healthz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /healthz keeps the server serving while argo-watcher is down, so its get_reachability tool can report the outage; /readyz gates readiness on argo-watcher instead, and drops out with it. |
 | mcp.replicaCount | int | `1` |  |
 | mcp.requestTimeout | string | `"15s"` | How long the MCP server waits for an argo-watcher API response |
 | mcp.resources | object | `{}` |  |

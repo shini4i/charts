@@ -261,6 +261,42 @@ tests:
           path: spec.template.metadata.labels["app.kubernetes.io/name"]
           value: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg
 
+  - it: should refuse a name override that collides with the argo-watcher name
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP workload name identical to argo-watcher's
+
+  - it: should refuse a shorter colliding name override that truncation reduces
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP workload name identical to argo-watcher's
+
+  - it: should ignore a colliding name override while mcp is disabled
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should refuse a fullname override that collides with the argo-watcher name
+    set:
+      fullnameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP object name identical to argo-watcher's
+
   - it: should keep object names within the dns label limit
     set:
       fullnameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg

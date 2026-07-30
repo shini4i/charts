@@ -25,8 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "argo-watcher.mcp.serviceAccountName" . }}
-      # Enforced on the pod as well as the ServiceAccount so a pre-created
-      # account cannot mount a token into a workload that never calls the API.
+      # Also set here so a pre-created ServiceAccount cannot mount a token.
       automountServiceAccountToken: {{ .Values.mcp.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.mcp.podSecurityContext | nindent 8 }}
