@@ -61,3 +61,18 @@ tests:
       - equal:
           path: spec.podMetricsEndpoints[0].scrapeTimeout
           value: 10
+
+  - it: should not scrape the mcp pods when the mcp server is enabled
+    set:
+      podMonitor:
+        enabled: true
+      mcp:
+        enabled: true
+        podMonitor:
+          enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/name"]
+          value: argo-watcher

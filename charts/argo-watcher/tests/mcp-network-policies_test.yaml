@@ -1,0 +1,112 @@
+suite: test mcp network policies
+templates:
+  - templates/mcp-network-policies.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created when mcp is disabled
+    set:
+      networkPolicies:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created when network policies are disabled
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create the default policies for the mcp pods only
+    set:
+      networkPolicies:
+        enabled: true
+      mcp:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+      - documentIndex: 0
+        equal:
+          path: metadata.name
+          value: RELEASE-NAME-argo-watcher-mcp-deny-ingress
+      - documentIndex: 0
+        equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher-mcp
+      - documentIndex: 0
+        contains:
+          path: spec.policyTypes
+          content: Ingress
+      - documentIndex: 1
+        equal:
+          path: metadata.name
+          value: RELEASE-NAME-argo-watcher-mcp-allow-self-namespace
+      - documentIndex: 1
+        equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: NAMESPACE
+
+  - it: should scope additional rules to the mcp port only
+    set:
+      networkPolicies:
+        enabled: true
+      mcp:
+        enabled: true
+        service:
+          containerPort: 9000
+        networkPolicies:
+          additionalRules:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: ingress-nginx
+    asserts:
+      - hasDocuments:
+          count: 3
+      - documentIndex: 2
+        equal:
+          path: metadata.name
+          value: RELEASE-NAME-argo-watcher-mcp-additional-ingress
+      - documentIndex: 2
+        equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher-mcp
+      - documentIndex: 2
+        equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: ingress-nginx
+      - documentIndex: 2
+        equal:
+          path: spec.ingress[0].ports[0].port
+          value: 9000
+
+  - it: should not widen the argo-watcher policies when the mcp rules are set
+    set:
+      networkPolicies:
+        enabled: true
+        additionalRules:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: argocd
+      mcp:
+        enabled: true
+        networkPolicies:
+          additionalRules:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: ingress-nginx
+    asserts:
+      - documentIndex: 2
+        notEqual:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels["kubernetes.io/metadata.name"]
+          value: argocd

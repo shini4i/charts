@@ -23,3 +23,5 @@
 .vscode/
 # Helm unittest files
 tests/
+# helm-docs source template
+*.gotmpl

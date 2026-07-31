@@ -1,0 +1,435 @@
+suite: test mcp deployment
+templates:
+  - templates/mcp-deployment.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      mcp:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create a deployment when enabled
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: apps/v1
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-argo-watcher-mcp
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: argo-watcher-mcp
+
+  - it: should carry its own name label so the argo-watcher selectors do not match it
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          value: argo-watcher-mcp
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: v0.3.0
+
+  - it: should point at the argo-watcher service and speak http
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ARGO_WATCHER_URL
+            value: http://RELEASE-NAME-argo-watcher:80
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TRANSPORT_MODE
+            value: http
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HTTP_LISTEN_ADDR
+            value: ":8000"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: REQUEST_TIMEOUT
+            value: 15s
+
+  - it: should follow the argo-watcher service port and fullnameOverride
+    set:
+      fullnameOverride: watcher
+      service:
+        port: 8080
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: watcher-mcp
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ARGO_WATCHER_URL
+            value: http://watcher:8080
+
+  - it: should bind the listen address to the configured container port
+    set:
+      mcp:
+        enabled: true
+        service:
+          containerPort: 9000
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HTTP_LISTEN_ADDR
+            value: ":9000"
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 9000
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+
+  - it: should use the pinned image tag
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/shini4i/argo-watcher-mcp:v0.3.0
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should allow overriding the image
+    set:
+      mcp:
+        enabled: true
+        image:
+          repository: example.com/argo-watcher-mcp
+          tag: v9.9.9
+          pullPolicy: Always
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: example.com/argo-watcher-mcp:v9.9.9
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+
+  - it: should fail when the image tag is emptied
+    set:
+      mcp:
+        enabled: true
+        image:
+          tag: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: mcp.image.tag is required when mcp.enabled is true; the chart appVersion tracks argo-watcher, not the MCP server
+
+  - it: should probe healthz on both probes by default
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /healthz
+
+  - it: should allow gating readiness on argo-watcher reachability
+    set:
+      mcp:
+        enabled: true
+        readinessProbe:
+          path: /readyz
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /readyz
+
+  - it: should allow disabling probes
+    set:
+      mcp:
+        enabled: true
+        livenessProbe:
+          enabled: false
+        readinessProbe:
+          enabled: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].livenessProbe
+      - isNull:
+          path: spec.template.spec.containers[0].readinessProbe
+
+  - it: should run as an unprivileged user with a read-only root filesystem
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            seccompProfile:
+              type: RuntimeDefault
+
+  - it: should use its own service account
+    set:
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: RELEASE-NAME-argo-watcher-mcp
+
+  - it: should use a pre-created service account when creation is disabled
+    set:
+      mcp:
+        enabled: true
+        serviceAccount:
+          create: false
+          name: existing-mcp-sa
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: existing-mcp-sa
+
+  - it: should fail when service account creation is disabled without a name
+    set:
+      mcp:
+        enabled: true
+        serviceAccount:
+          create: false
+    asserts:
+      - failedTemplate:
+          errorMessage: mcp.serviceAccount.name is required when mcp.serviceAccount.create is false
+
+  - it: should refuse a token on the pod even with a pre-created service account
+    set:
+      mcp:
+        enabled: true
+        serviceAccount:
+          create: false
+          name: existing-mcp-sa
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: should reserve room for the mcp suffix instead of truncating it away
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg
+      mcp:
+        enabled: true
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          pattern: ^a{10}b{10}c{10}d{10}e{10}f{9}-mcp$
+      - notEqual:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          value: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg
+
+  - it: should refuse a name override that collides with the argo-watcher name
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP workload name identical to argo-watcher's
+
+  - it: should refuse a shorter colliding name override that truncation reduces
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP workload name identical to argo-watcher's
+
+  - it: should ignore a colliding name override while mcp is disabled
+    set:
+      nameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should refuse a fullname override that collides with the argo-watcher name
+    set:
+      fullnameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeefffffffff-mcp
+      mcp:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: yields an MCP object name identical to argo-watcher's
+
+  - it: should keep object names within the dns label limit
+    set:
+      fullnameOverride: aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffggg
+      mcp:
+        enabled: true
+    asserts:
+      - matchRegex:
+          path: metadata.name
+          pattern: ^.{1,63}$
+      - matchRegex:
+          path: metadata.name
+          pattern: -mcp$
+
+  - it: should keep the version label a valid kubernetes label value
+    set:
+      mcp:
+        enabled: true
+        image:
+          tag: v0.3.0-aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggg
+    asserts:
+      - matchRegex:
+          path: metadata.labels["app.kubernetes.io/version"]
+          pattern: ^.{1,63}$
+
+  - it: should append extra environment variables
+    set:
+      mcp:
+        enabled: true
+        extraEnvs:
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: otel-collector:4317
+          - name: OTEL_EXPORTER_OTLP_INSECURE
+            value: "true"
+          - name: FROM_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: otel-collector:4317
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OTEL_EXPORTER_OTLP_INSECURE
+            value: "true"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: FROM_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+
+  - it: should keep the pod and container security contexts separate
+    set:
+      mcp:
+        enabled: true
+        podSecurityContext:
+          fsGroup: 2000
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 65532
+      - isNull:
+          path: spec.template.spec.containers[0].securityContext.fsGroup
+
+  - it: should pass scheduling and pod level values through
+    set:
+      mcp:
+        enabled: true
+        replicaCount: 3
+        revisionHistory: 5
+        podAnnotations:
+          example.com/annotation: value
+        nodeSelector:
+          disktype: ssd
+        tolerations:
+          - key: example
+            operator: Exists
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: example
+                      operator: Exists
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: DoNotSchedule
+        resources:
+          limits:
+            cpu: 100m
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+      - equal:
+          path: spec.revisionHistoryLimit
+          value: 5
+      - equal:
+          path: spec.template.metadata.annotations["example.com/annotation"]
+          value: value
+      - equal:
+          path: spec.template.spec.nodeSelector.disktype
+          value: ssd
+      - equal:
+          path: spec.template.spec.tolerations[0].key
+          value: example
+      - isNotNull:
+          path: spec.template.spec.affinity.nodeAffinity
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].maxSkew
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 100m
+
+  - it: should honour image pull secrets
+    set:
+      imagePullSecrets:
+        - name: regcred
+      mcp:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred

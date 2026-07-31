@@ -228,6 +228,113 @@
         "maxUnavailable": { "type": ["integer", "string"] }
       },
       "required": ["enabled"]
+    },
+    "mcp": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicaCount": { "type": "integer", "minimum": 1 },
+        "revisionHistory": { "type": "integer", "minimum": 0 },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string" },
+            "pullPolicy": { "type": "string", "enum": ["Always", "IfNotPresent", "Never"] },
+            "tag": { "type": ["string", "number"] }
+          },
+          "required": ["repository"]
+        },
+        "requestTimeout": { "type": "string" },
+        "livenessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "path": { "type": "string" },
+            "periodSeconds": { "type": "integer", "minimum": 1 },
+            "timeoutSeconds": { "type": "integer", "minimum": 1 },
+            "initialDelaySeconds": { "type": "integer", "minimum": 0 },
+            "failureThreshold": { "type": "integer", "minimum": 1 }
+          },
+          "required": ["enabled"]
+        },
+        "readinessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "path": { "type": "string" },
+            "periodSeconds": { "type": "integer", "minimum": 1 },
+            "timeoutSeconds": { "type": "integer", "minimum": 1 },
+            "initialDelaySeconds": { "type": "integer", "minimum": 0 },
+            "failureThreshold": { "type": "integer", "minimum": 1 }
+          },
+          "required": ["enabled"]
+        },
+        "extraEnvs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            },
+            "required": ["name"]
+          }
+        },
+        "serviceAccount": {
+          "type": "object",
+          "properties": {
+            "create": { "type": "boolean" },
+            "annotations": { "type": "object" },
+            "name": { "type": "string" },
+            "automountServiceAccountToken": { "type": "boolean" }
+          },
+          "required": ["create"]
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["ClusterIP", "NodePort", "LoadBalancer"] },
+            "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+            "containerPort": { "type": "integer", "minimum": 1, "maximum": 65535 }
+          },
+          "required": ["type", "port", "containerPort"]
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "className": { "type": "string" },
+            "annotations": { "type": "object" },
+            "hosts": { "type": "array" },
+            "tls": { "type": "array" }
+          },
+          "required": ["enabled"]
+        },
+        "networkPolicies": {
+          "type": "object",
+          "properties": {
+            "additionalRules": { "type": "array" }
+          }
+        },
+        "podMonitor": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "interval": { "type": ["string", "number"] },
+            "scrapeTimeout": { "type": ["string", "number"] },
+            "labels": { "type": "object" }
+          },
+          "required": ["enabled"]
+        },
+        "podAnnotations": { "type": "object" },
+        "podSecurityContext": { "type": "object" },
+        "securityContext": { "type": "object" },
+        "resources": { "type": "object" },
+        "nodeSelector": { "type": "object" },
+        "tolerations": { "type": "array" },
+        "affinity": { "type": "object" },
+        "topologySpreadConstraints": { "type": "array" }
+      },
+      "required": ["enabled"]
     }
   },
   "required": ["replicaCount", "image", "argo"]

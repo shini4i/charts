@@ -1,0 +1,17 @@
+{{- if .Values.mcp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.mcp.service.type }}
+  ports:
+    - port: {{ .Values.mcp.service.port }}
+      targetPort: {{ .Values.mcp.service.containerPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "argo-watcher.mcp.selectorLabels" . | nindent 4 }}
+{{- end }}

@@ -1,0 +1,92 @@
+{{- if .Values.mcp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.mcp.replicaCount }}
+  revisionHistoryLimit: {{ .Values.mcp.revisionHistory }}
+  selector:
+    matchLabels:
+      {{- include "argo-watcher.mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.mcp.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "argo-watcher.mcp.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "argo-watcher.mcp.serviceAccountName" . }}
+      # Also set here so a pre-created ServiceAccount cannot mount a token.
+      automountServiceAccountToken: {{ .Values.mcp.serviceAccount.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.mcp.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "argo-watcher.mcp.name" . }}
+          securityContext:
+            {{- toYaml .Values.mcp.securityContext | nindent 12 }}
+          image: "{{ .Values.mcp.image.repository }}:{{ include "argo-watcher.mcp.tag" . }}"
+          imagePullPolicy: {{ .Values.mcp.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.mcp.service.containerPort }}
+              protocol: TCP
+          env:
+            - name: ARGO_WATCHER_URL
+              value: {{ include "argo-watcher.mcp.upstreamUrl" . | quote }}
+            - name: TRANSPORT_MODE
+              value: "http"
+            - name: HTTP_LISTEN_ADDR
+              value: {{ printf ":%v" .Values.mcp.service.containerPort | quote }}
+            - name: REQUEST_TIMEOUT
+              value: {{ .Values.mcp.requestTimeout | quote }}
+            {{- with .Values.mcp.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.mcp.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.mcp.livenessProbe.path }}
+              port: http
+            periodSeconds: {{ .Values.mcp.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.mcp.livenessProbe.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.mcp.livenessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.mcp.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.mcp.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.mcp.readinessProbe.path }}
+              port: http
+            periodSeconds: {{ .Values.mcp.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.mcp.readinessProbe.timeoutSeconds }}
+            initialDelaySeconds: {{ .Values.mcp.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.mcp.readinessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.mcp.resources | nindent 12 }}
+      {{- with .Values.mcp.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mcp.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mcp.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mcp.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

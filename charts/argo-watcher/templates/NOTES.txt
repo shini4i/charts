@@ -21,3 +21,23 @@ Database: postgres ({{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .
 
 State storage: in-memory (data will be lost on pod restart)
 {{- end }}
+
+{{- if .Values.mcp.enabled }}
+
+The MCP server is deployed at {{ include "argo-watcher.mcp.fullname" . }}.
+
+Point an MCP client at http://localhost:8000 after running:
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "argo-watcher.mcp.fullname" . }} 8000:{{ .Values.mcp.service.port }}
+{{- if .Values.mcp.ingress.enabled }}
+
+  WARNING: mcp.ingress is enabled and argo-watcher-mcp performs NO
+  authentication or authorization. Anyone who can reach the addresses below can
+  read your full deployment history and instance configuration. Keep an
+  authenticating proxy in front of it.
+{{- range $host := .Values.mcp.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.mcp.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

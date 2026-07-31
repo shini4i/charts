@@ -1,0 +1,24 @@
+{{- if and .Values.mcp.enabled .Values.mcp.podMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}-metrics
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+    {{- with .Values.mcp.podMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "argo-watcher.mcp.selectorLabels" . | nindent 6 }}
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      {{- with .Values.mcp.podMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.mcp.podMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,55 @@
+{{- if and .Values.mcp.enabled .Values.networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}-deny-ingress
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "argo-watcher.mcp.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}-allow-self-namespace
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "argo-watcher.mcp.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+{{- if .Values.mcp.networkPolicies.additionalRules }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "argo-watcher.mcp.fullname" . }}-additional-ingress
+  labels:
+    {{- include "argo-watcher.mcp.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "argo-watcher.mcp.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    {{- with .Values.mcp.networkPolicies.additionalRules }}
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ $.Values.mcp.service.containerPort }}
+    {{- end }}
+{{- end }}
+{{- end }}
