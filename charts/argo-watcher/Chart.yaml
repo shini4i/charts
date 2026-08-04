@@ -6,14 +6,14 @@ sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/argo-watcher-mcp
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 1.2.0
+version: 1.2.1
 keywords:
 - argocd
 - gitops
 - automation
 - mcp
 kubeVersion: '>=1.21.0-0'
-appVersion: v0.13.0
+appVersion: v0.14.0
 maintainers:
 - name: Vadim Gedz
   email: github@shini4i.dev
@@ -24,5 +24,5 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: added
-      description: Optional argo-watcher-mcp deployment, enabled via mcp.enabled
+    - kind: changed
+      description: Update argo-watcher app version from v0.13.0 to v0.14.0
