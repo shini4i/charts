@@ -544,6 +544,18 @@ tests:
       - failedTemplate:
           errorMessage: "oidc.clientId is required when oidc.enabled is true"
 
+  # Liveness must not depend on the state backend: a restart cannot bring a
+  # database back, so probing it for liveness turns an outage into a
+  # CrashLoopBackoff while the pods can still serve task history.
+  - it: should probe livez for liveness and readyz for readiness by default
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /livez
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /readyz
+
   - it: should render separate liveness and readiness probes with different defaults
     asserts:
       - equal:
@@ -564,18 +576,27 @@ tests:
       - notExists:
           path: spec.template.spec.containers[0].startupProbe
 
+  - it: should probe livez when the startup probe is enabled without overrides
+    set:
+      startupProbe:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /livez
+
   - it: should render startup probe when enabled
     set:
       startupProbe:
         enabled: true
-        path: /healthz
+        path: /livez
         periodSeconds: 5
         timeoutSeconds: 3
         failureThreshold: 30
     asserts:
       - equal:
           path: spec.template.spec.containers[0].startupProbe.httpGet.path
-          value: /healthz
+          value: /livez
       - equal:
           path: spec.template.spec.containers[0].startupProbe.periodSeconds
           value: 5

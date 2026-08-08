@@ -14,6 +14,18 @@
 
 {{ template "chart.requirementsSection" . }}
 
+## Probes
+
+The liveness probe targets `/livez` and the readiness probe targets `/readyz`. Do
+not swap them: a liveness failure restarts the container, and a restart cannot
+reach a database that is down — see the `livenessProbe` and `readinessProbe`
+entries in the values table for the full reasoning.
+
+Both endpoints require an argo-watcher release that implements the liveness and
+readiness split, which replaced `/healthz`. If your `image.tag` predates it, set
+`livenessProbe.path`, `readinessProbe.path` and `startupProbe.path` back to
+`/healthz`.
+
 ## MCP server
 
 Setting `mcp.enabled: true` deploys [argo-watcher-mcp](https://github.com/shini4i/argo-watcher-mcp),

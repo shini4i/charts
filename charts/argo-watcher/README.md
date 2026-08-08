@@ -20,6 +20,18 @@ A Helm chart for deploying argo-watcher
 
 Kubernetes: `>=1.21.0-0`
 
+## Probes
+
+The liveness probe targets `/livez` and the readiness probe targets `/readyz`. Do
+not swap them: a liveness failure restarts the container, and a restart cannot
+reach a database that is down — see the `livenessProbe` and `readinessProbe`
+entries in the values table for the full reasoning.
+
+Both endpoints require an argo-watcher release that implements the liveness and
+readiness split, which replaced `/healthz`. If your `image.tag` predates it, set
+`livenessProbe.path`, `readinessProbe.path` and `startupProbe.path` back to
+`/healthz`.
+
 ## MCP server
 
 Setting `mcp.enabled: true` deploys [argo-watcher-mcp](https://github.com/shini4i/argo-watcher-mcp),
@@ -166,7 +178,7 @@ PodMonitor has the same property.
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
-| livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"path":"/healthz","periodSeconds":30,"timeoutSeconds":5}` | Liveness probe configuration |
+| livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"path":"/livez","periodSeconds":30,"timeoutSeconds":5}` | Liveness probe configuration. /livez checks no dependency, so a state backend outage marks pods unready instead of restarting them; do not point this at /readyz. |
 | logLevel | string | `"info"` |  |
 | mcp.affinity | object | `{}` |  |
 | mcp.enabled | bool | `false` | Deploy the MCP server alongside argo-watcher |
@@ -246,7 +258,7 @@ PodMonitor has the same property.
 | postgres.secretKey | string | `""` | Support for an optional key override (this specific key would be exposed to DB_PASSWORD) |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
 | postgres.user | string | `""` |  |
-| readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/healthz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration |
+| readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/readyz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /readyz reports down while the pod is shutting down and while the state backend is unreachable. ArgoCD reachability is excluded, so an ArgoCD outage keeps the API and Web UI serving. |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | revisionHistory | int | `1` |  |
@@ -264,7 +276,7 @@ PodMonitor has the same property.
 | serviceAccount.automountServiceAccountToken | bool | `true` | Whether to automount the service account token |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| startupProbe | object | `{"enabled":false,"failureThreshold":30,"path":"/healthz","periodSeconds":5,"timeoutSeconds":3}` | Startup probe configuration |
+| startupProbe | object | `{"enabled":false,"failureThreshold":30,"path":"/livez","periodSeconds":5,"timeoutSeconds":3}` | Startup probe configuration. Disabled because argo-watcher binds its listener only after its config, ArgoCD client and state backend are initialised, and exits rather than starting degraded, so there is no slow-start window for a startup probe to cover. |
 | tolerations | list | `[]` |  |
 | topologySpreadConstraints | list | `[]` |  |
 | updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","extraKnownHosts":[],"knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement (optional) |
