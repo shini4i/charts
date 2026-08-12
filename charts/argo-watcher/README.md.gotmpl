@@ -125,13 +125,16 @@ render without them. Enabling OIDC closes the read endpoints the Web UI
 consumes — the endpoints the CI client uses are unaffected, so no pipeline
 breaks.
 
-Two provider-side settings decide whether privileged controls work at all: the
+Three provider-side settings have to be right, and they fail differently. The
 redirect URI must be the application's base URL **including the trailing
-slash**, and the provider must emit a `groups` claim in its userinfo response
-under a scope argo-watcher requests (`profile` or `email`). Get either wrong and
-sign-in still succeeds while the redeploy button and deploy-lock toggle stay
-hidden. The upstream [OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/)
-covers both per provider.
+slash**; providers match it exactly, and a mismatch fails the login on the
+provider's own error page before argo-watcher is reached. The web origin must
+allow the application's origin, and the provider must emit a `groups` claim in
+its userinfo response under a scope argo-watcher requests (`profile` or
+`email`) — get either of those wrong and sign-in still succeeds while the
+redeploy button and deploy-lock toggle stay hidden. The upstream
+[OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/) covers
+all three per provider.
 
 `oidc.tokenValidationInterval` defaults to 10 s here, against the server's own
 5 min. That is one userinfo call per token per interval, so raise it if your
