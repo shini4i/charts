@@ -20,6 +20,136 @@ A Helm chart for deploying argo-watcher
 
 Kubernetes: `>=1.21.0-0`
 
+## Quick start
+
+```console
+helm repo add shini4i https://shini4i.github.io/charts/
+helm repo update
+helm install argo-watcher shini4i/argo-watcher -f values.yaml
+```
+
+The chart deploys the argo-watcher server as a StatefulSet. The REST API your CI
+client talks to and the Web UI are served on the same port, so one Ingress
+covers both:
+
+```yaml
+argo:
+  url: https://argocd.argocd.svc.cluster.local
+  secretName: argo-watcher
+ingress:
+  enabled: true
+  hosts:
+    - host: argo-watcher.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+```
+
+Point the CI client (`ghcr.io/shini4i/argo-watcher-client`) at that host through
+`ARGO_WATCHER_URL`; the upstream [installation guide](https://argo-watcher.readthedocs.io/en/latest/guides/install/)
+has GitLab CI and GitHub Actions examples.
+
+`networkPolicies.enabled: true` denies ingress to the pods and then allows the
+release namespace back in, so an Ingress in front of it needs a
+`networkPolicies.additionalRules` entry for the controller's own namespace.
+
+### The Argo CD secret
+
+The chart creates no secrets. Create one yourself and name it in
+`argo.secretName` — it is mounted with `envFrom`, so every key in it becomes an
+environment variable:
+
+| Key | Purpose |
+|-----|---------|
+| `ARGO_TOKEN` | Argo CD API token. Required; the server refuses to start without it. |
+| `ARGO_WATCHER_DEPLOY_TOKEN` | Shared token the CI client presents. Optional, planned for deprecation upstream. |
+| `JWT_SECRET` | HMAC key for signing client JWTs — the recommended alternative to the deploy token. |
+
+A dedicated Argo CD account with `get` and `sync` on `applications */*` is
+enough for the token:
+
+```console
+argocd account generate-token --account watcher
+```
+
+## State backend
+
+`postgres.enabled: false`, the default, keeps task history in the process. It is
+single-replica only — the chart refuses to render with `replicaCount > 1` — and
+the history, along with any manually set deploy lock, is lost on every restart.
+
+For a persistent, multi-replica install, point the chart at an existing
+PostgreSQL database:
+
+```yaml
+postgres:
+  enabled: true
+  host: postgres.example.svc.cluster.local
+  name: argo-watcher
+  user: argo-watcher
+  secretName: argo-watcher-postgres
+```
+
+The secret is consumed like the Argo CD one: with `postgres.secretKey` unset the
+whole secret is loaded through `envFrom` and must contain `DB_PASSWORD`; set
+`postgres.secretKey` to map a differently named key onto it instead.
+
+Migrations need no manual step. The chart schedules a `pre-install`/`pre-upgrade`
+hook Job that runs `argo-watcher --migrate` with the same image and database
+credentials, so `helm upgrade` applies new migrations before the new pods start.
+
+## GitOps updater
+
+Setting `updater.sshSecretName` enables argo-watcher's built-in image tag
+updater, which commits to your GitOps repository instead of relying on Argo CD
+Image Updater. It needs three things:
+
+- A secret holding the private SSH key under `updater.sshKey` (`sshPrivateKey`
+  by default), authorised to push to the GitOps repository.
+- A client credential — `ARGO_WATCHER_DEPLOY_TOKEN` or `JWT_SECRET` in the Argo
+  CD secret above. Tasks submitted without one are still tracked, but never
+  trigger a write-back.
+- Annotations on the Argo CD Application that say which images to update and
+  where to write the tag; see the upstream
+  [GitOps updater guide](https://argo-watcher.readthedocs.io/en/latest/guides/gitops-updater/).
+
+Known hosts for GitHub, GitLab, Bitbucket and Azure DevOps ship with the chart.
+`updater.extraKnownHosts` appends to them; `updater.knownHostsConfigMap`
+replaces them with a ConfigMap of your own.
+
+The persistent volume backs the updater's git clone cache (`REPO_CACHE_PATH`,
+which defaults to `/data`). `persistence.mountPath` moves the mount but not the
+cache path, so if you change it, set `REPO_CACHE_PATH` through `extraEnvs` to
+match. With the updater unused, `persistence.enabled: false` swaps the volume
+for a tmpfs `emptyDir`.
+
+## Authentication and the deploy lock
+
+The `oidc.*` values map onto the server's `OIDC_*` variables; `issuerUrl` and
+`clientId` are required when `oidc.enabled` is true and the chart fails the
+render without them. Enabling OIDC closes the read endpoints the Web UI
+consumes — the endpoints the CI client uses are unaffected, so no pipeline
+breaks.
+
+Three provider-side settings have to be right, and they fail differently. The
+redirect URI must be the application's base URL **including the trailing
+slash**; providers match it exactly, and a mismatch fails the login on the
+provider's own error page before argo-watcher is reached. The web origin must
+allow the application's origin, and the provider must emit a `groups` claim in
+its userinfo response under a scope argo-watcher requests (`profile` or
+`email`) — get either of those wrong and sign-in still succeeds while the
+redeploy button and deploy-lock toggle stay hidden. The upstream
+[OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/) covers
+all three per provider.
+
+`oidc.tokenValidationInterval` defaults to 10 s here, against the server's own
+5 min. That is one userinfo call per token per interval, so raise it if your
+provider is remote or rate-limited.
+
+Recurring maintenance windows are set with `scheduledLockdown` and need no
+authentication. Locking deployments manually from the Web UI does require OIDC:
+without an auth backend the server never registers the lock endpoints.
+
 ## Probes
 
 The liveness probe targets `/livez` and the readiness probe targets `/readyz`. Do
