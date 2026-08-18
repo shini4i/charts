@@ -183,11 +183,26 @@ job:
     tag: 8.7.1
     pullPolicy: IfNotPresent
   imagePullSecrets: []
+  # -- A job container command override
   command: ["curl", "https://ifconfig.me"]
+  # -- A job container args
+  args: []
   restartPolicy: Never
   backoffLimit: 1
-  annotations:
-    "helm.sh/hook": pre-upgrade
+  # -- Seconds to keep a finished job before the TTL controller removes it
+  ttlSecondsAfterFinished: null
+  # -- Seconds a job may run before it is terminated and marked failed
+  activeDeadlineSeconds: null
+  # -- Annotations to add to the job. Set "helm.sh/hook" here to run the job as a Helm hook
+  annotations: {}
+  #  "helm.sh/hook": pre-upgrade
+  #  "helm.sh/hook-delete-policy": before-hook-creation
+  # -- Labels to add to the job on top of the common chart labels
+  labels: {}
+  # -- Annotations to add to the job pod
+  podAnnotations: {}
+  # -- Labels to add to the job pod on top of instance, managed-by and component
+  podLabels: {}
   # -- An override for the job service account
   serviceAccountName: ""
   # -- NodeSelector to use for the job pod
@@ -196,7 +211,7 @@ job:
   tolerations: []
   # -- Affinity to use for the job pod
   affinity: {}
-  # -- securityContext to use for the job pod
+  # -- securityContext to use for the job container
   securityContext: {}
   #  allowPrivilegeEscalation: false
   #  capabilities:
@@ -206,6 +221,11 @@ job:
   #  runAsUser: 1000
   #  runAsGroup: 1000
   #  fsGroup: 1000
+  # -- Resources to request for the job container
+  resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 128Mi
   # -- Environment variables to pass to job container
   env: []
   # - name: "ENV_NAME"
@@ -216,6 +236,15 @@ job:
   #     name: config-map-name
   # - secretRef:
   #     name: secret-name
+  # -- Raw yaml definition of volumes available to the job pod
+  volumes: []
+  #  - name: config
+  #    configMap:
+  #      name: config-map-name
+  # -- Raw yaml definition of volume mounts for the job container
+  volumeMounts: []
+  #  - name: config
+  #    mountPath: /etc/config
 
 podMonitor:
   enabled: false
