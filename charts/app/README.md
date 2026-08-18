@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for a simple app deployment
 
@@ -48,11 +48,12 @@ A Helm chart for a simple app deployment
 | ingressRoute | object | `{"annotations":{},"enabled":false,"entryPoint":"websecure","exposedPort":80,"host":"example.com","labels":{},"tlsSecret":"example-com-tls"}` | Traefik v2 ingressRoute definition |
 | ingressRoute.exposedPort | int | `80` | Port to use with ingressRoute |
 | initContainers | list | `[]` | Raw yaml definition of init containers |
+| job.activeDeadlineSeconds | string | `nil` | Seconds a job may run before it is terminated and marked failed |
 | job.affinity | object | `{}` | Affinity to use for the job pod |
-| job.annotations."helm.sh/hook" | string | `"pre-upgrade"` |  |
+| job.annotations | object | `{}` | Annotations to add to the job. Set "helm.sh/hook" here to run the job as a Helm hook |
+| job.args | list | `[]` | A job container args |
 | job.backoffLimit | int | `1` |  |
-| job.command[0] | string | `"curl"` |  |
-| job.command[1] | string | `"https://ifconfig.me"` |  |
+| job.command | list | `["curl","https://ifconfig.me"]` | A job container command override |
 | job.enabled | bool | `false` |  |
 | job.env | list | `[]` | Environment variables to pass to job container |
 | job.envFrom | list | `[]` | envFrom to pass to job container |
@@ -60,12 +61,19 @@ A Helm chart for a simple app deployment
 | job.image.repository | string | `"curlimages/curl"` |  |
 | job.image.tag | string | `"8.7.1"` |  |
 | job.imagePullSecrets | list | `[]` |  |
+| job.labels | object | `{}` | Labels to add to the job on top of the common chart labels |
 | job.nodeSelector | object | `{}` | NodeSelector to use for the job pod |
+| job.podAnnotations | object | `{}` | Annotations to add to the job pod |
+| job.podLabels | object | `{}` | Labels to add to the job pod on top of instance, managed-by and component. app.kubernetes.io/name is ignored: it would enrol job pods as Service endpoints |
 | job.podSecurityContext | object | `{}` | podSecurityContext to use for the job pod |
+| job.resources | object | `{}` | Resources to request for the job container |
 | job.restartPolicy | string | `"Never"` |  |
-| job.securityContext | object | `{}` | securityContext to use for the job pod |
+| job.securityContext | object | `{}` | securityContext to use for the job container |
 | job.serviceAccountName | string | `""` | An override for the job service account |
 | job.tolerations | list | `[]` | Tolerations to use for the job pod |
+| job.ttlSecondsAfterFinished | string | `nil` | Seconds to keep a finished job before the TTL controller removes it |
+| job.volumeMounts | list | `[]` | Raw yaml definition of volume mounts for the job container |
+| job.volumes | list | `[]` | Raw yaml definition of volumes available to the job pod |
 | keda.advanced | object | `{}` |  |
 | keda.enabled | bool | `false` |  |
 | keda.fallback | object | `{}` |  |

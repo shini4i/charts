@@ -2,17 +2,21 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.2.1
+version: 0.3.0
 
 annotations:
   artifacthub.io/signKey: |
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
+    - kind: fixed
+      description: job annotations are no longer rendered outside of the metadata block
     - kind: changed
-      description: got rid of heavily outdated kubernetes support in Ingress
+      description: 'job.annotations now defaults to {}; set "helm.sh/hook" explicitly to keep the pre-upgrade hook, otherwise delete the leftover hook-created job before upgrading'
     - kind: added
-      description: support for specifying additional services in Ingress
+      description: job now carries the common chart labels and supports labels, podLabels and podAnnotations
+    - kind: added
+      description: job support for args, resources, volumes, volumeMounts, ttlSecondsAfterFinished and activeDeadlineSeconds
 
 maintainers:
   - name: Vadim Gedz

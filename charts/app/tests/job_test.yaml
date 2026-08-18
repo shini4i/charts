@@ -159,3 +159,201 @@ tests:
       - equal:
           path: spec.template.spec.serviceAccountName
           value: example-service-account
+
+  - it: should not set annotations by default
+    set:
+      job:
+        enabled: true
+    asserts:
+      - notExists:
+          path: metadata.annotations
+
+  - it: should keep every annotation nested under metadata
+    set:
+      job:
+        enabled: true
+        annotations:
+          "helm.sh/hook": pre-upgrade
+          "helm.sh/hook-delete-policy": before-hook-creation
+          example: example1
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            "helm.sh/hook": pre-upgrade
+            "helm.sh/hook-delete-policy": before-hook-creation
+            example: example1
+
+  - it: should set chart labels and additional labels
+    set:
+      job:
+        enabled: true
+        labels:
+          example: example1
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: app
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels.example
+          value: example1
+
+  - it: should set pod labels and pod annotations
+    set:
+      job:
+        enabled: true
+        podLabels:
+          example: example1
+        podAnnotations:
+          example: example2
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/component: job
+            example: example1
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            example: example2
+
+  - it: should not label job pods with the service selector pair
+    set:
+      job:
+        enabled: true
+    asserts:
+      - notExists:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+
+  - it: should ignore a name label supplied through podLabels
+    set:
+      job:
+        enabled: true
+        podLabels:
+          "app.kubernetes.io/name": app
+          example: example1
+    asserts:
+      - notExists:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+      - equal:
+          path: spec.template.metadata.labels.example
+          value: example1
+
+  - it: should render zero second timeouts
+    set:
+      job:
+        enabled: true
+        ttlSecondsAfterFinished: 0
+        activeDeadlineSeconds: 0
+    asserts:
+      - equal:
+          path: spec.ttlSecondsAfterFinished
+          value: 0
+      - equal:
+          path: spec.activeDeadlineSeconds
+          value: 0
+
+  - it: should use safe job defaults
+    set:
+      job:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.backoffLimit
+          value: 1
+      - equal:
+          path: spec.template.spec.restartPolicy
+          value: Never
+
+  - it: should set args and resources
+    set:
+      job:
+        enabled: true
+        args: ["-c", "echo test"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - -c
+            - echo test
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+  - it: should not set args or resources by default
+    set:
+      job:
+        enabled: true
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].args
+      - notExists:
+          path: spec.template.spec.containers[0].resources
+
+  - it: should set volumes and volumeMounts
+    set:
+      job:
+        enabled: true
+        volumes:
+          - name: config
+            configMap:
+              name: example-configmap
+        volumeMounts:
+          - name: config
+            mountPath: /etc/config
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0]
+          value:
+            name: config
+            configMap:
+              name: example-configmap
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0]
+          value:
+            name: config
+            mountPath: /etc/config
+
+  - it: should set ttlSecondsAfterFinished and activeDeadlineSeconds
+    set:
+      job:
+        enabled: true
+        ttlSecondsAfterFinished: 300
+        activeDeadlineSeconds: 600
+    asserts:
+      - equal:
+          path: spec.ttlSecondsAfterFinished
+          value: 300
+      - equal:
+          path: spec.activeDeadlineSeconds
+          value: 600
+
+  - it: should omit optional pod fields when unset
+    set:
+      job:
+        enabled: true
+    asserts:
+      - notExists:
+          path: spec.ttlSecondsAfterFinished
+      - notExists:
+          path: spec.activeDeadlineSeconds
+      - notExists:
+          path: spec.template.metadata.annotations
+      - notExists:
+          path: spec.template.spec.nodeSelector
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.volumes
