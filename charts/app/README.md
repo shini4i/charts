@@ -64,7 +64,7 @@ A Helm chart for a simple app deployment
 | job.labels | object | `{}` | Labels to add to the job on top of the common chart labels |
 | job.nodeSelector | object | `{}` | NodeSelector to use for the job pod |
 | job.podAnnotations | object | `{}` | Annotations to add to the job pod |
-| job.podLabels | object | `{}` | Labels to add to the job pod on top of instance, managed-by and component |
+| job.podLabels | object | `{}` | Labels to add to the job pod on top of instance, managed-by and component. app.kubernetes.io/name is ignored: it would enrol job pods as Service endpoints |
 | job.podSecurityContext | object | `{}` | podSecurityContext to use for the job pod |
 | job.resources | object | `{}` | Resources to request for the job container |
 | job.restartPolicy | string | `"Never"` |  |

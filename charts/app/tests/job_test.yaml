@@ -230,6 +230,20 @@ tests:
       - notExists:
           path: spec.template.metadata.labels["app.kubernetes.io/name"]
 
+  - it: should ignore a name label supplied through podLabels
+    set:
+      job:
+        enabled: true
+        podLabels:
+          "app.kubernetes.io/name": app
+          example: example1
+    asserts:
+      - notExists:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+      - equal:
+          path: spec.template.metadata.labels.example
+          value: example1
+
   - it: should render zero second timeouts
     set:
       job:

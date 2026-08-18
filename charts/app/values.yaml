@@ -201,7 +201,7 @@ job:
   labels: {}
   # -- Annotations to add to the job pod
   podAnnotations: {}
-  # -- Labels to add to the job pod on top of instance, managed-by and component
+  # -- Labels to add to the job pod on top of instance, managed-by and component. app.kubernetes.io/name is ignored: it would enrol job pods as Service endpoints
   podLabels: {}
   # -- An override for the job service account
   serviceAccountName: ""

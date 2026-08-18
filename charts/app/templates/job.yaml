@@ -23,12 +23,13 @@ spec:
   template:
     metadata:
       {{- /* Not app.selectorLabels: that pair is the Service and PodMonitor selector,
-             and job pods matching it would be enrolled as Service endpoints. */}}
+             and job pods matching it would be enrolled as Service endpoints. The
+             omit below stops podLabels reintroducing the half that is missing. */}}
       labels:
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/component: job
-        {{- with .Values.job.podLabels }}
+        {{- with omit .Values.job.podLabels "app.kubernetes.io/name" }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- with .Values.job.podAnnotations }}
