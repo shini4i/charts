@@ -3,6 +3,36 @@ entries:
   app:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: job annotations are no longer rendered outside of the metadata block
+        - kind: changed
+          description: 'job.annotations now defaults to {}; set "helm.sh/hook" explicitly to keep the pre-upgrade hook, otherwise delete the leftover hook-created job before upgrading'
+        - kind: added
+          description: job now carries the common chart labels and supports labels, podLabels and podAnnotations
+        - kind: added
+          description: job support for args, resources, volumes, volumeMounts, ttlSecondsAfterFinished and activeDeadlineSeconds
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2026-08-18T13:51:18.295100486Z"
+    dependencies:
+    - name: network-policies
+      repository: https://shini4i.github.io/charts/
+      version: 0.0.6
+    description: A Helm chart for a simple app deployment
+    digest: f924fbf57ae88db34fcb71160cc67ddf30b0e9845ff2150a3c74db05bea8f191
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.3.0/app-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: got rid of heavily outdated kubernetes support in Ingress
         - kind: added
@@ -2824,4 +2854,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-11T18:22:24.310304006Z"
+generated: "2026-08-18T13:51:18.493312708Z"
