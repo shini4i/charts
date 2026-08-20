@@ -105,7 +105,7 @@ updater, which commits to your GitOps repository instead of relying on Argo CD
 Image Updater. It needs three things:
 
 - A secret holding the private SSH key under `updater.sshKey` (`sshPrivateKey`
-  by default), authorised to push to the GitOps repository.
+  by default), authorised to write to the GitOps repository.
 - A client credential — `ARGO_WATCHER_DEPLOY_TOKEN` or `JWT_SECRET` in the Argo
   CD secret above. Tasks submitted without one are still tracked, but never
   trigger a write-back.
@@ -118,27 +118,30 @@ Known hosts for GitHub, GitLab, Bitbucket and Azure DevOps ship with the chart.
 replaces them with a ConfigMap of your own.
 
 The persistent volume backs the updater's git clone cache (`REPO_CACHE_PATH`,
-which defaults to `/data`). `persistence.mountPath` moves the mount but not the
-cache path, so if you change it, set `REPO_CACHE_PATH` through `extraEnvs` to
-match. With the updater unused, `persistence.enabled: false` swaps the volume
-for a tmpfs `emptyDir`.
+default `/data`). `persistence.mountPath` moves the mount but not the cache
+path, so if you change it, set `REPO_CACHE_PATH` through `extraEnvs` to match.
+With the updater unused, `persistence.enabled: false` swaps the volume for a
+tmpfs `emptyDir`.
 
 ## Authentication and the deploy lock
 
 The `oidc.*` values map onto the server's `OIDC_*` variables; `issuerUrl` and
 `clientId` are required when `oidc.enabled` is true and the chart fails the
-render without them. Enabling OIDC closes the read endpoints the Web UI
-consumes — the endpoints the CI client uses are unaffected, so no pipeline
-breaks.
+render without them. Enabling OIDC closes the reads the Web UI consumes
+(`/api/v1/tasks`, `/version`, `/reachability`, `GET /deploy-lock`); the
+endpoints the CI client uses stay open, so no pipeline breaks.
 
-Three provider-side settings have to be right, and they fail differently. The
-redirect URI must be the application's base URL **including the trailing
-slash**; providers match it exactly, and a mismatch fails the login on the
-provider's own error page before argo-watcher is reached. The web origin must
-allow the application's origin, and the provider must emit a `groups` claim in
-its userinfo response under a scope argo-watcher requests (`profile` or
-`email`) — get either of those wrong and sign-in still succeeds while the
-redeploy button and deploy-lock toggle stay hidden. The upstream
+Three settings on the provider decide whether it works:
+
+- **Redirect URI** — the application's base URL, including the trailing slash.
+  A mismatch fails the login on the provider's own error page.
+- **Web origin** — the application's origin, so the browser's cross-origin
+  userinfo request is allowed. Keycloak has a separate **Web origins** field.
+- **`groups` claim** — emitted in the userinfo response under a scope
+  argo-watcher requests (`profile` or `email`).
+
+The last two fail quietly: sign-in succeeds while the redeploy button and
+deploy-lock toggle stay hidden. The upstream
 [OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/) covers
 all three per provider.
 
@@ -150,18 +153,6 @@ Recurring maintenance windows are set with `scheduledLockdown` and need no
 authentication. Locking deployments manually from the Web UI does require OIDC:
 without an auth backend the server never registers the lock endpoints.
 
-## Probes
-
-The liveness probe targets `/livez` and the readiness probe targets `/readyz`. Do
-not swap them: a liveness failure restarts the container, and a restart cannot
-reach a database that is down — see the `livenessProbe` and `readinessProbe`
-entries in the values table for the full reasoning.
-
-Both endpoints require an argo-watcher release that implements the liveness and
-readiness split, which replaced `/healthz`. If your `image.tag` predates it, set
-`livenessProbe.path`, `readinessProbe.path` and `startupProbe.path` back to
-`/healthz`.
-
 ## MCP server
 
 Setting `mcp.enabled: true` deploys [argo-watcher-mcp](https://github.com/shini4i/argo-watcher-mcp),
@@ -169,39 +160,29 @@ which exposes argo-watcher's read-only API as [Model Context Protocol](https://m
 tools so AI agents can ask what was deployed, when, by whom, and whether it
 succeeded. Upstream describes the project as a proof of concept.
 
-It runs as its own Deployment rather than as a sidecar, so its image and
-configuration can change without restarting argo-watcher — which matters because
-argo-watcher is a StatefulSet that holds task history in memory unless
-`postgres.enabled` is set.
+It runs as its own Deployment, not a sidecar, so its image and configuration
+change without restarting argo-watcher. `mcp.image.tag` is pinned independently
+of the chart `appVersion`, which tracks argo-watcher itself. The
+`get_reachability` tool needs argo-watcher v0.13.0 or newer.
 
-The image tag lives in `mcp.image.tag` and is pinned independently of the chart
-`appVersion`, which tracks argo-watcher itself. The `get_reachability` tool needs
-argo-watcher v0.13.0 or newer.
+> [!IMPORTANT]
+> **The MCP server does not work with `oidc.enabled: true`.** As of argo-watcher
+> v0.15.0 the reads its tools depend on require a credential when OIDC is on,
+> and argo-watcher-mcp v0.3.0 sends none — every tool gets a 401.
 
 ### Exposing the MCP server
 
 > [!WARNING]
 > **argo-watcher-mcp performs no authentication and no authorization.** Every
-> request is anonymous, there is no token or OIDC support, and no per-tool
-> permission model. Anything that can reach the endpoint can read your full
-> deployment history and instance configuration.
+> request is anonymous, there is no token support and no per-tool permission
+> model. Anything that can reach the endpoint can read every deployment's
+> application, image tags, author, timestamp and outcome, the deploy-lock state,
+> and an allowlisted subset of the instance configuration.
 
-Enabling `oidc.*` does not change this. The endpoints the MCP server reads —
-`GET /api/v1/tasks`, `/version`, `/config`, `/reachability` and `GET /deploy-lock`
-— are registered on argo-watcher without auth middleware whether or not OIDC is
-enabled, so the MCP server discloses nothing argo-watcher's own API does not
-already serve unauthenticated. What an Ingress changes is *who can reach it*.
-
-What an anonymous caller can read: every deployment's application, image tags,
-author, timestamp and outcome, including rollbacks; the deploy-lock state;
-ArgoCD and state-backend reachability; and an allowlisted subset of the
-instance's configuration. The MCP server strips `user:password@` credentials
-from URL-valued config fields, but `ARGO_URL_ALIAS` and `DOCKER_IMAGES_PROXY`
-are forwarded as argo-watcher reports them. The server cannot create deployments
-or change the deploy lock, so the exposure is disclosure and request load, not
-tampering.
-
-Pick the least exposure that works for you.
+The server cannot create deployments or change the deploy lock, so the exposure
+is disclosure and request load, not tampering. It strips `user:password@`
+credentials from URL-valued config fields, but forwards `ARGO_URL_ALIAS` and
+`DOCKER_IMAGES_PROXY` as argo-watcher reports them.
 
 **Port-forward — nothing is exposed.** Enough for a developer workstation and
 the recommended default:
@@ -234,11 +215,10 @@ mcp:
 also widen access to the argo-watcher API.
 
 **Ingress, behind an authenticating proxy.** Since the endpoint authenticates
-nobody, the proxy in front of it is the only thing standing between your
-deployment history and the internet. Terminate authentication there — for
-example with [oauth2-proxy](https://oauth2-proxy.github.io/oauth2-proxy/) or
-your ingress controller's external-auth support — and keep `mcp.ingress.hosts`
-off any public wildcard DNS you do not control:
+nobody, the proxy in front of it is the only access control. Terminate
+authentication there — for example with
+[oauth2-proxy](https://oauth2-proxy.github.io/oauth2-proxy/) or your ingress
+controller's external-auth support:
 
 ```yaml
 mcp:
@@ -265,11 +245,10 @@ With `networkPolicies.enabled: true`, the ingress controller also needs an
 the deny-by-default policy drops its traffic and the Ingress returns 502 with
 nothing pointing at the NetworkPolicy as the cause.
 
-Two transport details to check against your proxy when you do this: the MCP
-endpoint is mounted at `/`, so it cannot share a host with another backend
-without a path prefix, and its streamable transport holds a long-lived
-server-sent-events stream open — a proxy that buffers responses or applies a
-short read timeout will break sessions rather than fail outright.
+Two transport details to check against your proxy: the MCP endpoint is mounted
+at `/`, so it cannot share a host with another backend without a path prefix,
+and its streamable transport holds a long-lived server-sent-events stream open,
+which a proxy that buffers responses or applies a short read timeout will break.
 
 ### Metrics
 
@@ -308,7 +287,7 @@ PodMonitor has the same property.
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
-| livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"path":"/livez","periodSeconds":30,"timeoutSeconds":5}` | Liveness probe configuration. /livez checks no dependency, so a state backend outage marks pods unready instead of restarting them; do not point this at /readyz. |
+| livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"path":"/livez","periodSeconds":30,"timeoutSeconds":5}` | Liveness probe configuration. /livez checks no dependency. |
 | logLevel | string | `"info"` |  |
 | mcp.affinity | object | `{}` |  |
 | mcp.enabled | bool | `false` | Deploy the MCP server alongside argo-watcher |
@@ -388,7 +367,7 @@ PodMonitor has the same property.
 | postgres.secretKey | string | `""` | Support for an optional key override (this specific key would be exposed to DB_PASSWORD) |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
 | postgres.user | string | `""` |  |
-| readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/readyz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /readyz reports down while the pod is shutting down and while the state backend is unreachable. ArgoCD reachability is excluded, so an ArgoCD outage keeps the API and Web UI serving. |
+| readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/readyz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /readyz reports down while the pod is shutting down and while the state backend is unreachable; ArgoCD reachability is excluded. |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | revisionHistory | int | `1` |  |
@@ -406,7 +385,7 @@ PodMonitor has the same property.
 | serviceAccount.automountServiceAccountToken | bool | `true` | Whether to automount the service account token |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| startupProbe | object | `{"enabled":false,"failureThreshold":30,"path":"/livez","periodSeconds":5,"timeoutSeconds":3}` | Startup probe configuration. Disabled because argo-watcher binds its listener only after its config, ArgoCD client and state backend are initialised, and exits rather than starting degraded, so there is no slow-start window for a startup probe to cover. |
+| startupProbe | object | `{"enabled":false,"failureThreshold":30,"path":"/livez","periodSeconds":5,"timeoutSeconds":3}` | Startup probe configuration. Disabled: argo-watcher binds its listener only after initialisation and exits rather than starting degraded, so there is no slow-start window to cover. |
 | tolerations | list | `[]` |  |
 | topologySpreadConstraints | list | `[]` |  |
 | updater | object | `{"commitAuthor":"argo-watcher","commitEmail":"argo-watcher@example.com","extraKnownHosts":[],"knownHostsConfigMap":"","knownHostsKey":"ssh_known_hosts","sshKey":"sshPrivateKey","sshSecretName":""}` | Configuration for argo image updater logic replacement (optional) |

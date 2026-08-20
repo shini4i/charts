@@ -12,9 +12,7 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# -- Liveness probe configuration. /livez checks no dependency, so a state
-# backend outage marks pods unready instead of restarting them; do not point
-# this at /readyz.
+# -- Liveness probe configuration. /livez checks no dependency.
 livenessProbe:
   enabled: true
   path: /livez
@@ -24,8 +22,8 @@ livenessProbe:
   failureThreshold: 3
 
 # -- Readiness probe configuration. /readyz reports down while the pod is
-# shutting down and while the state backend is unreachable. ArgoCD reachability
-# is excluded, so an ArgoCD outage keeps the API and Web UI serving.
+# shutting down and while the state backend is unreachable; ArgoCD reachability
+# is excluded.
 readinessProbe:
   enabled: true
   path: /readyz
@@ -34,10 +32,9 @@ readinessProbe:
   initialDelaySeconds: 3
   failureThreshold: 3
 
-# -- Startup probe configuration. Disabled because argo-watcher binds its
-# listener only after its config, ArgoCD client and state backend are
-# initialised, and exits rather than starting degraded, so there is no slow-start
-# window for a startup probe to cover.
+# -- Startup probe configuration. Disabled: argo-watcher binds its listener only
+# after initialisation and exits rather than starting degraded, so there is no
+# slow-start window to cover.
 startupProbe:
   enabled: false
   path: /livez
