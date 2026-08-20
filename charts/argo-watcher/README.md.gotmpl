@@ -125,13 +125,19 @@ render without them. Enabling OIDC closes the reads the Web UI consumes
 (`/api/v1/tasks`, `/version`, `/reachability`, `GET /deploy-lock`); the
 endpoints the CI client uses stay open, so no pipeline breaks.
 
-Two provider-side settings decide whether it works, and both fail quietly. The
-redirect URI must be the application's base URL **including the trailing
-slash**. The provider must emit a `groups` claim in its userinfo response under
-a scope argo-watcher requests (`profile` or `email`) — without it sign-in
-succeeds while the redeploy button and deploy-lock toggle stay hidden. The
-upstream [OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/)
-covers both per provider.
+Three settings on the provider decide whether it works:
+
+- **Redirect URI** — the application's base URL, including the trailing slash.
+  A mismatch fails the login on the provider's own error page.
+- **Web origin** — the application's origin, so the browser's cross-origin
+  userinfo request is allowed. Keycloak has a separate **Web origins** field.
+- **`groups` claim** — emitted in the userinfo response under a scope
+  argo-watcher requests (`profile` or `email`).
+
+The last two fail quietly: sign-in succeeds while the redeploy button and
+deploy-lock toggle stay hidden. The upstream
+[OIDC guide](https://argo-watcher.readthedocs.io/en/latest/guides/oidc/) covers
+all three per provider.
 
 `oidc.tokenValidationInterval` defaults to 10 s here, against the server's own
 5 min. That is one userinfo call per token per interval, so raise it if your
