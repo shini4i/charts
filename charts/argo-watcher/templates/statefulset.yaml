@@ -102,6 +102,10 @@ spec:
             - name: OIDC_PRIVILEGED_GROUPS
               value: {{ join "," . | quote }}
             {{- end }}
+            {{- if .Values.oidc.gravatarFallback }}
+            - name: OIDC_GRAVATAR_FALLBACK
+              value: "true"
+            {{- end }}
             {{- end }}
             - name: STATE_TYPE
               {{- if .Values.postgres.enabled }}

@@ -110,7 +110,8 @@
         "privilegedGroups": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "gravatarFallback": { "type": "boolean" }
       },
       "required": ["enabled"]
     },

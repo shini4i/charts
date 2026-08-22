@@ -486,6 +486,33 @@ tests:
             name: OIDC_PRIVILEGED_GROUPS
             value: "platform-team,sre-team"
 
+  - it: should not render the Gravatar fallback unless asked
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: argo-watcher
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: OIDC_GRAVATAR_FALLBACK
+
+  - it: should render the Gravatar fallback when enabled
+    set:
+      oidc:
+        enabled: true
+        issuerUrl: https://keycloak.example.com/realms/example
+        clientId: argo-watcher
+        gravatarFallback: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: OIDC_GRAVATAR_FALLBACK
+            value: "true"
+
   - it: should render custom OIDC token validation interval
     set:
       oidc:

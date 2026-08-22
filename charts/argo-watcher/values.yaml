@@ -101,6 +101,11 @@ oidc:
   privilegedGroups: []
   #  - platform-team
   #  - sre-team
+  # -- Falls back to Gravatar for the account card avatar when the provider sends no
+  # picture claim. Off by default: it discloses the user's email address to
+  # gravatar.com — hashed, but reversible for any address worth guessing.
+  # Requires argo-watcher >= v0.16.0
+  gravatarFallback: false
 
 # -- Additional environment variables to add to the container (supports both value and valueFrom)
 extraEnvs: []
