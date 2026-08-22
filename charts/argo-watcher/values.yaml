@@ -104,7 +104,8 @@ oidc:
   # -- Falls back to Gravatar for the account card avatar when the provider sends no
   # picture claim. Off by default: it discloses the user's email address to
   # gravatar.com — hashed, but reversible for any address worth guessing.
-  # Requires argo-watcher >= v0.16.0
+  # Requires an argo-watcher release that honors OIDC_GRAVATAR_FALLBACK; older
+  # versions ignore it.
   gravatarFallback: false
 
 # -- Additional environment variables to add to the container (supports both value and valueFrom)
