@@ -343,9 +343,10 @@ PodMonitor has the same property.
 | networkPolicies.additionalRules | list | `[]` | additional ingress rules to add to the network policy (access will be granted to .Values.service.containerPort) |
 | networkPolicies.enabled | bool | `false` | If network policies should be created |
 | nodeSelector | object | `{}` |  |
-| oidc | object | `{"clientId":"","enabled":false,"issuerUrl":"","privilegedGroups":[],"tokenValidationInterval":10000}` | OIDC / SSO authentication configuration. Requires argo-watcher >= v0.13.0; earlier versions only honor the deprecated KEYCLOAK_* variables, which can be set via extraEnvs. |
+| oidc | object | `{"clientId":"","enabled":false,"gravatarFallback":false,"issuerUrl":"","privilegedGroups":[],"tokenValidationInterval":10000}` | OIDC / SSO authentication configuration. Requires argo-watcher >= v0.13.0; earlier versions only honor the deprecated KEYCLOAK_* variables, which can be set via extraEnvs. |
 | oidc.clientId | string | `""` | Client ID registered with the identity provider (required when enabled) |
 | oidc.enabled | bool | `false` | Enables OIDC authentication for the Web UI and privileged operations |
+| oidc.gravatarFallback | bool | `false` | Falls back to Gravatar when the provider sends no picture claim; discloses the user's email address to gravatar.com |
 | oidc.issuerUrl | string | `""` | Identity provider issuer URL used for OIDC discovery, e.g. https://keycloak.example.com/realms/example (required when enabled) |
 | oidc.privilegedGroups | list | `[]` | Groups whose members may redeploy applications and manage the deployment lock |
 | oidc.tokenValidationInterval | int | `10000` | Interval in milliseconds between token validations |

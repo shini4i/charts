@@ -101,6 +101,8 @@ oidc:
   privilegedGroups: []
   #  - platform-team
   #  - sre-team
+  # -- Falls back to Gravatar when the provider sends no picture claim; discloses the user's email address to gravatar.com
+  gravatarFallback: false
 
 # -- Additional environment variables to add to the container (supports both value and valueFrom)
 extraEnvs: []
