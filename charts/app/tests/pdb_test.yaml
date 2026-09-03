@@ -1,0 +1,86 @@
+suite: test pod disruption budget
+templates:
+  - templates/pdb.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should render with minAvailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PodDisruptionBudget
+      - isAPIVersion:
+          of: policy/v1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-app
+      - equal:
+          path: spec.minAvailable
+          value: 1
+      - notExists:
+          path: spec.maxUnavailable
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/name: app
+            app.kubernetes.io/instance: RELEASE-NAME
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+
+  - it: should render with maxUnavailable as a percentage
+    set:
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 50%
+    asserts:
+      - equal:
+          path: spec.maxUnavailable
+          value: 50%
+      - notExists:
+          path: spec.minAvailable
+
+  - it: should pass annotations and unhealthyPodEvictionPolicy
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 2
+        unhealthyPodEvictionPolicy: AlwaysAllow
+        annotations:
+          example.com/owner: team
+    asserts:
+      - equal:
+          path: metadata.annotations["example.com/owner"]
+          value: team
+      - equal:
+          path: spec.unhealthyPodEvictionPolicy
+          value: AlwaysAllow
+
+  - it: should not set unhealthyPodEvictionPolicy by default
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+    asserts:
+      - notExists:
+          path: spec.unhealthyPodEvictionPolicy
+
+  - it: should render minAvailable as a percentage
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 50%
+    asserts:
+      - equal:
+          path: spec.minAvailable
+          value: 50%
+      - notExists:
+          path: spec.maxUnavailable

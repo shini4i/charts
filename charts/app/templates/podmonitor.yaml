@@ -1,16 +1,17 @@
-{{ if .Values.podMonitor.enabled }}
+{{- if .Values.podMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: {{ include "app.fullname" . }}-metrics
-  {{- with .Values.podMonitor.labels }}
+  name: {{ include "app.suffixedName" (dict "context" . "suffix" "metrics") }}
   labels:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- include "app.labels" . | nindent 4 }}
+    {{- with .Values.podMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
-  {{- include "app.selectorLabels" . | nindent 6 }}
+      {{- include "app.selectorLabels" . | nindent 6 }}
   podMetricsEndpoints:
     {{- toYaml .Values.podMonitor.podMetricsEndpoints | nindent 4 }}
-{{ end }}
+{{- end }}

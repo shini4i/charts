@@ -33,9 +33,19 @@ tests:
       - isKind:
           of: PodMonitor
       - equal:
+          path: metadata.name
+          value: RELEASE-NAME-app-metrics
+      - isSubset:
           path: metadata.labels
-          value:
+          content:
             prometheus: main
+            app.kubernetes.io/name: app
+            app.kubernetes.io/managed-by: Helm
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/name: app
+            app.kubernetes.io/instance: RELEASE-NAME
       - equal:
           path: spec.podMetricsEndpoints[0].port
           value: metrics

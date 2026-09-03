@@ -70,3 +70,26 @@ jobs:
         run: |
           helm dependency update charts/${{ matrix.chart }}
           helm unittest charts/${{ matrix.chart }}
+
+      - name: Check what ${{ matrix.chart }} packages
+        # A .helmignore pattern matches at every level, so an unanchored "tests/"
+        # also drops templates/tests/ and the helm test hook with it. The unit
+        # tests cannot see that: they render the directory, not the package.
+        env:
+          CHART_DIR: charts/${{ matrix.chart }}
+        run: |
+          helm package "${CHART_DIR}" -d "${RUNNER_TEMP}/pkg"
+          contents=$(tar -tzf "${RUNNER_TEMP}"/pkg/*.tgz)
+          echo "${contents}"
+
+          if [ -d "${CHART_DIR}/templates/tests" ] \
+            && ! echo "${contents}" | grep -qE '^[^/]+/templates/tests/'; then
+            echo "::error::templates/tests/ is missing from the package, check .helmignore"
+            exit 1
+          fi
+
+          if [ -d "${CHART_DIR}/tests" ] \
+            && echo "${contents}" | grep -qE '^[^/]+/tests/'; then
+            echo "::error::chart unit tests are packaged, exclude /tests/ in .helmignore"
+            exit 1
+          fi

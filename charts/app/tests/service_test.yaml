@@ -72,3 +72,84 @@ tests:
           value:
             app.kubernetes.io/instance: example
             app.kubernetes.io/name: app
+
+  - it: should fall back to the service port when containerPort is omitted
+    set:
+      service:
+        ports:
+          - port: 8080
+            name: http
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+
+  - it: should pass service annotations
+    set:
+      service:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+  - it: should pass per port protocol, appProtocol and nodePort
+    set:
+      service:
+        type: NodePort
+        ports:
+          - port: 53
+            containerPort: 53
+            name: dns
+            protocol: UDP
+            nodePort: 30053
+            appProtocol: dns
+    asserts:
+      - equal:
+          path: spec.ports[0].protocol
+          value: UDP
+      - equal:
+          path: spec.ports[0].nodePort
+          value: 30053
+      - equal:
+          path: spec.ports[0].appProtocol
+          value: dns
+
+  - it: should pass session affinity
+    set:
+      service:
+        sessionAffinity: ClientIP
+    asserts:
+      - equal:
+          path: spec.sessionAffinity
+          value: ClientIP
+
+  - it: should not set session affinity by default
+    asserts:
+      - notExists:
+          path: spec.sessionAffinity
+
+  - it: should render every declared port
+    set:
+      service:
+        ports:
+          - port: 80
+            containerPort: 8080
+            name: http
+          - port: 9090
+            name: grpc
+            appProtocol: kubernetes.io/h2c
+    asserts:
+      - lengthEqual:
+          path: spec.ports
+          count: 2
+      - equal:
+          path: spec.ports[1]
+          value:
+            port: 9090
+            targetPort: 9090
+            protocol: TCP
+            name: grpc
+            appProtocol: kubernetes.io/h2c

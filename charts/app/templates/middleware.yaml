@@ -1,16 +1,21 @@
-{{- if .Values.middleware.sourceRange -}}
-apiVersion: traefik.containo.us/v1alpha1
+{{- if and .Values.middleware.enabled .Values.middleware.sourceRange -}}
+apiVersion: {{ .Values.traefik.apiVersion }}
 kind: Middleware
 metadata:
-  name: {{ include "app.fullname" . }}-whitelist
-  {{- with .Values.middleware.labels }}
+  name: {{ include "app.suffixedName" (dict "context" . "suffix" "whitelist") }}
   labels:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  ipWhiteList:
-    {{- with .Values.middleware.sourceRange }}
-    sourceRange:
-    {{- toYaml . | nindent 6 }}
+    {{- include "app.labels" . | nindent 4 }}
+    {{- with .Values.middleware.labels }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
+spec:
+  {{- /* Traefik renamed the field in v3; the v2 CRD is structural and silently
+         prunes the name it does not know, taking the restriction with it. */}}
+  {{- if hasPrefix "traefik.containo.us/" .Values.traefik.apiVersion }}
+  ipWhiteList:
+  {{- else }}
+  ipAllowList:
+  {{- end }}
+    sourceRange:
+      {{- toYaml .Values.middleware.sourceRange | nindent 6 }}
 {{- end }}

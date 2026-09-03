@@ -1,15 +1,16 @@
 {{- if .Values.ingressRoute.enabled -}}
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: {{ .Values.traefik.apiVersion }}
 kind: IngressRoute
 metadata:
   name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    {{- with .Values.ingressRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- with .Values.ingressRoute.annotations }}
   annotations:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
-  {{- with .Values.ingressRoute.labels }}
-  labels:
-  {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   entryPoints:
@@ -20,17 +21,25 @@ spec:
       services:
         - name: {{ include "app.fullname" . }}
           port: {{ .Values.ingressRoute.exposedPort }}
-      {{ if .Values.middleware.enabled -}}
-      middlewares:
-        {{ if .Values.middleware.sourceRange -}}
-        - name: {{ include "app.fullname" . }}-whitelist
-        {{- end }}
-        {{- range .Values.middleware.existingMiddlewares }}
-        - name: {{ toYaml . }}
-        {{- end }}
+      {{- if .Values.middleware.enabled }}
+      {{- $middlewares := list }}
+      {{- if .Values.middleware.sourceRange }}
+      {{- $middlewares = append $middlewares (dict "name" (include "app.suffixedName" (dict "context" $ "suffix" "whitelist"))) }}
       {{- end }}
+      {{- range .Values.middleware.existingMiddlewares }}
+      {{- $middlewares = append $middlewares (dict "name" .) }}
+      {{- end }}
+      {{- with $middlewares }}
+      middlewares:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+  {{- if .Values.ingressRoute.tls.enabled }}
   tls:
     domains:
       - main: {{ .Values.ingressRoute.host }}
-    secretName: {{ .Values.ingressRoute.tlsSecret }}
+    {{- with .Values.ingressRoute.tlsSecret }}
+    secretName: {{ . }}
+    {{- end }}
+  {{- end }}
 {{- end }}

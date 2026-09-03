@@ -3,6 +3,7 @@ replicaCount: 1
 image:
   repository: traefik/whoami
   pullPolicy: IfNotPresent
+  # -- Image tag. Leave empty to pin the image by digest through image.repository
   tag: "v1.10.2"
 
 imagePullSecrets: []
@@ -17,11 +18,15 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # -- Whether pods using this service account get an API token mounted. Left unset
+  # to keep the Kubernetes default (true); set to false for workloads that never
+  # call the API server
+  automountServiceAccountToken: null
 
 podAnnotations: {}
 
-# deployments revisionHistoryLimit
-revisionHistoryLimit: 1
+# -- Number of superseded ReplicaSets or ControllerRevisions kept for rollbacks
+revisionHistoryLimit: 3
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -36,6 +41,12 @@ securityContext: {}
 
 service:
   type: ClusterIP
+  # -- Annotations to add to the service
+  annotations: {}
+  # -- Service sessionAffinity, e.g. ClientIP. Unset means None
+  sessionAffinity: ""
+  # -- Service ports. containerPort defaults to port, protocol to TCP;
+  # appProtocol and nodePort are optional
   ports:
     - port: 80
       containerPort: 80
@@ -65,11 +76,20 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- Traefik v2 ingressRoute definition
+traefik:
+  # -- CRD API group used by the ingressRoute and middleware templates. Traefik v3
+  # serves traefik.io/v1alpha1; set traefik.containo.us/v1alpha1 for Traefik v2
+  apiVersion: traefik.io/v1alpha1
+
+# -- Traefik ingressRoute definition
 ingressRoute:
   enabled: false
   entryPoint: websecure
   host: example.com
+  tls:
+    # -- Terminate TLS on the route. Turn off for a plain HTTP entryPoint
+    enabled: true
+  # -- TLS secret for the route. Empty falls back to the entryPoint certificate
   tlsSecret: example-com-tls
   # -- Port to use with ingressRoute
   exposedPort: 80
@@ -80,8 +100,12 @@ ingressRoute:
 middleware:
   enabled: false
   labels: {}
+  # -- CIDRs allowed to reach the route. A Middleware is created only when this
+  # is non-empty and middleware.enabled is true
   sourceRange: []
-  existingMiddlewares: {}
+  # -- Names of existing middlewares, attached after the whitelist. Needs enabled: true
+  existingMiddlewares: []
+  #  - oauth2-proxy
 
 app:
   # -- Allowed values: Deployment or StatefulSet
@@ -90,9 +114,16 @@ app:
   # -- StatefulSet configuration (only used if kind is set to StatefulSet)
   statefulSet:
     strategy: RollingUpdate
+    podManagementPolicy: OrderedReady
+    headless:
+      # -- Create a headless service and point spec.serviceName at it, which is what
+      # stable per-pod DNS requires. Off by default because spec.serviceName is
+      # immutable: on an existing release the StatefulSet has to be recreated
+      enabled: false
     persistence:
       enabled: false
-      # -- Persistent volumes configuration
+      # -- Persistent volumes configuration. accessModes defaults to
+      # ["ReadWriteOnce"]; size is required
       volumes: []
       #  - name: data
       #    mountPath: /data
@@ -100,6 +131,15 @@ app:
       #    storageClassName: ""
       #    accessModes:
       #     - ReadWriteOnce
+
+  # -- Deployment configuration (only used if kind is set to Deployment)
+  deployment:
+    strategy: RollingUpdate
+    # Used only if strategy is set to RollingUpdate
+    maxUnavailable: 25%
+    maxSurge: 1
+    # -- Seconds a rollout may stall before it is marked failed
+    progressDeadlineSeconds: null
 
   # -- A primary container command override
   command: []
@@ -110,26 +150,48 @@ app:
     # - -c
     # - echo "Hello, World!"
 
-  # -- Deployment configuration (only used if kind is set to Deployment)
-  deployment:
-    strategy: RollingUpdate
-    # Used only if strategy is set to RollingUpdate
-    maxUnavailable: 25%
-    maxSurge: 1
+  # -- Labels to add to the app pods on top of the common chart labels. The
+  # selector labels cannot be overridden
+  podLabels: {}
 
-  # -- Deployments startupProbe configuration
+  # -- Seconds a new pod must stay ready before it counts as available
+  minReadySeconds: null
+
+  # -- Grace period for a terminating pod. Should exceed the time the app needs
+  # to drain in-flight requests
+  terminationGracePeriodSeconds: null
+
+  # -- PriorityClass for the app pods
+  priorityClassName: ""
+
+  # -- Whether the app pods get an API token mounted. Left unset to keep the
+  # Kubernetes default
+  automountServiceAccountToken: null
+
+  # -- Raw yaml definition of topology spread constraints
+  topologySpreadConstraints: []
+  #  - maxSkew: 1
+  #    topologyKey: topology.kubernetes.io/zone
+  #    whenUnsatisfiable: ScheduleAnyway
+  #    labelSelector: { matchLabels: { app.kubernetes.io/name: app } }
+
+  sharedVolume:
+    # -- Mount an emptyDir at /shared in the primary container
+    enabled: true
+
+  # -- Startup probe configuration
   startupProbe: {}
   #  httpGet:
   #    path: /
   #    port: http
 
-  # -- Deployments livenessProbe configuration
+  # -- Liveness probe configuration
   livenessProbe: {}
   #  httpGet:
   #    path: /
   #    port: http
 
-  # -- Deployments readinessProbe configuration
+  # -- Readiness probe configuration. A rolling update has no gate without one
   readinessProbe: {}
   #  httpGet:
   #    path: /
@@ -175,6 +237,15 @@ initContainers: []
   # - name: test
   #   image: alpine:3.14.2
   #   command: ["sh", "-c", "echo test"]
+
+# -- PodDisruptionBudget. Set exactly one of minAvailable or maxUnavailable
+podDisruptionBudget:
+  enabled: false
+  minAvailable: null
+  maxUnavailable: null
+  # -- AlwaysAllow lets a drain evict already-unhealthy pods. Needs Kubernetes 1.27
+  unhealthyPodEvictionPolicy: null
+  annotations: {}
 
 job:
   enabled: false
@@ -248,6 +319,7 @@ job:
 
 podMonitor:
   enabled: false
+  # -- Endpoints to scrape. At least one is required when podMonitor is enabled
   podMetricsEndpoints: []
   #  - port: metrics
   #  - port: web
@@ -271,11 +343,20 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+  # -- Raw yaml definition of the HPA scaling behavior
+  behavior: {}
+  #  scaleDown:
+  #    stabilizationWindowSeconds: 600
 
 keda:
   enabled: false
   minReplicaCount: 2
   maxReplicaCount: 5
+  # -- Seconds between trigger evaluations
+  pollingInterval: 30
+  # -- Seconds to wait after the last trigger fired before scaling down
+  cooldownPeriod: 300
+  # -- At least one trigger is required when keda is enabled
   triggers: []
     # - metadata:
     #    metricName: app_http_request_count

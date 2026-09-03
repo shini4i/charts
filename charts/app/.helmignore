@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Chart tests are not part of the packaged chart
+/tests/

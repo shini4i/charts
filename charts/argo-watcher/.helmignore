@@ -21,7 +21,7 @@
 .idea/
 *.tmproj
 .vscode/
-# Helm unittest files
-tests/
+# Helm unittest files. Anchored: an unanchored pattern also matches templates/tests/
+/tests/
 # helm-docs source template
 *.gotmpl

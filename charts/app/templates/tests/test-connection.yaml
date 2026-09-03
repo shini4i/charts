@@ -1,9 +1,14 @@
+{{- include "app.validateValues" . }}
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "app.fullname" . }}-test-connection"
+  name: {{ include "app.suffixedName" (dict "context" . "suffix" "test-connection") }}
+  {{- /* Not app.labels: the selector pair in it would enrol this pod as a
+         Service endpoint and route live traffic to it while the test runs. */}}
   labels:
-    {{- include "app.labels" . | nindent 4 }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: test
   annotations:
     "helm.sh/hook": test
 spec:
@@ -11,5 +16,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "app.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "app.fullname" . }}:{{ (first .Values.service.ports).port }}']
   restartPolicy: Never

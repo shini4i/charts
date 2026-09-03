@@ -2,7 +2,16 @@ apiVersion: v2
 name: app
 description: A Helm chart for a simple app deployment
 type: application
-version: 0.3.0
+version: 0.4.0
+kubeVersion: ">=1.23.0-0"
+
+home: https://github.com/shini4i/charts
+sources:
+  - https://github.com/shini4i/charts/tree/main/charts/app
+keywords:
+  - deployment
+  - statefulset
+  - generic
 
 annotations:
   artifacthub.io/signKey: |
@@ -10,13 +19,51 @@ annotations:
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
     - kind: fixed
-      description: job annotations are no longer rendered outside of the metadata block
+      description: 'helm test rendered an empty port; it now targets the first entry of service.ports'
+    - kind: fixed
+      description: 'volumeClaimTemplates rendered an empty accessModes when a persistence volume omitted it; it now defaults to ReadWriteOnce'
+    - kind: fixed
+      description: 'the KEDA ScaledObject now sets scaleTargetRef.kind from app.kind, so a StatefulSet is actually scaled'
+    - kind: fixed
+      description: 'resource names that carry a suffix are truncated to 63 characters, so a long release name no longer produces an invalid Job name'
+    - kind: fixed
+      description: 'the whitelist Middleware is no longer created when middleware.enabled is false, so a release that set only sourceRange loses that object on upgrade'
+    - kind: fixed
+      description: 'the helm test pod no longer carries the selector labels, which had enrolled it as a Service endpoint while it ran'
     - kind: changed
-      description: 'job.annotations now defaults to {}; set "helm.sh/hook" explicitly to keep the pre-upgrade hook, otherwise delete the leftover hook-created job before upgrading'
+      description: 'the Traefik CRD group is now traefik.io/v1alpha1 (Traefik v3); set traefik.apiVersion to traefik.containo.us/v1alpha1 to stay on Traefik v2'
+    - kind: changed
+      description: 'the whitelist Middleware uses ipAllowList on traefik.io and ipWhiteList on traefik.containo.us, matching what each CRD accepts'
+    - kind: changed
+      description: 'middleware.existingMiddlewares is documented and defaulted as a list of names; a map still renders the same, since both forms are iterated by value'
+    - kind: changed
+      description: 'the HPA is always autoscaling/v2, the removed v2beta1 and v2beta2 fallbacks are gone, and the chart now declares kubeVersion >=1.23.0-0'
+    - kind: changed
+      description: 'revisionHistoryLimit now defaults to 3'
+    - kind: changed
+      description: 'the pod template carries the common chart labels, which rolls pods once on upgrade'
     - kind: added
-      description: job now carries the common chart labels and supports labels, podLabels and podAnnotations
+      description: 'a PodDisruptionBudget, disabled by default'
     - kind: added
-      description: job support for args, resources, volumes, volumeMounts, ttlSecondsAfterFinished and activeDeadlineSeconds
+      description: 'an opt-in headless service for StatefulSets, required for stable per-pod DNS'
+    - kind: added
+      description: 'app.podLabels, minReadySeconds, terminationGracePeriodSeconds, priorityClassName, topologySpreadConstraints, automountServiceAccountToken, podManagementPolicy and progressDeadlineSeconds'
+    - kind: added
+      description: 'service annotations, sessionAffinity and per-port protocol, appProtocol and nodePort'
+    - kind: added
+      description: 'serviceAccount.automountServiceAccountToken, controlling whether the created ServiceAccount mounts an API token'
+    - kind: added
+      description: 'leaving image.tag empty omits the :tag suffix, so an image can be pinned by digest through image.repository'
+    - kind: added
+      description: 'ingressRoute.tls.enabled to turn TLS termination off for a plain HTTP entryPoint; clearing ingressRoute.tlsSecret now falls back to the entryPoint certificate instead of rendering an empty secretName'
+    - kind: added
+      description: 'autoscaling.behavior, and keda.pollingInterval and keda.cooldownPeriod are now documented values'
+    - kind: added
+      description: 'app.sharedVolume.enabled to drop the /shared emptyDir'
+    - kind: added
+      description: 'service.ports[].nodePort is rejected at render time unless service.type is NodePort or LoadBalancer'
+    - kind: added
+      description: 'value validation that fails the render on an unsupported app.kind, on autoscaling and keda both enabled, on an empty service.ports, and on autoscaling, keda or podMonitor enabled with nothing to act on'
 
 maintainers:
   - name: Vadim Gedz

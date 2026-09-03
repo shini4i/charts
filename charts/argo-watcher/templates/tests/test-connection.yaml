@@ -2,8 +2,12 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "argo-watcher.fullname" . }}-test-connection"
+  {{- /* Not argo-watcher.labels: the selector pair in it would enrol this pod as
+         a Service endpoint and route live traffic to it while the test runs. */}}
   labels:
-    {{- include "argo-watcher.labels" . | nindent 4 }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: test
   annotations:
     "helm.sh/hook": test
 spec:

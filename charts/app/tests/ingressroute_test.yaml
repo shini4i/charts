@@ -30,17 +30,19 @@ tests:
       - hasDocuments:
           count: 1
       - isAPIVersion:
-          of: traefik.containo.us/v1alpha1
+          of: traefik.io/v1alpha1
       - isKind:
           of: IngressRoute
       - equal:
           path: metadata.annotations
           value:
             cert-manager.io/cluster-issuer: letsencrypt
-      - equal:
+      - isSubset:
           path: metadata.labels
-          value:
+          content:
             traffic-type: private
+            app.kubernetes.io/name: app
+            app.kubernetes.io/managed-by: Helm
       - equal:
           path: spec.entryPoints[0]
           value: example
@@ -53,3 +55,106 @@ tests:
       - equal:
           path: spec.tls.secretName
           value: demo-example-io
+
+  - it: should follow the traefik api version override
+    set:
+      traefik:
+        apiVersion: traefik.containo.us/v1alpha1
+      ingressRoute:
+        enabled: true
+    asserts:
+      - isAPIVersion:
+          of: traefik.containo.us/v1alpha1
+
+  - it: should keep tls without a secret so the entryPoint certificate applies
+    set:
+      ingressRoute:
+        enabled: true
+        tlsSecret: ""
+    asserts:
+      - equal:
+          path: spec.tls
+          value:
+            domains:
+              - main: example.com
+      - notExists:
+          path: spec.tls.secretName
+
+  - it: should omit tls when tls is disabled
+    set:
+      ingressRoute:
+        enabled: true
+        tls:
+          enabled: false
+    asserts:
+      - notExists:
+          path: spec.tls
+
+  - it: should attach the whitelist and existing middlewares
+    set:
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: true
+        sourceRange:
+          - 10.10.10.1/24
+        existingMiddlewares:
+          - auth
+          - headers
+    asserts:
+      - equal:
+          path: spec.routes[0].middlewares
+          value:
+            - name: RELEASE-NAME-app-whitelist
+            - name: auth
+            - name: headers
+
+  - it: should attach only existing middlewares without a source range
+    set:
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: true
+        existingMiddlewares:
+          - auth
+    asserts:
+      - equal:
+          path: spec.routes[0].middlewares
+          value:
+            - name: auth
+
+  - it: should not attach middlewares when middleware is disabled
+    set:
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: false
+        existingMiddlewares:
+          - auth
+    asserts:
+      - notExists:
+          path: spec.routes[0].middlewares
+
+  - it: should attach only the whitelist when no existing middlewares are set
+    set:
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: true
+        sourceRange:
+          - 10.10.10.1/24
+    asserts:
+      - equal:
+          path: spec.routes[0].middlewares
+          value:
+            - name: RELEASE-NAME-app-whitelist
+
+  - it: should omit middlewares when enabled with nothing to attach
+    set:
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: true
+    asserts:
+      - notExists:
+          path: spec.routes[0].middlewares

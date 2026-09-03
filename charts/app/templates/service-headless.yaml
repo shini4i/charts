@@ -1,0 +1,22 @@
+{{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.headless.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.suffixedName" (dict "context" . "suffix" "headless") }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  # Peer discovery has to resolve pods before they pass their readiness probe,
+  # otherwise a quorum-forming StatefulSet can never reach quorum.
+  publishNotReadyAddresses: true
+  ports:
+    {{- range .Values.service.ports }}
+    - port: {{ .port }}
+      targetPort: {{ .containerPort | default .port }}
+      protocol: {{ .protocol | default "TCP" }}
+      name: {{ .name }}
+    {{- end }}
+  selector:
+    {{- include "app.selectorLabels" . | nindent 4 }}
+{{- end }}

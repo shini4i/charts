@@ -4,14 +4,27 @@ metadata:
   name: {{ include "app.fullname" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
+  {{- with .Values.service.sessionAffinity }}
+  sessionAffinity: {{ . }}
+  {{- end }}
   ports:
     {{- range .Values.service.ports }}
-    - port: {{ .port}}
-      targetPort: {{ .containerPort}}
-      protocol: TCP
+    - port: {{ .port }}
+      targetPort: {{ .containerPort | default .port }}
+      protocol: {{ .protocol | default "TCP" }}
       name: {{ .name }}
+      {{- with .appProtocol }}
+      appProtocol: {{ . }}
+      {{- end }}
+      {{- with .nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- end }}
   selector:
     {{- include "app.selectorLabels" . | nindent 4 }}
