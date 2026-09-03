@@ -1,3 +1,4 @@
+{{- include "app.validateValues" . }}
 apiVersion: apps/v1
 kind: {{ .Values.app.kind }}
 metadata:
@@ -19,10 +20,17 @@ spec:
       maxUnavailable: {{ .Values.app.deployment.maxUnavailable }}
       maxSurge: {{ .Values.app.deployment.maxSurge }}
     {{- end }}
+  {{- if not (kindIs "invalid" .Values.app.deployment.progressDeadlineSeconds) }}
+  progressDeadlineSeconds: {{ .Values.app.deployment.progressDeadlineSeconds }}
+  {{- end }}
   {{- else if eq .Values.app.kind "StatefulSet" }}
-  serviceName: {{ include "app.fullname" . }}
+  serviceName: {{ include "app.statefulSetServiceName" . }}
+  podManagementPolicy: {{ .Values.app.statefulSet.podManagementPolicy }}
   updateStrategy:
     type: {{ .Values.app.statefulSet.strategy }}
+  {{- end }}
+  {{- if not (kindIs "invalid" .Values.app.minReadySeconds) }}
+  minReadySeconds: {{ .Values.app.minReadySeconds }}
   {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
@@ -32,86 +40,104 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "app.selectorLabels" . | nindent 8 }}
+        {{- include "app.podLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "app.serviceAccountName" . }}
+      {{- if not (kindIs "invalid" .Values.app.automountServiceAccountToken) }}
+      automountServiceAccountToken: {{ .Values.app.automountServiceAccountToken }}
+      {{- end }}
+      {{- with .Values.app.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- if not (kindIs "invalid" .Values.app.terminationGracePeriodSeconds) }}
+      terminationGracePeriodSeconds: {{ .Values.app.terminationGracePeriodSeconds }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.initContainers }}
+      {{- with .Values.initContainers }}
       initContainers:
-        {{ toYaml .Values.initContainers | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}{{ with .Values.image.tag }}:{{ . }}{{ end }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.app.command }}
+          {{- with .Values.app.command }}
           command:
-            {{- toYaml .Values.app.command | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.args }}
+          {{- with .Values.app.args }}
           args:
-            {{- toYaml .Values.app.args | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
             {{- range .Values.service.ports }}
             - name: {{ .name }}
-              containerPort: {{ .containerPort }}
-              protocol: TCP
+              containerPort: {{ .containerPort | default .port }}
+              protocol: {{ .protocol | default "TCP" }}
             {{- end }}
-          volumeMounts:
-            - mountPath: /shared
-              name: shared
-          {{- if .Values.app.additionalVolumeMounts }}
-          {{- toYaml .Values.app.additionalVolumeMounts | nindent 12 }}
+          {{- $volumeMounts := list }}
+          {{- if .Values.app.sharedVolume.enabled }}
+          {{- $volumeMounts = append $volumeMounts (dict "mountPath" "/shared" "name" "shared") }}
+          {{- end }}
+          {{- range .Values.app.additionalVolumeMounts }}
+          {{- $volumeMounts = append $volumeMounts . }}
           {{- end }}
           {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled }}
           {{- range .Values.app.statefulSet.persistence.volumes }}
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
+          {{- $volumeMounts = append $volumeMounts (dict "name" .name "mountPath" .mountPath) }}
           {{- end }}
           {{- end }}
-          {{- if .Values.app.lifecycle }}
+          {{- with $volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.app.lifecycle }}
           lifecycle:
-            {{- toYaml .Values.app.lifecycle | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.env }}
+          {{- with .Values.app.env }}
           env:
-          {{- toYaml .Values.app.env | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.envFrom }}
+          {{- with .Values.app.envFrom }}
           envFrom:
-          {{- toYaml .Values.app.envFrom | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.startupProbe }}
+          {{- with .Values.app.startupProbe }}
           startupProbe:
-            {{- toYaml .Values.app.startupProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.livenessProbe }}
+          {{- with .Values.app.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.app.livenessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.app.readinessProbe }}
+          {{- with .Values.app.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.app.readinessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-        {{- if .Values.sideCars }}
-        {{- toYaml .Values.sideCars | nindent 8 }}
+        {{- with .Values.sideCars }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- $volumes := list }}
+      {{- if .Values.app.sharedVolume.enabled }}
+      {{- $volumes = append $volumes (dict "name" "shared" "emptyDir" dict) }}
+      {{- end }}
+      {{- range .Values.volumes }}
+      {{- $volumes = append $volumes . }}
+      {{- end }}
+      {{- with $volumes }}
       volumes:
-        - name: shared
-          emptyDir: {}
-        {{- if .Values.volumes }}
-        {{- toYaml .Values.volumes | nindent 8 }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -120,25 +146,27 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.app.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled }}
+  {{- if and (eq .Values.app.kind "StatefulSet") .Values.app.statefulSet.persistence.enabled .Values.app.statefulSet.persistence.volumes }}
   volumeClaimTemplates:
     {{- range .Values.app.statefulSet.persistence.volumes }}
     - metadata:
         name: {{ .name }}
       spec:
         accessModes:
-          {{- range .accessModes }}
-          - {{ . }}
-          {{- end }}
+          {{- toYaml (.accessModes | default (list "ReadWriteOnce")) | nindent 10 }}
         resources:
           requests:
             storage: {{ .size }}
-        {{- if .storageClassName }}
-        storageClassName: {{ .storageClassName }}
+        {{- if not (kindIs "invalid" .storageClassName) }}
+        storageClassName: {{ .storageClassName | quote }}
         {{- end }}
     {{- end }}
   {{- end }}

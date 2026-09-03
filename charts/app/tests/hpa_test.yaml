@@ -19,16 +19,19 @@ tests:
     set:
       autoscaling:
         enabled: true
-    capabilities:
-      majorVersion: "1"
-      minorVersion: "23"
-      apiVersions:
-        - autoscaling/v2
     asserts:
       - hasDocuments:
           count: 1
       - isKind:
           of: HorizontalPodAutoscaler
+      - isAPIVersion:
+          of: autoscaling/v2
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: RELEASE-NAME-app
       - equal:
           path: spec.minReplicas
           value: 1
@@ -44,40 +47,19 @@ tests:
       - equal:
           path: spec.metrics[0].resource.target.type
           value: Utilization
+      - notExists:
+          path: spec.behavior
 
-  - it: should use autoscaling/v2beta apiVersion on kubernetes < 1.23
+  - it: should target a statefulset when app kind is StatefulSet
     set:
+      app:
+        kind: StatefulSet
       autoscaling:
         enabled: true
-    capabilities:
-      majorVersion: "1"
-      minorVersion: "22"
-      apiVersions:
-        - autoscaling/v2beta2
     asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: HorizontalPodAutoscaler
-      - isAPIVersion:
-          of: autoscaling/v2beta2
-
-  - it: should use autoscaling/v2 apiVersion on kubernetes => 1.23
-    set:
-      autoscaling:
-        enabled: true
-    capabilities:
-      majorVersion: "1"
-      minorVersion: "23"
-      apiVersions:
-        - autoscaling/v2
-    asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: HorizontalPodAutoscaler
-      - isAPIVersion:
-          of: autoscaling/v2
+      - equal:
+          path: spec.scaleTargetRef.kind
+          value: StatefulSet
 
   - it: should pass custom replica size
     set:
@@ -86,10 +68,6 @@ tests:
         minReplicas: 2
         maxReplicas: 10
     asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: HorizontalPodAutoscaler
       - equal:
           path: spec.minReplicas
           value: 2
@@ -102,16 +80,7 @@ tests:
       autoscaling:
         enabled: true
         targetCPUUtilizationPercentage: 65
-    capabilities:
-      majorVersion: "1"
-      minorVersion: "23"
-      apiVersions:
-        - autoscaling/v2
     asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: HorizontalPodAutoscaler
       - equal:
           path: spec.metrics[0].resource.target.averageUtilization
           value: 65
@@ -121,19 +90,22 @@ tests:
       autoscaling:
         enabled: true
         targetMemoryUtilizationPercentage: 50
-    capabilities:
-      majorVersion: "1"
-      minorVersion: "23"
-      apiVersions:
-        - autoscaling/v2
     asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: HorizontalPodAutoscaler
       - equal:
           path: spec.metrics[0].resource.target.averageUtilization
           value: 80
       - equal:
           path: spec.metrics[1].resource.target.averageUtilization
           value: 50
+
+  - it: should pass scaling behavior
+    set:
+      autoscaling:
+        enabled: true
+        behavior:
+          scaleDown:
+            stabilizationWindowSeconds: 600
+    asserts:
+      - equal:
+          path: spec.behavior.scaleDown.stabilizationWindowSeconds
+          value: 600

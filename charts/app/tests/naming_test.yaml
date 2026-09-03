@@ -1,0 +1,103 @@
+suite: test suffixed resource names
+tests:
+  - it: should keep the job name within 63 characters
+    templates:
+      - templates/job.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      job:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-job
+
+  - it: should keep the middleware name within 63 characters
+    templates:
+      - templates/middleware.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      middleware:
+        enabled: true
+        sourceRange:
+          - 10.0.0.0/8
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-whitelist
+
+  - it: should keep the podmonitor name within 63 characters
+    templates:
+      - templates/podmonitor.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      podMonitor:
+        enabled: true
+        podMetricsEndpoints:
+          - port: metrics
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-metrics
+
+  - it: should keep the headless service name within 63 characters
+    templates:
+      - templates/service-headless.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      app:
+        kind: StatefulSet
+        statefulSet:
+          headless:
+            enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-headless
+
+  - it: should keep the test connection pod name within 63 characters
+    templates:
+      - templates/tests/test-connection.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-test-connection
+
+  - it: should reference the headless service from the statefulset
+    templates:
+      - templates/app.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      app:
+        kind: StatefulSet
+        statefulSet:
+          headless:
+            enabled: true
+    asserts:
+      - equal:
+          path: spec.serviceName
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-headless
+
+  - it: should reference the same truncated whitelist name from both templates
+    templates:
+      - templates/middleware.yaml
+      - templates/ingressRoute.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      ingressRoute:
+        enabled: true
+      middleware:
+        enabled: true
+        sourceRange:
+          - 10.10.10.1/24
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-whitelist
+        template: templates/middleware.yaml
+      - equal:
+          path: spec.routes[0].middlewares[0].name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-whitelist
+        template: templates/ingressRoute.yaml

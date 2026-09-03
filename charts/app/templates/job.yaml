@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "app.fullname" . }}-job
+  name: {{ include "app.suffixedName" (dict "context" . "suffix" "job") }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
     {{- with .Values.job.labels }}

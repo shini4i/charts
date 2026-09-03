@@ -6,7 +6,7 @@ sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/argo-watcher-mcp
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 1.2.5
+version: 1.2.6
 keywords:
 - argocd
 - gitops
@@ -24,5 +24,7 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: changed
-      description: Update argo-watcher app version from v1.1.0 to v1.1.1
+    - kind: fixed
+      description: the helm test hook is packaged again; an unanchored tests/ in .helmignore also matched templates/tests/
+    - kind: fixed
+      description: the helm test pod no longer carries the selector labels, which would have enrolled it as a Service endpoint while it ran

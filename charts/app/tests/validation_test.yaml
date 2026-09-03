@@ -1,0 +1,114 @@
+suite: test values validation
+templates:
+  - templates/app.yaml
+tests:
+  - it: should accept Deployment
+    set:
+      app:
+        kind: Deployment
+    asserts:
+      - isKind:
+          of: Deployment
+
+  - it: should accept StatefulSet
+    set:
+      app:
+        kind: StatefulSet
+    asserts:
+      - isKind:
+          of: StatefulSet
+
+  - it: should fail on an unsupported app kind
+    set:
+      app:
+        kind: DaemonSet
+    asserts:
+      - failedTemplate:
+          errorMessage: "app.kind must be either Deployment or StatefulSet, got: DaemonSet"
+
+  - it: should fail when both autoscaling and keda are enabled
+    set:
+      autoscaling:
+        enabled: true
+      keda:
+        enabled: true
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - failedTemplate:
+          errorMessage: "autoscaling.enabled and keda.enabled are mutually exclusive, disable one of them"
+
+  - it: should fail when keda is enabled without triggers
+    set:
+      keda:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: "keda.enabled requires at least one entry in keda.triggers"
+
+  - it: should fail when podMonitor is enabled without endpoints
+    set:
+      podMonitor:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: "podMonitor.enabled requires at least one entry in podMonitor.podMetricsEndpoints"
+
+  - it: should fail when the pod disruption budget sets neither minAvailable nor maxUnavailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: "podDisruptionBudget requires exactly one of minAvailable or maxUnavailable"
+
+  - it: should fail when the pod disruption budget sets both minAvailable and maxUnavailable
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+        maxUnavailable: 1
+    asserts:
+      - failedTemplate:
+          errorMessage: "podDisruptionBudget requires exactly one of minAvailable or maxUnavailable"
+
+  - it: should fail when a persistence volume has no size
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+    asserts:
+      - failedTemplate:
+          errorMessage: "app.statefulSet.persistence.volumes[].size is required, missing on volume: data"
+
+  - it: should fail when service.ports is empty
+    set:
+      service:
+        ports: []
+    asserts:
+      - failedTemplate:
+          errorMessage: "service.ports requires at least one entry"
+
+  - it: should fail when autoscaling is enabled with no target
+    set:
+      autoscaling:
+        enabled: true
+        targetCPUUtilizationPercentage: null
+    asserts:
+      - failedTemplate:
+          errorMessage: "autoscaling.enabled requires targetCPUUtilizationPercentage or targetMemoryUtilizationPercentage"
+
+  - it: should fail on a null service.ports before the test hook renders
+    set:
+      service:
+        ports: null
+    asserts:
+      - failedTemplate:
+          errorMessage: "service.ports requires at least one entry"

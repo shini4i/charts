@@ -1,0 +1,158 @@
+suite: test keda scaled object
+templates:
+  - templates/keda-scaledobject.yaml
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not be created if disabled
+    set:
+      keda:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should pass default values
+    set:
+      keda:
+        enabled: true
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: keda.sh/v1alpha1
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: spec.minReplicaCount
+          value: 2
+      - equal:
+          path: spec.maxReplicaCount
+          value: 5
+      - equal:
+          path: spec.pollingInterval
+          value: 30
+      - equal:
+          path: spec.cooldownPeriod
+          value: 300
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: RELEASE-NAME-app
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: app
+
+  - it: should target a statefulset when app kind is StatefulSet
+    set:
+      app:
+        kind: StatefulSet
+      keda:
+        enabled: true
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: StatefulSet
+            name: RELEASE-NAME-app
+
+  - it: should pass full name override
+    set:
+      fullnameOverride: example
+      keda:
+        enabled: true
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: example
+
+  - it: should pass custom replica size
+    set:
+      keda:
+        enabled: true
+        minReplicaCount: 10
+        maxReplicaCount: 100
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.minReplicaCount
+          value: 10
+      - equal:
+          path: spec.maxReplicaCount
+          value: 100
+
+  - it: should pass custom polling interval and cooldown period
+    set:
+      keda:
+        enabled: true
+        pollingInterval: 10
+        cooldownPeriod: 60
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
+    asserts:
+      - equal:
+          path: spec.pollingInterval
+          value: 10
+      - equal:
+          path: spec.cooldownPeriod
+          value: 60
+
+  - it: should render triggers, fallback and advanced
+    set:
+      keda:
+        enabled: true
+        fallback:
+          failureThreshold: 3
+          replicas: 4
+        advanced:
+          restoreToOriginalReplicaCount: false
+        triggers:
+          - type: prometheus
+            metadata:
+              serverAddress: http://prometheus.monitoring:9090
+              query: sum(rate(http_requests_total[2m]))
+              threshold: "80"
+    asserts:
+      - equal:
+          path: spec.fallback
+          value:
+            failureThreshold: 3
+            replicas: 4
+      - equal:
+          path: spec.advanced
+          value:
+            restoreToOriginalReplicaCount: false
+      - lengthEqual:
+          path: spec.triggers
+          count: 1
+      - equal:
+          path: spec.triggers[0].type
+          value: prometheus

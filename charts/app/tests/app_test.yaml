@@ -58,6 +58,10 @@ tests:
     set:
       keda:
         enabled: true
+        triggers:
+          - type: cron
+            metadata:
+              start: "0 6 * * *"
     asserts:
       - hasDocuments:
           count: 1
@@ -477,3 +481,394 @@ tests:
           path: spec.template.spec.containers[0].args
           value:
             - echo "Hello, World!"
+
+  - it: should carry the common labels on the pod template
+    asserts:
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            app.kubernetes.io/name: app
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+
+  - it: should pass custom pod labels
+    set:
+      app:
+        podLabels:
+          example.com/tier: backend
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["example.com/tier"]
+          value: backend
+
+  - it: should not let pod labels override the selector labels
+    set:
+      app:
+        podLabels:
+          app.kubernetes.io/name: hijacked
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          value: app
+
+  - it: should default the persistent volume access mode to ReadWriteOnce
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+                size: 1Gi
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.accessModes
+          value:
+            - ReadWriteOnce
+
+  - it: should omit the image tag when it is empty
+    set:
+      image:
+        repository: alpine@sha256:aaaa
+        tag: ""
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: alpine@sha256:aaaa
+
+  - it: should mount the shared volume by default
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0]
+          value:
+            mountPath: /shared
+            name: shared
+      - equal:
+          path: spec.template.spec.volumes[0]
+          value:
+            name: shared
+            emptyDir: {}
+
+  - it: should drop the shared volume when disabled
+    set:
+      app:
+        sharedVolume:
+          enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+      - notExists:
+          path: spec.template.spec.volumes
+
+  - it: should keep custom volumes when the shared volume is disabled
+    set:
+      app:
+        sharedVolume:
+          enabled: false
+        additionalVolumeMounts:
+          - name: config
+            mountPath: /etc/config
+      volumes:
+        - name: config
+          configMap:
+            name: config
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.volumes
+          count: 1
+      - lengthEqual:
+          path: spec.template.spec.containers[0].volumeMounts
+          count: 1
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/config
+
+  - it: should default revisionHistoryLimit to 3
+    asserts:
+      - equal:
+          path: spec.revisionHistoryLimit
+          value: 3
+
+  - it: should not set optional scheduling and lifecycle fields by default
+    asserts:
+      - notExists:
+          path: spec.minReadySeconds
+      - notExists:
+          path: spec.progressDeadlineSeconds
+      - notExists:
+          path: spec.template.spec.priorityClassName
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
+      - notExists:
+          path: spec.template.spec.topologySpreadConstraints
+      - notExists:
+          path: spec.template.spec.automountServiceAccountToken
+
+  - it: should pass scheduling and lifecycle fields when set
+    set:
+      app:
+        minReadySeconds: 10
+        priorityClassName: high
+        terminationGracePeriodSeconds: 60
+        automountServiceAccountToken: false
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: topology.kubernetes.io/zone
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: app
+        deployment:
+          progressDeadlineSeconds: 900
+    asserts:
+      - equal:
+          path: spec.minReadySeconds
+          value: 10
+      - equal:
+          path: spec.progressDeadlineSeconds
+          value: 900
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: high
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 60
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].topologyKey
+          value: topology.kubernetes.io/zone
+
+  - it: should not set progressDeadlineSeconds on a statefulset
+    set:
+      app:
+        kind: StatefulSet
+        deployment:
+          progressDeadlineSeconds: 900
+    asserts:
+      - notExists:
+          path: spec.progressDeadlineSeconds
+
+  - it: should default the statefulset pod management policy to OrderedReady
+    set:
+      app:
+        kind: StatefulSet
+    asserts:
+      - equal:
+          path: spec.podManagementPolicy
+          value: OrderedReady
+      - equal:
+          path: spec.serviceName
+          value: RELEASE-NAME-app
+
+  - it: should pass a custom statefulset pod management policy
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          podManagementPolicy: Parallel
+    asserts:
+      - equal:
+          path: spec.podManagementPolicy
+          value: Parallel
+
+  - it: should pass the default deployment strategy
+    asserts:
+      - equal:
+          path: spec.strategy
+          value:
+            type: RollingUpdate
+            rollingUpdate:
+              maxUnavailable: 25%
+              maxSurge: 1
+      - notExists:
+          path: spec.updateStrategy
+      - notExists:
+          path: spec.podManagementPolicy
+      - notExists:
+          path: spec.serviceName
+
+  - it: should drop the rolling update block for the Recreate strategy
+    set:
+      app:
+        deployment:
+          strategy: Recreate
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - notExists:
+          path: spec.strategy.rollingUpdate
+
+  - it: should pass the statefulset update strategy
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          strategy: OnDelete
+    asserts:
+      - equal:
+          path: spec.updateStrategy.type
+          value: OnDelete
+      - notExists:
+          path: spec.strategy
+
+  - it: should carry the full common labels on the pod template
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            helm.sh/chart: app-0.4.0
+            app.kubernetes.io/name: app
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+
+  - it: should declare every service port on the container
+    set:
+      service:
+        ports:
+          - port: 80
+            containerPort: 8080
+            name: http
+          - port: 9090
+            name: grpc
+            protocol: TCP
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers[0].ports
+          count: 2
+      - equal:
+          path: spec.template.spec.containers[0].ports[1]
+          value:
+            name: grpc
+            containerPort: 9090
+            protocol: TCP
+
+  - it: should omit volumeClaimTemplates when persistence has no volumes
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes: []
+    asserts:
+      - notExists:
+          path: spec.volumeClaimTemplates
+
+  - it: should keep a custom persistent volume access mode
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+                size: 1Gi
+                accessModes:
+                  - ReadWriteMany
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.accessModes
+          value:
+            - ReadWriteMany
+
+  - it: should pass the startup probe
+    set:
+      app:
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          failureThreshold: 30
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 30
+
+  - it: should pass a custom revisionHistoryLimit
+    set:
+      revisionHistoryLimit: 10
+    asserts:
+      - equal:
+          path: spec.revisionHistoryLimit
+          value: 10
+
+  - it: should render a persistent statefulset behind a headless service
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          headless:
+            enabled: true
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+                size: 8Gi
+        additionalVolumeMounts:
+          - name: config
+            mountPath: /etc/config
+      volumes:
+        - name: config
+          configMap:
+            name: config
+    asserts:
+      - equal:
+          path: spec.serviceName
+          value: RELEASE-NAME-app-headless
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - mountPath: /shared
+              name: shared
+            - name: config
+              mountPath: /etc/config
+            - name: data
+              mountPath: /data
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: shared
+              emptyDir: {}
+            - name: config
+              configMap:
+                name: config
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.resources.requests.storage
+          value: 8Gi
+
+  - it: should keep a zero terminationGracePeriodSeconds
+    set:
+      app:
+        terminationGracePeriodSeconds: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 0
+
+  - it: should keep an empty storageClassName, which pins the claim to a static volume
+    set:
+      app:
+        kind: StatefulSet
+        statefulSet:
+          persistence:
+            enabled: true
+            volumes:
+              - name: data
+                mountPath: /data
+                size: 1Gi
+                storageClassName: ""
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+          value: ""
