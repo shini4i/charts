@@ -112,3 +112,26 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "service.ports requires at least one entry"
+
+  - it: should fail on a nodePort with the default ClusterIP service type
+    set:
+      service:
+        ports:
+          - port: 80
+            name: http
+            nodePort: 30080
+    asserts:
+      - failedTemplate:
+          errorMessage: "service.ports[].nodePort needs service.type NodePort or LoadBalancer, set on port: http"
+
+  - it: should allow a nodePort on a LoadBalancer service
+    set:
+      service:
+        type: LoadBalancer
+        ports:
+          - port: 80
+            name: http
+            nodePort: 30080
+    asserts:
+      - isKind:
+          of: Deployment

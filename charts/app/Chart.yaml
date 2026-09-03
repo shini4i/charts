@@ -27,7 +27,7 @@ annotations:
     - kind: fixed
       description: 'resource names that carry a suffix are truncated to 63 characters, so a long release name no longer produces an invalid Job name'
     - kind: fixed
-      description: 'the whitelist Middleware is no longer created when middleware.enabled is false'
+      description: 'the whitelist Middleware is no longer created when middleware.enabled is false, so a release that set only sourceRange loses that object on upgrade'
     - kind: fixed
       description: 'the helm test pod no longer carries the selector labels, which had enrolled it as a Service endpoint while it ran'
     - kind: changed
@@ -35,7 +35,7 @@ annotations:
     - kind: changed
       description: 'the whitelist Middleware uses ipAllowList on traefik.io and ipWhiteList on traefik.containo.us, matching what each CRD accepts'
     - kind: changed
-      description: 'middleware.existingMiddlewares is now a list of names; it was documented as a map that never worked'
+      description: 'middleware.existingMiddlewares is documented and defaulted as a list of names; a map still renders the same, since both forms are iterated by value'
     - kind: changed
       description: 'the HPA is always autoscaling/v2, the removed v2beta1 and v2beta2 fallbacks are gone, and the chart now declares kubeVersion >=1.23.0-0'
     - kind: changed
@@ -60,6 +60,8 @@ annotations:
       description: 'autoscaling.behavior, and keda.pollingInterval and keda.cooldownPeriod are now documented values'
     - kind: added
       description: 'app.sharedVolume.enabled to drop the /shared emptyDir'
+    - kind: added
+      description: 'service.ports[].nodePort is rejected at render time unless service.type is NodePort or LoadBalancer'
     - kind: added
       description: 'value validation that fails the render on an unsupported app.kind, on autoscaling and keda both enabled, on an empty service.ports, and on autoscaling, keda or podMonitor enabled with nothing to act on'
 

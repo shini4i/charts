@@ -114,6 +114,13 @@ app.yaml, which renders for every release.
 {{- if empty .Values.service.ports -}}
 {{- fail "service.ports requires at least one entry" -}}
 {{- end -}}
+{{- if not (has .Values.service.type (list "NodePort" "LoadBalancer")) -}}
+{{- range .Values.service.ports -}}
+{{- if .nodePort -}}
+{{- fail (printf "service.ports[].nodePort needs service.type NodePort or LoadBalancer, set on port: %s" .name) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{- if not (has .Values.app.kind (list "Deployment" "StatefulSet")) -}}
 {{- fail (printf "app.kind must be either Deployment or StatefulSet, got: %s" .Values.app.kind) -}}
 {{- end -}}
