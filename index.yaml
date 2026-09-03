@@ -4,6 +4,82 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: fixed
+          description: 'helm test rendered an empty port; it now targets the first entry of service.ports'
+        - kind: fixed
+          description: 'volumeClaimTemplates rendered an empty accessModes when a persistence volume omitted it; it now defaults to ReadWriteOnce'
+        - kind: fixed
+          description: 'the KEDA ScaledObject now sets scaleTargetRef.kind from app.kind, so a StatefulSet is actually scaled'
+        - kind: fixed
+          description: 'resource names that carry a suffix are truncated to 63 characters, so a long release name no longer produces an invalid Job name'
+        - kind: fixed
+          description: 'the whitelist Middleware is no longer created when middleware.enabled is false, so a release that set only sourceRange loses that object on upgrade'
+        - kind: fixed
+          description: 'the helm test pod no longer carries the selector labels, which had enrolled it as a Service endpoint while it ran'
+        - kind: changed
+          description: 'the Traefik CRD group is now traefik.io/v1alpha1 (Traefik v3); set traefik.apiVersion to traefik.containo.us/v1alpha1 to stay on Traefik v2'
+        - kind: changed
+          description: 'the whitelist Middleware uses ipAllowList on traefik.io and ipWhiteList on traefik.containo.us, matching what each CRD accepts'
+        - kind: changed
+          description: 'middleware.existingMiddlewares is documented and defaulted as a list of names; a map still renders the same, since both forms are iterated by value'
+        - kind: changed
+          description: 'the HPA is always autoscaling/v2, the removed v2beta1 and v2beta2 fallbacks are gone, and the chart now declares kubeVersion >=1.23.0-0'
+        - kind: changed
+          description: 'revisionHistoryLimit now defaults to 3'
+        - kind: changed
+          description: 'the pod template carries the common chart labels, which rolls pods once on upgrade'
+        - kind: added
+          description: 'a PodDisruptionBudget, disabled by default'
+        - kind: added
+          description: 'an opt-in headless service for StatefulSets, required for stable per-pod DNS'
+        - kind: added
+          description: 'app.podLabels, minReadySeconds, terminationGracePeriodSeconds, priorityClassName, topologySpreadConstraints, automountServiceAccountToken, podManagementPolicy and progressDeadlineSeconds'
+        - kind: added
+          description: 'service annotations, sessionAffinity and per-port protocol, appProtocol and nodePort'
+        - kind: added
+          description: 'serviceAccount.automountServiceAccountToken, controlling whether the created ServiceAccount mounts an API token'
+        - kind: added
+          description: 'leaving image.tag empty omits the :tag suffix, so an image can be pinned by digest through image.repository'
+        - kind: added
+          description: 'ingressRoute.tls.enabled to turn TLS termination off for a plain HTTP entryPoint; clearing ingressRoute.tlsSecret now falls back to the entryPoint certificate instead of rendering an empty secretName'
+        - kind: added
+          description: 'autoscaling.behavior, and keda.pollingInterval and keda.cooldownPeriod are now documented values'
+        - kind: added
+          description: 'app.sharedVolume.enabled to drop the /shared emptyDir'
+        - kind: added
+          description: 'service.ports[].nodePort is rejected at render time unless service.type is NodePort or LoadBalancer'
+        - kind: added
+          description: 'value validation that fails the render on an unsupported app.kind, on autoscaling and keda both enabled, on an empty service.ports, and on autoscaling, keda or podMonitor enabled with nothing to act on'
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    created: "2026-09-03T10:32:04.106326182Z"
+    dependencies:
+    - name: network-policies
+      repository: https://shini4i.github.io/charts/
+      version: 0.0.6
+    description: A Helm chart for a simple app deployment
+    digest: 850c4bc0ceb64293a2404df71740bfe1d4f7a3bfe37a13281838cc32b203569c
+    home: https://github.com/shini4i/charts
+    keywords:
+    - deployment
+    - statefulset
+    - generic
+    kubeVersion: '>=1.23.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: app
+    sources:
+    - https://github.com/shini4i/charts/tree/main/charts/app
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/app-0.4.0/app-0.4.0.tgz
+    version: 0.4.0
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
           description: job annotations are no longer rendered outside of the metadata block
         - kind: changed
           description: 'job.annotations now defaults to {}; set "helm.sh/hook" explicitly to keep the pre-upgrade hook, otherwise delete the leftover hook-created job before upgrading'
@@ -435,6 +511,40 @@ entries:
     - https://github.com/shini4i/charts/releases/download/app-0.0.1/app-0.0.1.tgz
     version: 0.0.1
   argo-watcher:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
+          description: the helm test hook is packaged again; an unanchored tests/ in .helmignore also matched templates/tests/
+        - kind: fixed
+          description: the helm test pod no longer carries the selector labels, which would have enrolled it as a Service endpoint while it ran
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v1.1.1
+    created: "2026-09-03T10:32:04.27667903Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: aaeda08b45a6ce8fe448c56ce889c2479bce3776aefcbd4dc01f54d49d2e9590
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    - mcp
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/argo-watcher-mcp
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-1.2.6/argo-watcher-1.2.6.tgz
+    version: 1.2.6
   - annotations:
       artifacthub.io/changes: |
         - kind: changed
@@ -2950,4 +3060,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-02T15:37:40.579589413Z"
+generated: "2026-09-03T10:32:04.276944524Z"
