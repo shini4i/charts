@@ -513,6 +513,38 @@ entries:
   argo-watcher:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Update argo-watcher app version from v1.4.0 to v1.4.1
+      artifacthub.io/signKey: |
+        fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
+        url: https://shini4i.github.io/charts/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v1.4.1
+    created: "2026-09-15T17:39:17.96507749Z"
+    description: A Helm chart for deploying argo-watcher
+    digest: 342872ed0e5e899172cdd29a1449904c644b51f48a4f126e6e96c5e071939ab5
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argocd
+    - gitops
+    - automation
+    - mcp
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: github@shini4i.dev
+      name: Vadim Gedz
+      url: https://github.com/shini4i
+    name: argo-watcher
+    sources:
+    - https://github.com/shini4i/argo-watcher
+    - https://github.com/shini4i/argo-watcher-mcp
+    - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
+    type: application
+    urls:
+    - https://github.com/shini4i/charts/releases/download/argo-watcher-1.3.1/argo-watcher-1.3.1.tgz
+    version: 1.3.1
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: postgres.sslMode, rendered as DB_SSL_MODE into the server and the migration Job
       artifacthub.io/signKey: |
@@ -3188,4 +3220,4 @@ entries:
     urls:
     - https://github.com/shini4i/charts/releases/download/node-configurer-0.1.0/node-configurer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-15T11:57:11.18208816Z"
+generated: "2026-09-15T17:39:17.96545873Z"
