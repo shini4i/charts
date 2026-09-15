@@ -88,6 +88,20 @@ The secret is consumed like the Argo CD one: with `postgres.secretKey` unset the
 whole secret is loaded through `envFrom` and must contain `DB_PASSWORD`; set
 `postgres.secretKey` to map a differently named key onto it instead.
 
+argo-watcher connects with `sslmode=disable` unless told otherwise. A database
+that rejects plaintext connections — a Zalando postgres-operator cluster, whose
+`pg_hba` ends in `hostnossl all all all reject`, for one — needs
+`postgres.sslMode` set:
+
+```yaml
+postgres:
+  sslMode: require
+```
+
+The value reaches both the server and the migration Job. `verify-ca` and
+`verify-full` resolve the root CA from the image's trust store — the chart mounts
+no CA bundle — so a database fronted by a private CA needs `require`.
+
 Migrations need no manual step. The chart schedules a `pre-install`/`pre-upgrade`
 hook Job that runs `argo-watcher --migrate` with the same image and database
 credentials, so `helm upgrade` applies new migrations before the new pods start.

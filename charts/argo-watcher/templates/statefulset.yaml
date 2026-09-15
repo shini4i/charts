@@ -122,6 +122,10 @@ spec:
               value: {{ .Values.postgres.name }}
             - name: DB_USER
               value: {{ .Values.postgres.user }}
+            {{- with .Values.postgres.sslMode }}
+            - name: DB_SSL_MODE
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.postgres.secretKey }}
             - name: DB_PASSWORD
               valueFrom:

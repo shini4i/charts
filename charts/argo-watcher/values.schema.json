@@ -134,7 +134,11 @@
         "name": { "type": "string" },
         "user": { "type": "string" },
         "secretName": { "type": "string" },
-        "secretKey": { "type": "string" }
+        "secretKey": { "type": "string" },
+        "sslMode": {
+          "type": "string",
+          "enum": ["", "disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
+        }
       },
       "required": ["enabled"]
     },
