@@ -133,3 +133,42 @@ tests:
       - equal:
           path: spec.template.spec.imagePullSecrets[0].name
           value: regcred
+
+  - it: should not render DB_SSL_MODE when postgres.sslMode is unset
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+          any: true
+
+  - it: should render DB_SSL_MODE when postgres.sslMode is set
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        secretKey: password
+        sslMode: verify-full
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+            value: verify-full
+
+  - it: should render DB_SSL_MODE when postgres.sslMode is explicitly disable
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: disable
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+            value: disable

@@ -123,6 +123,8 @@ postgres:
   user: ""
   # -- Pre-created secret with DB_PASSWORD variable
   secretName: ""
+  # -- Sets DB_SSL_MODE on the server and the migration Job; empty keeps the app default (disable)
+  sslMode: ""
   # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
   secretKey: ""
 

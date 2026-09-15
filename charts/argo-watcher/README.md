@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 1.2.9](https://img.shields.io/badge/Version-1.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.0](https://img.shields.io/badge/AppVersion-v1.4.0-informational?style=flat-square)
+![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.0](https://img.shields.io/badge/AppVersion-v1.4.0-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -93,6 +93,20 @@ postgres:
 The secret is consumed like the Argo CD one: with `postgres.secretKey` unset the
 whole secret is loaded through `envFrom` and must contain `DB_PASSWORD`; set
 `postgres.secretKey` to map a differently named key onto it instead.
+
+argo-watcher connects with `sslmode=disable` unless told otherwise. A database
+that rejects plaintext connections — a Zalando postgres-operator cluster, whose
+`pg_hba` ends in `hostnossl all all all reject`, for one — needs
+`postgres.sslMode` set:
+
+```yaml
+postgres:
+  sslMode: require
+```
+
+The value reaches both the server and the migration Job. `verify-ca` and
+`verify-full` resolve the root CA from the image's trust store — the chart mounts
+no CA bundle — so a database fronted by a private CA needs `require`.
 
 Migrations need no manual step. The chart schedules a `pre-install`/`pre-upgrade`
 hook Job that runs `argo-watcher --migrate` with the same image and database
@@ -367,6 +381,7 @@ PodMonitor has the same property.
 | postgres.port | int | `5432` |  |
 | postgres.secretKey | string | `""` | Support for an optional key override (this specific key would be exposed to DB_PASSWORD) |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
+| postgres.sslMode | string | `""` | Sets DB_SSL_MODE on the server and the migration Job; empty keeps the app default (disable) |
 | postgres.user | string | `""` |  |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/readyz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /readyz reports down while the pod is shutting down and while the state backend is unreachable; ArgoCD reachability is excluded. |
 | replicaCount | int | `1` |  |

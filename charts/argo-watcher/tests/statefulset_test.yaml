@@ -708,3 +708,63 @@ tests:
               items:
                 - key: id_rsa
                   path: id_rsa
+
+  - it: should not render DB_SSL_MODE when postgres.sslMode is unset
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+          any: true
+
+  - it: should render DB_SSL_MODE when postgres.sslMode is set
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: require
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+            value: require
+
+  - it: should not render DB_SSL_MODE when postgres is disabled
+    set:
+      postgres:
+        enabled: false
+        sslMode: require
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+          any: true
+
+  - it: should render DB_SSL_MODE when postgres.sslMode is explicitly disable
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: disable
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_SSL_MODE
+            value: disable
+
+  - it: should reject a postgres.sslMode outside the schema enum
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: bogus
+    asserts:
+      - failedTemplate:
+          errorPattern: postgres/sslMode
