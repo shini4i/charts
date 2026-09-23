@@ -4,6 +4,9 @@
 {{- if and (not .Values.postgres.enabled) (gt (int .Values.replicaCount) 1) }}
 {{- fail "replicaCount > 1 is not supported with in-memory state (postgres.enabled: false); enable postgres for multi-replica deployments" }}
 {{- end }}
+{{- if and .Values.postgres.enabled .Values.postgres.sslRootCert (not (has .Values.postgres.sslMode (list "require" "verify-ca" "verify-full"))) }}
+{{- fail "postgres.sslRootCert requires postgres.sslMode require, verify-ca or verify-full; any other mode ignores the CA" }}
+{{- end }}
 {{- if .Values.oidc.enabled }}
 {{- if not .Values.oidc.issuerUrl }}
 {{- fail "oidc.issuerUrl is required when oidc.enabled is true" }}
@@ -39,6 +42,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "argo-watcher.serviceAccountName" . }}
+      # Also set here so a pre-created ServiceAccount cannot mount a token.
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       {{- if not (kindIs "invalid" .Values.terminationGracePeriodSeconds) }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
@@ -126,6 +131,10 @@ spec:
             - name: DB_SSL_MODE
               value: {{ . | quote }}
             {{- end }}
+            {{- with .Values.postgres.sslRootCert }}
+            - name: PGSSLROOTCERT
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.postgres.secretKey }}
             - name: DB_PASSWORD
               valueFrom:
@@ -192,6 +201,9 @@ spec:
               subPath: {{ .Values.updater.knownHostsKey }}
               readOnly: true
           {{- end }}
+          {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
@@ -216,6 +228,9 @@ spec:
             items:
               - key: {{ .Values.updater.knownHostsKey }}
                 path: {{ .Values.updater.knownHostsKey }}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

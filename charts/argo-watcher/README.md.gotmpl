@@ -98,9 +98,33 @@ postgres:
   sslMode: require
 ```
 
-The value reaches both the server and the migration Job. `verify-ca` and
-`verify-full` resolve the root CA from the image's trust store — the chart mounts
-no CA bundle — so a database fronted by a private CA needs `require`.
+The value reaches both the server and the migration Job. `require` encrypts but
+accepts any certificate; only `verify-ca` and `verify-full` authenticate the
+server. Without `postgres.sslRootCert` they check it against the image's trust
+store.
+
+For a database signed by a private CA, mount the CA into both pods and point
+`postgres.sslRootCert` at it. The chart renders it as `PGSSLROOTCERT`:
+
+```yaml
+postgres:
+  sslMode: verify-full
+  sslRootCert: /etc/postgres-ca/ca.crt
+extraVolumes: &postgresCaVolumes
+  - name: postgres-ca
+    secret:
+      secretName: postgres-ca
+extraVolumeMounts: &postgresCaMounts
+  - name: postgres-ca
+    mountPath: /etc/postgres-ca
+    readOnly: true
+migration:
+  extraVolumes: *postgresCaVolumes
+  extraVolumeMounts: *postgresCaMounts
+```
+
+The migration Job runs as a `pre-install`/`pre-upgrade` hook, so the CA secret
+must exist before the release is installed or upgraded.
 
 Migrations need no manual step. The chart schedules a `pre-install`/`pre-upgrade`
 hook Job that runs `argo-watcher --migrate` with the same image and database

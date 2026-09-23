@@ -1,6 +1,6 @@
 # argo-watcher
 
-![Version: 1.3.1](https://img.shields.io/badge/Version-1.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.1](https://img.shields.io/badge/AppVersion-v1.4.1-informational?style=flat-square)
+![Version: 1.4.0](https://img.shields.io/badge/Version-1.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.1](https://img.shields.io/badge/AppVersion-v1.4.1-informational?style=flat-square)
 
 A Helm chart for deploying argo-watcher
 
@@ -104,9 +104,33 @@ postgres:
   sslMode: require
 ```
 
-The value reaches both the server and the migration Job. `verify-ca` and
-`verify-full` resolve the root CA from the image's trust store — the chart mounts
-no CA bundle — so a database fronted by a private CA needs `require`.
+The value reaches both the server and the migration Job. `require` encrypts but
+accepts any certificate; only `verify-ca` and `verify-full` authenticate the
+server. Without `postgres.sslRootCert` they check it against the image's trust
+store.
+
+For a database signed by a private CA, mount the CA into both pods and point
+`postgres.sslRootCert` at it. The chart renders it as `PGSSLROOTCERT`:
+
+```yaml
+postgres:
+  sslMode: verify-full
+  sslRootCert: /etc/postgres-ca/ca.crt
+extraVolumes: &postgresCaVolumes
+  - name: postgres-ca
+    secret:
+      secretName: postgres-ca
+extraVolumeMounts: &postgresCaMounts
+  - name: postgres-ca
+    mountPath: /etc/postgres-ca
+    readOnly: true
+migration:
+  extraVolumes: *postgresCaVolumes
+  extraVolumeMounts: *postgresCaMounts
+```
+
+The migration Job runs as a `pre-install`/`pre-upgrade` hook, so the CA secret
+must exist before the release is installed or upgraded.
 
 Migrations need no manual step. The chart schedules a `pre-install`/`pre-upgrade`
 hook Job that runs `argo-watcher --migrate` with the same image and database
@@ -289,6 +313,8 @@ PodMonitor has the same property.
 | argo.url | string | `"https://argocd.example.com"` |  |
 | argo.urlAlias | string | `""` | An alias that will be used to generate url for ArgoCD app |
 | extraEnvs | list | `[]` | Additional environment variables to add to the container (supports both value and valueFrom) |
+| extraVolumeMounts | list | `[]` | Additional volume mounts for the argo-watcher container |
+| extraVolumes | list | `[]` | Additional volumes for the argo-watcher pod, e.g. a private database CA |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/shini4i/argo-watcher"` |  |
@@ -344,6 +370,8 @@ PodMonitor has the same property.
 | mcp.tolerations | list | `[]` |  |
 | mcp.topologySpreadConstraints | list | `[]` |  |
 | migration.backoffLimit | int | `5` |  |
+| migration.extraVolumeMounts | list | `[]` | Additional volume mounts for the migration container |
+| migration.extraVolumes | list | `[]` | Additional volumes for the migration Job pod, e.g. a private database CA. The server's extraVolumes are not mounted here. |
 | migration.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | migration.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | migration.resources | object | `{}` |  |
@@ -382,6 +410,7 @@ PodMonitor has the same property.
 | postgres.secretKey | string | `""` | Support for an optional key override (this specific key would be exposed to DB_PASSWORD) |
 | postgres.secretName | string | `""` | Pre-created secret with DB_PASSWORD variable |
 | postgres.sslMode | string | `""` | Sets DB_SSL_MODE on the server and the migration Job; empty keeps the app default (disable) |
+| postgres.sslRootCert | string | `""` | Path to the root CA the server and the migration Job verify the database certificate against, rendered as PGSSLROOTCERT. Mount the file with extraVolumes and migration.extraVolumes. Requires sslMode require, verify-ca or verify-full. |
 | postgres.user | string | `""` |  |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":3,"path":"/readyz","periodSeconds":10,"timeoutSeconds":3}` | Readiness probe configuration. /readyz reports down while the pod is shutting down and while the state backend is unreachable; ArgoCD reachability is excluded. |
 | replicaCount | int | `1` |  |
@@ -398,7 +427,7 @@ PodMonitor has the same property.
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.automountServiceAccountToken | bool | `true` | Whether to automount the service account token |
+| serviceAccount.automountServiceAccountToken | bool | `false` | Whether to automount the service account token. argo-watcher never calls the Kubernetes API. Also set on the pod, so it applies to a pre-created ServiceAccount too. |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | startupProbe | object | `{"enabled":false,"failureThreshold":30,"path":"/livez","periodSeconds":5,"timeoutSeconds":3}` | Startup probe configuration. Disabled: argo-watcher binds its listener only after initialisation and exits rather than starting degraded, so there is no slow-start window to cover. |

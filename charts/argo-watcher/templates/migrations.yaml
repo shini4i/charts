@@ -39,6 +39,10 @@ spec:
             - name: DB_SSL_MODE
               value: {{ . | quote }}
             {{- end }}
+            {{- with .Values.postgres.sslRootCert }}
+            - name: PGSSLROOTCERT
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.postgres.secretKey }}
             - name: DB_PASSWORD
               valueFrom:
@@ -51,10 +55,18 @@ spec:
             - secretRef:
                 name: {{ .Values.postgres.secretName }}
           {{- end }}
+          {{- with .Values.migration.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.migration.securityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.migration.resources | nindent 12 }}
+      {{- with .Values.migration.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       restartPolicy: {{ .Values.migration.restartPolicy }}
   backoffLimit: {{ .Values.migration.backoffLimit }}
 {{- end }}
