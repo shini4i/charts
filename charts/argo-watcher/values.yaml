@@ -114,7 +114,8 @@ extraEnvs: []
 #        name: my-secret
 #        key: secret-key
 
-# -- Additional volumes for the argo-watcher pod, e.g. a private database CA
+# -- Additional volumes for the argo-watcher pod, e.g. a private database CA.
+# The names data, tmp, ssh-key and known-hosts are taken by the chart.
 extraVolumes: []
 #  - name: postgres-ca
 #    secret:

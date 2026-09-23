@@ -314,7 +314,7 @@ PodMonitor has the same property.
 | argo.urlAlias | string | `""` | An alias that will be used to generate url for ArgoCD app |
 | extraEnvs | list | `[]` | Additional environment variables to add to the container (supports both value and valueFrom) |
 | extraVolumeMounts | list | `[]` | Additional volume mounts for the argo-watcher container |
-| extraVolumes | list | `[]` | Additional volumes for the argo-watcher pod, e.g. a private database CA |
+| extraVolumes | list | `[]` | Additional volumes for the argo-watcher pod, e.g. a private database CA. The names data, tmp, ssh-key and known-hosts are taken by the chart. |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/shini4i/argo-watcher"` |  |
