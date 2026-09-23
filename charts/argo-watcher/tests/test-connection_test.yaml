@@ -1,0 +1,17 @@
+suite: test connection test pod
+templates:
+  - templates/tests/test-connection.yaml
+tests:
+  - it: should run as a helm test hook
+    asserts:
+      - isKind:
+          of: Pod
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: test
+
+  - it: should not automount a service account token
+    asserts:
+      - equal:
+          path: spec.automountServiceAccountToken
+          value: false

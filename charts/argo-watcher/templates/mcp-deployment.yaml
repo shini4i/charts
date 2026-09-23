@@ -25,7 +25,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "argo-watcher.mcp.serviceAccountName" . }}
-      # Also set here so a pre-created ServiceAccount cannot mount a token.
       automountServiceAccountToken: {{ .Values.mcp.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.mcp.podSecurityContext | nindent 8 }}

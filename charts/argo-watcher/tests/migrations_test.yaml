@@ -172,3 +172,85 @@ tests:
           content:
             name: DB_SSL_MODE
             value: disable
+
+  - it: should render no volumes by default
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+
+  - it: should render migration.extraVolumes and migration.extraVolumeMounts
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+      migration:
+        extraVolumes:
+          - name: postgres-ca
+            secret:
+              secretName: postgres-ca
+        extraVolumeMounts:
+          - name: postgres-ca
+            mountPath: /etc/postgres-ca
+            readOnly: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: postgres-ca
+              secret:
+                secretName: postgres-ca
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - name: postgres-ca
+              mountPath: /etc/postgres-ca
+              readOnly: true
+
+  - it: should not mount the server's extraVolumes into the migration Job
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+      extraVolumes:
+        - name: server-only
+          emptyDir: {}
+      extraVolumeMounts:
+        - name: server-only
+          mountPath: /server-only
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+
+  - it: should not render PGSSLROOTCERT when postgres.sslRootCert is unset
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+          any: true
+
+  - it: should render PGSSLROOTCERT when postgres.sslRootCert is set
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: verify-full
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+            value: /etc/postgres-ca/ca.crt

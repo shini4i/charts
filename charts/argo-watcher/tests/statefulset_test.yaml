@@ -768,3 +768,164 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: postgres/sslMode
+
+  - it: should not automount a service account token by default
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: should keep the token unmounted with a pre-created service account
+    set:
+      serviceAccount:
+        create: false
+        name: existing-sa
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: should automount a service account token when enabled
+    set:
+      serviceAccount:
+        automountServiceAccountToken: true
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: true
+
+  - it: should render only the built-in volumes by default
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.volumes
+          count: 1
+      - lengthEqual:
+          path: spec.template.spec.containers[0].volumeMounts
+          count: 2
+
+  - it: should append extraVolumes and extraVolumeMounts to the built-in ones
+    set:
+      updater:
+        sshSecretName: ssh-secret
+      extraVolumes:
+        - name: postgres-ca
+          secret:
+            secretName: postgres-ca
+      extraVolumeMounts:
+        - name: postgres-ca
+          mountPath: /etc/postgres-ca
+          readOnly: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: postgres-ca
+            secret:
+              secretName: postgres-ca
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tmp
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ssh-key
+          any: true
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: postgres-ca
+            mountPath: /etc/postgres-ca
+            readOnly: true
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ssh-key
+          any: true
+
+  - it: should not render PGSSLROOTCERT when postgres.sslRootCert is unset
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+          any: true
+
+  - it: should render PGSSLROOTCERT when postgres.sslRootCert is set
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: verify-full
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+            value: /etc/postgres-ca/ca.crt
+
+  - it: should not render PGSSLROOTCERT when postgres is disabled
+    set:
+      postgres:
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+          any: true
+
+  - it: should fail when postgres.sslRootCert is set without a verifying sslMode
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - failedTemplate:
+          errorMessage: "postgres.sslRootCert requires postgres.sslMode require, verify-ca or verify-full; any other mode ignores the CA"
+
+  - it: should fail when postgres.sslRootCert is set with sslMode prefer
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: prefer
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - failedTemplate:
+          errorMessage: "postgres.sslRootCert requires postgres.sslMode require, verify-ca or verify-full; any other mode ignores the CA"
+
+  - it: should accept postgres.sslRootCert with sslMode require
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: require
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+            value: /etc/postgres-ca/ca.crt
+
+  - it: should accept postgres.sslRootCert with sslMode verify-ca
+    set:
+      postgres:
+        enabled: true
+        secretName: db-secret
+        sslMode: verify-ca
+        sslRootCert: /etc/postgres-ca/ca.crt
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGSSLROOTCERT
+            value: /etc/postgres-ca/ca.crt

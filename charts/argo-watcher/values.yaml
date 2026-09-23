@@ -114,6 +114,19 @@ extraEnvs: []
 #        name: my-secret
 #        key: secret-key
 
+# -- Additional volumes for the argo-watcher pod, e.g. a private database CA.
+# The names data, tmp, ssh-key and known-hosts are taken by the chart.
+extraVolumes: []
+#  - name: postgres-ca
+#    secret:
+#      secretName: postgres-ca
+
+# -- Additional volume mounts for the argo-watcher container
+extraVolumeMounts: []
+#  - name: postgres-ca
+#    mountPath: /etc/postgres-ca
+#    readOnly: true
+
 postgres:
   # -- Sets STATE_TYPE to postgres
   enabled: false
@@ -125,12 +138,22 @@ postgres:
   secretName: ""
   # -- Sets DB_SSL_MODE on the server and the migration Job; empty keeps the app default (disable)
   sslMode: ""
+  # -- Path to the root CA the server and the migration Job verify the database
+  # certificate against, rendered as PGSSLROOTCERT. Mount the file with
+  # extraVolumes and migration.extraVolumes. Requires sslMode require, verify-ca or verify-full.
+  sslRootCert: ""
   # -- Support for an optional key override (this specific key would be exposed to DB_PASSWORD)
   secretKey: ""
 
 migration:
   restartPolicy: OnFailure
   backoffLimit: 5
+
+  # -- Additional volumes for the migration Job pod, e.g. a private database CA.
+  # The server's extraVolumes are not mounted here.
+  extraVolumes: []
+  # -- Additional volume mounts for the migration container
+  extraVolumeMounts: []
 
   podSecurityContext:
     seccompProfile:
@@ -156,8 +179,10 @@ serviceAccount:
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-  # -- Whether to automount the service account token
-  automountServiceAccountToken: true
+  # -- Whether to automount the service account token. argo-watcher never calls
+  # the Kubernetes API. Also set on the pod, so it applies to a pre-created
+  # ServiceAccount too.
+  automountServiceAccountToken: false
 
 podMonitor:
   enabled: false

@@ -125,6 +125,8 @@
         "required": ["name"]
       }
     },
+    "extraVolumes": { "type": "array", "items": { "type": "object" } },
+    "extraVolumeMounts": { "type": "array", "items": { "type": "object" } },
     "postgres": {
       "type": "object",
       "properties": {
@@ -138,7 +140,8 @@
         "sslMode": {
           "type": "string",
           "enum": ["", "disable", "allow", "prefer", "require", "verify-ca", "verify-full"]
-        }
+        },
+        "sslRootCert": { "type": "string" }
       },
       "required": ["enabled"]
     },
@@ -147,6 +150,8 @@
       "properties": {
         "restartPolicy": { "type": "string", "enum": ["OnFailure", "Never"] },
         "backoffLimit": { "type": "integer", "minimum": 0 },
+        "extraVolumes": { "type": "array", "items": { "type": "object" } },
+        "extraVolumeMounts": { "type": "array", "items": { "type": "object" } },
         "podSecurityContext": { "type": "object" },
         "resources": { "type": "object" },
         "securityContext": { "type": "object" }
