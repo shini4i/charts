@@ -42,7 +42,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "argo-watcher.serviceAccountName" . }}
-      # Also set here so a pre-created ServiceAccount cannot mount a token.
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       {{- if not (kindIs "invalid" .Values.terminationGracePeriodSeconds) }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
