@@ -6,14 +6,14 @@ sources:
 - https://github.com/shini4i/argo-watcher
 - https://github.com/shini4i/argo-watcher-mcp
 - https://github.com/shini4i/charts/tree/main/charts/argo-watcher
-version: 1.4.0
+version: 1.4.1
 keywords:
 - argocd
 - gitops
 - automation
 - mcp
 kubeVersion: '>=1.21.0-0'
-appVersion: "v1.4.1"
+appVersion: "v1.4.2"
 maintainers:
 - name: Vadim Gedz
   email: github@shini4i.dev
@@ -24,11 +24,5 @@ annotations:
     fingerprint: FF1E9948F6234DC6D70AB47BF509F29B63C1DC2B
     url: https://shini4i.github.io/charts/pgp_keys.asc
   artifacthub.io/changes: |
-    - kind: security
-      description: serviceAccount.automountServiceAccountToken defaults to false and is also set on the pod; argo-watcher never calls the Kubernetes API
-    - kind: security
-      description: The helm test pod no longer mounts a service account token
-    - kind: added
-      description: extraVolumes and extraVolumeMounts for the server, migration.extraVolumes and migration.extraVolumeMounts for the migration Job
-    - kind: added
-      description: postgres.sslRootCert, rendered as PGSSLROOTCERT into the server and the migration Job
+    - kind: changed
+      description: Update argo-watcher app version from v1.4.1 to v1.4.2
